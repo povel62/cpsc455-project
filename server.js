@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const movieRouter = require('./routes/movie-router')
+const memberRouter = require('./routes/member-router')
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -39,7 +39,7 @@ app.post('/api/world', (req, res) => {
   );
 });
 
-app.use('/api', movieRouter)
+app.use('/api', memberRouter)
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
