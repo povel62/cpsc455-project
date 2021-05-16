@@ -1,9 +1,28 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-
+const movieRouter = require('./routes/movie-router')
 const app = express();
 const port = process.env.PORT || 5000;
+
+// const MongoClient = require('mongodb').MongoClient;
+const uri = "mongodb+srv://Admin:RI2JBvI7gof0ODkH@cluster0.kdzl2.mongodb.net/dev?retryWrites=true&w=majority";
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+// client.connect(err => {
+//   const collection = client.db("test").collection("devices");
+//   // perform actions on the collection object
+//   client.close();
+// });
+
+const mongoose = require('mongoose')
+
+mongoose
+    .connect(uri, { useNewUrlParser: true })
+    .catch(e => {
+        console.error('Connection error', e.message)
+    })
+
+const db = mongoose.connection
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,6 +38,8 @@ app.post('/api/world', (req, res) => {
     `I received your POST request. This is what you sent me: ${req.body.post}`,
   );
 });
+
+app.use('/api', movieRouter)
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
