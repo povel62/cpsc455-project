@@ -27,8 +27,11 @@
 ### 2. Payment system gateway (maybe with crypto -- only dogecoin)
 
 # Sketches:
+## Login Sketch
 ![Login Sketch](./Login_signup.png?raw=true "Login/Signup")
+## Discover Sketch
 ![Discover Sketch](./Discover.png?raw=true "Discover")
+## Auction Sketch
 ![Auction Sketch](./Auction.png?raw=true "Auction")
 
 #  Setup Links:
