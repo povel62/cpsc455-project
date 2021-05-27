@@ -8,12 +8,11 @@
 #### Add frontend screen for login/signup
 
 ### 2. Show products
-#### Add backend model, controller, router and apis (\getProducts, model: {name, type, year, price, order})
+#### Add backend model, controller, router and apis (\getProducts, model: {name, type, year, price, order, endTime})
 #### Add frontend screen for showing products and their relevant information 
 
 ### 3. Bid on item
 ### 4. Notify bid winners/losers
-
 
 ## 3-7 standard req.
 ### 1. Bid timeline (open/closing)
@@ -21,11 +20,16 @@
 ### 3. Notify on bids that the user is likely to bid on (Recommendation)
 ### 4. Let users select a charity of their choice to contribute towards through their tickets
 ### 5. Getting/Buying points/credits/tokens (account balance)
+### 6. Login via other thridy party (Facebook, Apple, Google)
 
 ## 2-3 stretch req.
 ### 1. User generated posts/lotteries/auctions/seller reviews
 ### 2. Payment system gateway (maybe with crypto -- only dogecoin)
 
+# Sketches:
+![Login Sketch](./Login_signup.png?raw=true "Login/Signup")
+![Discover Sketch](./Discover.png?raw=true "Discover")
+![Auction Sketch](./Auction.png?raw=true "Auction")
 
 #  Setup Links:
 ## https://www.freecodecamp.org/news/how-to-make-create-react-app-work-with-a-node-backend-api-7c5c48acb1b0/
