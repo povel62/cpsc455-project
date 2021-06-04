@@ -1,38 +1,44 @@
 #  Project Description
-## This project is for everyone who likes to gamble/buy lottery or win cool products. It will let its users bid some money for a chance of winning a product. It will store user data, product data and the tokens invested. This will let users keep track of their token bidding on older products and also check newer featured products. We can add more sophisticated features like live timing and winning probability. Some features can be different types of transactions like auctions/charity.
+## This project is designed to support Blackbox ML users that will allow a fluid user experience and quick and easy access to the machine learning systems. Our goal is to provide easy access to world-class predictive automated machine learning systems to the masses. We aim to support both general and advanced users equally in using the system to solve their inference problems. Our stretch goal is to allow integration and use with Kaggle to making using the system even easier.
+
 
 #  Project Task Requirements
 ## 3-5 minimum req.
-### 1. Login 
-#### Add backend model, controller, router and apis (\login, \signup, model: {firstname, lastName, dateOfBirth, email, phoneNumber, balance})
-#### Add frontend screen for login/signup
+### 1. Login/account page
+#### Allow Guest mode with hash (like current site)
+#### Allow sign up with email and password for multiple jobs, no hash required
+### 2. Tutorial (step by step guided mode)
+### 3. Casual and advanced user parameters for model generation
+#### Show minimal options to complete job to casual users and show maximum applicable options available to advanced users
+#### Allow toggle button in user settings and at sign up
+### 4. Nav Bar for different pages
 
-### 2. Show products
-#### Add backend model, controller, router and apis (\getProducts, model: {name, type, year, price, order, endTime})
-#### Add frontend screen for showing products and their relevant information 
-
-### 3. Bid on item
-### 4. Notify bid winners/losers
 
 ## 3-7 standard req.
-### 1. Bid timeline (open/closing)
-### 2. Favourites / Watch list for sales
-### 3. Notify on bids that the user is likely to bid on (Recommendation)
-### 4. Let users select a charity of their choice to contribute towards through their tickets
-### 5. Getting/Buying points/credits/tokens (account balance)
-### 6. Login via other thridy party (Facebook, Apple, Google)
+### 1. Payment system integration for long jobs
+### 2. Add/remove associated jobs to account with collaborators (add with email)
+### 3. Control dashboard (with jobs progress, datasets)
+#### On site progress indicator for jobs
+#### Timer for the job on page
+### 4.Tabular uploading screen (maybe other) data viewer/explorer
+#### Allow user to make minor corrections to data
+#### Allow verification of data? Pre confirmation and summary stats
+### 5. Prediction data results on site
+
+
 
 ## 2-3 stretch req.
-### 1. User generated posts/lotteries/auctions/seller reviews
-### 2. Payment system gateway (maybe with crypto -- only dogecoin)
+### 1. Kaggle integration (dataset import/viewer, login with account)
+### 2. Graphs or visuals to support models/input data? (Tableau/d3js?)
+### 3. Image/object recognition datatype support
 
 # Sketches:
+## Dashboard Sketch
+![Dashboard Sketch](./cpsc455-Dashboard.png?raw=true "Login/Signup")
+## Data Viewer Sketch
+![Data Viewer Sketch](./cpsc455-Data viewer.png?raw=true "Discover")
 ## Login Sketch
 ![Login Sketch](./Login_signup.png?raw=true "Login/Signup")
-## Discover Sketch
-![Discover Sketch](./Discover.png?raw=true "Discover")
-## Auction Sketch
-![Auction Sketch](./Auction.png?raw=true "Auction")
 
 #  Setup Links:
 ## https://www.freecodecamp.org/news/how-to-make-create-react-app-work-with-a-node-backend-api-7c5c48acb1b0/
