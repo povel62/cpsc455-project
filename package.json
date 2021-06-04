@@ -6,7 +6,9 @@
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "start": "node server.js",
-    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
+    "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.js'",
+    "lint": "eslint . --ext .js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -16,6 +18,10 @@
     "nodemon": "^2.0.7"
   },
   "devDependencies": {
-    "concurrently": "^4.0.1"
+    "concurrently": "^4.0.1",
+    "eslint": "^7.27.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.0"
   }
 }
