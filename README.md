@@ -46,3 +46,5 @@
 ## https://material-ui.com/
 ## https://www.codementor.io/@rajjeet/step-by-step-how-to-add-redux-to-a-react-app-11tcgslmvi
 ## https://medium.com/how-to-react/config-eslint-and-prettier-in-visual-studio-code-for-react-js-development-97bb2236b31a#:~:text=Open%20the%20terminal%20in%20your,Code%20formatter%20and%20install%20it.
+## https://stackabuse.com/handling-authentication-in-express-js
+## https://bezkoder.com/node-js-jwt-authentication-mysql/
