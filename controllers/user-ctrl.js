@@ -83,6 +83,18 @@ updateUser = async (req, res) => {
     user.email = body.email;
     user.password = body.password;
     user.dob = body.dob;
+    // allow empty field to remove kaggle account link
+    if (body.kusername) {
+      user.kusername = body.kusername;
+    } else {
+      user.kusername = "";
+    }
+
+    if (body.kapi) {
+      user.kapi = body.kapi;
+    } else {
+      user.kapi = "";
+    }
 
     user
       .save()
