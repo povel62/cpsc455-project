@@ -2,9 +2,10 @@ import React, { Component } from "react";
 
 export default class Signup extends Component {
   render() {
-    const signup_handler = (e) => {
+    const signup_handler = async (e) => {
       e.preventDefault();
-      alert("hi from signup");
+      const response = await fetch("/api/hello");
+      alert(await response.text());
     };
     return (
       <div className="signupPage">

@@ -2,10 +2,17 @@ import React, { Component } from "react";
 
 export default class Login extends Component {
   render() {
-    const login_handler = (e) => {
+    const login_handler = async (e) => {
       e.preventDefault();
-      alert("hi from login");
+      const response = await fetch("/api/world", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      alert(await response.text());
     };
+
     return (
       <div className="loginPage">
         <h1>LOGIN PAGE</h1>
