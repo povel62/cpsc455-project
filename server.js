@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const userRouter = require("./routes/user-router");
+const kaggleRouter = require("./routes/kaggle-router");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -21,6 +22,7 @@ mongoose.connect(uri, { useNewUrlParser: true }).catch((e) => {
   console.error("Connection error", e.message);
 });
 
+// eslint-disable-next-line no-unused-vars
 const db = mongoose.connection;
 
 app.use(bodyParser.json());
@@ -39,6 +41,7 @@ app.post("/api/world", (req, res) => {
 });
 
 app.use("/api", userRouter);
+app.use("/kagglev1", kaggleRouter);
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files
