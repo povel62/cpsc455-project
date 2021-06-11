@@ -15,7 +15,7 @@
 
 
 ## 3-7 standard req.
-### 1. Payment system integration for long jobs
+### 1. Kaggle integration (dataset import/viewer, add api key to account)
 ### 2. Add/remove associated jobs to account with collaborators (add with email)
 ### 3. Control dashboard (with jobs progress, datasets)
 #### On site progress indicator for jobs
@@ -28,9 +28,10 @@
 
 
 ## 2-3 stretch req.
-### 1. Kaggle integration (dataset import/viewer, login with account)
+### 1. Image/object recognition datatype support
 ### 2. Graphs or visuals to support models/input data? (Tableau/d3js?)
-### 3. Image/object recognition datatype support
+### 3. Payment system integration for long jobs
+
 
 # Sketches:
 ## Dashboard Sketch
