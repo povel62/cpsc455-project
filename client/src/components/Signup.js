@@ -26,8 +26,6 @@ const Signup = () => {
   useEffect(() => {
     dispatch(allActions.userActions.setUser(user))
   }, [])
-  //const [username, setUsername] = useState("")
-  //const [pwd, setPwd] = useState("")
 
   const signup_handler = async (e) => {
     e.preventDefault();
@@ -62,6 +60,9 @@ const Signup = () => {
           <br />
           <label>Confirm Password</label>
           <input type="text"></input>
+          <br />
+          <label>DOB</label>
+          <input type="date"></input>
           <br />
           <button type="submit" onClick={signup_handler}>
             Sign Up
