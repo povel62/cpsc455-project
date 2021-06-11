@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-/*import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import * as actions from "../redux/actions/actions";*/
-//import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { has_login_token } from "../redux/actions/actions";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -14,21 +12,8 @@ const Login = () => {
     pwd: "",
   });
 
-  /*
-  const username = useSelector((values) => values.username);
-  const currentUser = useSelector((values) => values.currentUser);
-
-  const dispatch = useDispatch();
-
-  const user = { name: "Rei" };
-
-  useEffect(() => {
-    dispatch(allActions.userActions.setUser(user));
-  }, []);
-  */
-
-  //const [username, setUsername] = useState("")
-  //const [pwd, setPwd] = useState("")
+  // extract loginReducer
+  const login_token = useSelector((state) => state.loginReducer);
 
   const login_handler = async (e) => {
     e.preventDefault();
@@ -41,8 +26,16 @@ const Login = () => {
     });
 
     const body = await response.text();
-    alert(body);
     setValues({ ...values, responseToPost: body });
+    if (JSON.parse(body)["accessToken"]) {
+      const accessToken = JSON.parse(body)["accessToken"];
+      dispatch(has_login_token(accessToken));
+      alert(accessToken);
+    } else {
+      alert("wrong username or password");
+    }
+    console.log("login_token:");
+    console.log(login_token);
   };
 
   return (
@@ -66,6 +59,7 @@ const Login = () => {
         <button type="submit" onClick={login_handler}>
           Login
         </button>
+        <br />
       </form>
     </div>
   );

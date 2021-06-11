@@ -1,9 +1,4 @@
 import React, { useState } from "react";
-/*import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";*/
-//import * as actions from "../redux/actions/actions";
-//import { /*useSelector,*/ useDispatch } from "react-redux";
 
 const Signup = () => {
   const [values, setValues] = useState({
@@ -16,18 +11,6 @@ const Signup = () => {
     lastname: "",
     dob: "",
   });
-
-  //const username = useSelector(values => values.username)
-  //const currentUser = useSelector(values => values.currentUser)
-
-  /*
-  const dispatch = useDispatch();
-
-  const user = { name: "Rei" };
-
-  useEffect(() => {
-    dispatch(allActions.userActions.setUser(user));
-  }, []);*/
 
   const signup_handler = async (e) => {
     e.preventDefault();
