@@ -30,7 +30,7 @@ const Signup = () => {
 
     const body = await response.text();
     if (JSON.parse(body)["success"]) {
-      alert("Signed up");
+      alert("Signed up!!");
       setValues({ ...values, responseToPost: body });
     } else {
       alert(body);
