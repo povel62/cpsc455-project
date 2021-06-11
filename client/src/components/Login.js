@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { has_login_token } from "../redux/actions/actions";
 
 const Login = () => {
@@ -11,9 +11,6 @@ const Login = () => {
     username: "",
     pwd: "",
   });
-
-  // extract loginReducer
-  const login_token = useSelector((state) => state.loginReducer);
 
   const login_handler = async (e) => {
     e.preventDefault();
@@ -30,12 +27,10 @@ const Login = () => {
     if (JSON.parse(body)["accessToken"]) {
       const accessToken = JSON.parse(body)["accessToken"];
       dispatch(has_login_token(accessToken));
-      alert(accessToken);
+      alert("Welcome");
     } else {
       alert("wrong username or password");
     }
-    console.log("login_token:");
-    console.log(login_token);
   };
 
   return (

@@ -29,8 +29,12 @@ const Signup = () => {
     });
 
     const body = await response.text();
-    alert(body);
-    setValues({ ...values, responseToPost: body });
+    if (JSON.parse(body)["success"]) {
+      alert("Signed up");
+      setValues({ ...values, responseToPost: body });
+    } else {
+      alert(body);
+    }
   };
 
   return (

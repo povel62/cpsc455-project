@@ -1,10 +1,12 @@
 const loginReducer = (state = "", action) => {
-  switch (action.type) {
-    case "SET_LOGIN_TOKEN":
-      return action.payload;
-    default:
-      return state;
+  if (action.type == "SET_LOGIN_TOKEN") {
+    return action.payload;
+  } else {
+    return state;
   }
 };
+
+// To extract loginReducer
+//const login_token = useSelector((state) => state.loginReducer);
 
 export default loginReducer;
