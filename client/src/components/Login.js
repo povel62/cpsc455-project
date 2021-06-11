@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
+/*import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as actions from "../redux/actions/actions";
-import {useSelector, useDispatch} from 'react-redux'
+import * as actions from "../redux/actions/actions";*/
+//import { useSelector, useDispatch } from "react-redux";
 
 const Login = () => {
   const [values, setValues] = useState({
@@ -14,16 +14,19 @@ const Login = () => {
     pwd: "",
   });
 
-  const username = useSelector(values => values.username)
-  const currentUser = useSelector(values => values.currentUser)
+  /*
+  const username = useSelector((values) => values.username);
+  const currentUser = useSelector((values) => values.currentUser);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const user = {name: "Rei"}
+  const user = { name: "Rei" };
 
   useEffect(() => {
-    dispatch(allActions.userActions.setUser(user))
-  }, [])
+    dispatch(allActions.userActions.setUser(user));
+  }, []);
+  */
+
   //const [username, setUsername] = useState("")
   //const [pwd, setPwd] = useState("")
 
@@ -36,7 +39,7 @@ const Login = () => {
       },
       body: JSON.stringify({ email: values.username, password: values.pwd }),
     });
-    
+
     const body = await response.text();
     alert(body);
     setValues({ ...values, responseToPost: body });
