@@ -13,16 +13,19 @@ module.exports.encrypt = function encrypt(text) {
   return vector.toString("hex") + ":" + crypted.toString("hex");
 };
 
-module.exports.decrypt = function encrypt(text) {
+module.exports.decrypt = function decrypt(text) {
   if (text === null || typeof text === "undefined") {
     return text;
   }
-  let encryptedArray = text.split(":");
-  let vector = Buffer.from(encryptedArray[0], "hex");
-  let value = Buffer.from(encryptedArray[1], "hex");
-  let decipher = crypto.createDecipheriv("aes-256-cbc", key, vector);
-  let dec = decipher.update(value);
-  dec = dec.toString("utf-8") + decipher.final("utf8");
-
-  return dec;
+  try {
+    let encryptedArray = text.split(":");
+    let vector = Buffer.from(encryptedArray[0], "hex");
+    let value = Buffer.from(encryptedArray[1], "hex");
+    let decipher = crypto.createDecipheriv("aes-256-cbc", key, vector);
+    let dec = decipher.update(value);
+    dec = dec.toString("utf-8") + decipher.final("utf8");
+    return dec;
+  } catch (e) {
+    return "keyFail:" + text;
+  }
 };

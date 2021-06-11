@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const salt = 10;
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const { validateGuest } = require("../util/validation");
 const secret = crypto.randomBytes(60).toString("utf8");
 
 verifyToken = (req, res, next) => {
@@ -34,13 +35,18 @@ createUser = async (req, res) => {
     });
   }
   let newUser = body;
-  newUser.password = await bcrypt.hash(newUser.password, salt);
 
-  const user = new User(newUser);
+  if (newUser.password) {
+    newUser.password = await bcrypt.hash(newUser.password, salt);
+  }
+
+  let user = new User(newUser);
 
   if (!user) {
     return res.status(400).json({ success: false, error: err });
   }
+
+  validateGuest(newUser, user);
 
   user
     .save()
@@ -78,22 +84,23 @@ updateUser = async (req, res) => {
       });
     }
 
+    if (user.guest === true) {
+      return res.status(403).json({
+        message: "Forbidden for guest users",
+      });
+    }
+
     user.fname = body.fname;
     user.lname = body.lname;
     user.email = body.email;
     user.password = body.password;
     user.dob = body.dob;
-    // allow empty field to remove kaggle account link
+
     if (body.kusername) {
       user.kusername = body.kusername;
-    } else {
-      user.kusername = "";
     }
-
     if (body.kapi) {
       user.kapi = body.kapi;
-    } else {
-      user.kapi = "";
     }
 
     user
@@ -170,7 +177,7 @@ getUsers = async (req, res) => {
   }).catch((err) => console.log(err));
 };
 
-getUserByEmailAndPassword = async (req, res) => {
+login = async (req, res) => {
   const body = req.body;
 
   await User.findOne({ email: body.email }, (err, user) => {
@@ -180,9 +187,9 @@ getUserByEmailAndPassword = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ success: false, error: `User not found` });
-    } else {
-      let passCorect = bcrypt.compareSync(body.password, user.password, salt);
-      if (!passCorect) {
+    } else if (!user.guest || user.guest === false) {
+      let passCorrect = bcrypt.compareSync(body.password, user.password, salt);
+      if (!passCorrect) {
         return res
           .status(404)
           .json({ success: false, error: `Password not correct` });
@@ -204,5 +211,5 @@ module.exports = {
   getUsers,
   getUserById,
   getUserByEmail,
-  getUserByEmailAndPassword,
+  login,
 };
