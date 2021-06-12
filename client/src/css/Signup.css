@@ -1,12 +1,12 @@
 .signupPage {
   text-align: center;
-  width: 60%;
+  width: 50vh;
   margin: 100px auto;
   color: white;
   background: black;
   padding: 10px;
   line-height: 15px;
-  border-radius: 30px;
+  border-radius: 15px;
   min-height: 300px;
   max-height: 300px;
 }
@@ -26,4 +26,16 @@
   height: 100%;
   background: #6e828b83;
   min-height: 100vh;
+}
+
+.buttonClass {
+  width: 70px;
+  margin: 5px;
+  margin-left: 70px;
+  font-family: "Titillium Web";
+  background-color: #ff1801;
+  color: #ddd;
+  border: #ff1801 solid 1px;
+  border-radius: 10px;
+  font-weight: bold;
 }

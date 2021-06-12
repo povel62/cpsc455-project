@@ -53,7 +53,7 @@ const Login = () => {
             onChange={(e) => setValues({ ...values, pwd: e.target.value })}
           ></input>
           <br />
-          <button type="submit" onClick={login_handler}>
+          <button className="buttonClass" type="submit" onClick={login_handler}>
             Login
           </button>
           <br />

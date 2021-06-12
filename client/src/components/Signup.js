@@ -77,7 +77,11 @@ const Signup = () => {
             onChange={(e) => setValues({ ...values, dob: e.target.value })}
           ></input>
           <br />
-          <button type="submit" onClick={signup_handler}>
+          <button
+            type="submit"
+            onClick={signup_handler}
+            className="buttonClass"
+          >
             Sign Up
           </button>
         </form>

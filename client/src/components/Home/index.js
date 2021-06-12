@@ -1,9 +1,13 @@
 import React from "react";
+import UploadButtons from "./Upload_button";
 
 const Home = () => {
   return (
     <div className="App">
       <h1>BLACK BOX ML</h1>
+      <br />
+      <UploadButtons></UploadButtons>
+      <br />
       <p>
         BlackBox Machine Learning is an online platform that uses an ensemble of
         state-of-the-art AutoML systems to find the best model to describe your
