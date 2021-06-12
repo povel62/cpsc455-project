@@ -16,7 +16,12 @@ const Navigation = () => {
 
   return (
     <div>
-      <Tabs value={selectedTab} onChange={handleChange}>
+      <Tabs
+        className="containerTab"
+        value={selectedTab}
+        onChange={handleChange}
+        inkBarStyle={{ background: "blue" }}
+      >
         <Tab label="Home" />
         <Tab label="Instructions" />
         <Tab label="FAQ" />
