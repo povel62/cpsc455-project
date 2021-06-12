@@ -1,0 +1,19 @@
+.signupPage {
+  text-align: center;
+  width: 70%;
+  margin: 10px auto;
+  color: white;
+  background: #333;
+  padding: 10px;
+  line-height: 15px;
+  border-radius: 10px;
+  min-height: 190px;
+}
+
+.signupPage label {
+  display: inline-block;
+  width: 50%;
+  text-align: left;
+  margin: 5px auto;
+  padding: 5px;
+}
