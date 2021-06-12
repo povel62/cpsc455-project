@@ -45,38 +45,37 @@ const Signup = () => {
       <div className="signupPage">
         <h1>SIGNUP PAGE</h1>
         <form>
-          <label>First Name</label>
           <input
             type="text"
+            placeholder="First Name"
             onChange={(e) =>
               setValues({ ...values, firstname: e.target.value })
             }
           ></input>
           <br />
-          <label>Last Name</label>
           <input
             type="text"
+            placeholder="Last Name"
             onChange={(e) => setValues({ ...values, lastname: e.target.value })}
           ></input>
           <br />
-          <label>e-mail</label>
           <input
             type="text"
+            placeholder="e-mail"
             onChange={(e) => setValues({ ...values, username: e.target.value })}
           ></input>
           <br />
-          <label>Password</label>
           <input
             type="password"
+            placeholder="password"
             onChange={(e) => setValues({ ...values, pwd: e.target.value })}
           ></input>
           <br />
-          <label>DOB</label>
           <input
             type="date"
             onChange={(e) => setValues({ ...values, dob: e.target.value })}
           ></input>
-          <br />
+          <hr />
           <button type="submit" onClick={signup_handler}>
             Sign Up
           </button>

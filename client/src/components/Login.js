@@ -39,20 +39,20 @@ const Login = () => {
       <div className="loginPage">
         <h1>LOGIN PAGE</h1>
         <form>
-          <label>e-mail</label>
           <input
             type="text"
             id="email_text"
+            placeholder="e-mail"
             onChange={(e) => setValues({ ...values, username: e.target.value })}
           ></input>
           <br />
-          <label>Password</label>
           <input
             type="password"
+            placeholder="password"
             id="password_text"
             onChange={(e) => setValues({ ...values, pwd: e.target.value })}
           ></input>
-          <br />
+          <hr />
           <button type="submit" onClick={login_handler}>
             Login
           </button>
