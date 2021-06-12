@@ -1,0 +1,12 @@
+nav {
+  float: left;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+nav:hover:not(.active) {
+  background-color: #000000;
+}

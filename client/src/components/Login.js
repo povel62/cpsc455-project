@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { has_login_token } from "../redux/actions/actions";
+import "../css/Login.css";
+import Button from "@material-ui/core/Button";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -34,28 +36,36 @@ const Login = () => {
   };
 
   return (
-    <div className="loginPage">
-      <h1>LOGIN PAGE</h1>
-      <form>
-        <label>e-mail</label>
-        <input
-          type="text"
-          id="email_text"
-          onChange={(e) => setValues({ ...values, username: e.target.value })}
-        ></input>
-        <br />
-        <label>Password</label>
-        <input
-          type="password"
-          id="password_text"
-          onChange={(e) => setValues({ ...values, pwd: e.target.value })}
-        ></input>
-        <br />
-        <button type="submit" onClick={login_handler}>
-          Login
-        </button>
-        <br />
-      </form>
+    <div className="loginContainer">
+      <div className="loginPage">
+        <h1>LOGIN PAGE</h1>
+        <form>
+          <input
+            type="text"
+            id="email_text"
+            placeholder="e-mail"
+            onChange={(e) => setValues({ ...values, username: e.target.value })}
+          ></input>
+          <br />
+          <input
+            type="password"
+            placeholder="password"
+            id="password_text"
+            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+          ></input>
+          <hr />
+          <Button
+            type="submit"
+            onClick={login_handler}
+            variant="contained"
+            color="primary"
+            component="span"
+          >
+            Login
+          </Button>
+          <br />
+        </form>
+      </div>
     </div>
   );
 };
