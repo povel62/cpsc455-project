@@ -41,43 +41,47 @@ const Signup = () => {
   };
 
   return (
-    <div className="signupPage">
-      <h1>SIGNUP PAGE</h1>
-      <form>
-        <label>First Name</label>
-        <input
-          type="text"
-          onChange={(e) => setValues({ ...values, firstname: e.target.value })}
-        ></input>
-        <br />
-        <label>Last Name</label>
-        <input
-          type="text"
-          onChange={(e) => setValues({ ...values, lastname: e.target.value })}
-        ></input>
-        <br />
-        <label>e-mail</label>
-        <input
-          type="text"
-          onChange={(e) => setValues({ ...values, username: e.target.value })}
-        ></input>
-        <br />
-        <label>Password</label>
-        <input
-          type="password"
-          onChange={(e) => setValues({ ...values, pwd: e.target.value })}
-        ></input>
-        <br />
-        <label>DOB</label>
-        <input
-          type="date"
-          onChange={(e) => setValues({ ...values, dob: e.target.value })}
-        ></input>
-        <br />
-        <button type="submit" onClick={signup_handler}>
-          Sign Up
-        </button>
-      </form>
+    <div className="signupContainer">
+      <div className="signupPage">
+        <h1>SIGNUP PAGE</h1>
+        <form>
+          <label>First Name</label>
+          <input
+            type="text"
+            onChange={(e) =>
+              setValues({ ...values, firstname: e.target.value })
+            }
+          ></input>
+          <br />
+          <label>Last Name</label>
+          <input
+            type="text"
+            onChange={(e) => setValues({ ...values, lastname: e.target.value })}
+          ></input>
+          <br />
+          <label>e-mail</label>
+          <input
+            type="text"
+            onChange={(e) => setValues({ ...values, username: e.target.value })}
+          ></input>
+          <br />
+          <label>Password</label>
+          <input
+            type="password"
+            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+          ></input>
+          <br />
+          <label>DOB</label>
+          <input
+            type="date"
+            onChange={(e) => setValues({ ...values, dob: e.target.value })}
+          ></input>
+          <br />
+          <button type="submit" onClick={signup_handler}>
+            Sign Up
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
