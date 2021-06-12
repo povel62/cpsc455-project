@@ -1,13 +1,23 @@
 .loginPage {
   text-align: center;
   width: 60%;
-  margin: 50px auto;
+  margin: 100px auto;
   color: white;
   background: black;
   padding: 10px;
   line-height: 15px;
   border-radius: 30px;
   min-height: 200px;
+  max-height: 200px;
+}
+
+.loginContainer {
+  text-align: center;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: gray;
+  min-height: 100vh;
 }
 
 .loginPage label {
