@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { has_login_token } from "../redux/actions/actions";
 import "../css/Login.css";
+import Button from "@material-ui/core/Button";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -53,9 +54,15 @@ const Login = () => {
             onChange={(e) => setValues({ ...values, pwd: e.target.value })}
           ></input>
           <hr />
-          <button type="submit" onClick={login_handler}>
+          <Button
+            type="submit"
+            onClick={login_handler}
+            variant="contained"
+            color="primary"
+            component="span"
+          >
             Login
-          </button>
+          </Button>
           <br />
         </form>
       </div>

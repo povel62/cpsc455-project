@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../css/Signup.css";
+import Button from "@material-ui/core/Button";
 
 const Signup = () => {
   const [values, setValues] = useState({
@@ -76,9 +77,15 @@ const Signup = () => {
             onChange={(e) => setValues({ ...values, dob: e.target.value })}
           ></input>
           <hr />
-          <button type="submit" onClick={signup_handler}>
+          <Button
+            type="submit"
+            onClick={signup_handler}
+            variant="contained"
+            color="primary"
+            component="span"
+          >
             Sign Up
-          </button>
+          </Button>
         </form>
       </div>
     </div>
