@@ -6,6 +6,7 @@ const Signup = () => {
     post: "",
     responseToPost: "",
     username: "",
+    guest: true,
     pwd: "",
     firstname: "",
     lastname: "",
@@ -20,6 +21,7 @@ const Signup = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        guest: values.guest,
         fname: values.firstname,
         lname: values.lastname,
         email: values.username,
