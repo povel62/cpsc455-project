@@ -1,5 +1,6 @@
 import React from "react";
 import UploadButtons from "./Upload_button";
+import "../../css/index.css";
 
 const Home = () => {
   return (
