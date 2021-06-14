@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const userRouter = require("./routes/user-router");
+const jobRouter = require("./routes/job-router");
 const kaggleRouter = require("./routes/kaggle-router");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -41,6 +42,8 @@ app.post("/api/world", (req, res) => {
 });
 
 app.use("/api", userRouter);
+app.use("/api", jobRouter);
+
 app.use("/kagglev1", kaggleRouter);
 
 if (process.env.NODE_ENV === "production") {
