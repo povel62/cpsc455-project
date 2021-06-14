@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const secret = crypto.randomBytes(60).toString("utf8");
 
 const key = process.env.SERVER_KEY
   ? process.env.SERVER_KEY
@@ -29,3 +30,4 @@ module.exports.decrypt = function decrypt(text) {
     return "keyFail:" + text;
   }
 };
+module.exports.secret = secret;

@@ -8,7 +8,8 @@
     "start": "node server.js",
     "heroku-postbuild": "cd client && yarn install && yarn run build",
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.js'",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+    "install-all": "yarn install && cd client && yarn install"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -21,6 +22,7 @@
     "mongoose": "^5.12.9",
     "nodemon": "^2.0.7",
     "prettier-eslint": "^12.0.0",
+    "underscore": "^1.13.1",
     "reactjs-popup": "^2.0.4"
   },
   "devDependencies": {

@@ -1,29 +1,9 @@
 const User = require("../models/user-model");
 const bcrypt = require("bcrypt");
 const salt = 10;
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const { validateGuest } = require("../util/validation");
-const secret = crypto.randomBytes(60).toString("utf8");
-
-verifyToken = (req, res, next) => {
-  if (
-    !req.headers.authorization ||
-    req.headers.authorization.split(" ").length < 2
-  ) {
-    return res.status(403).send({ message: "No token provided!" });
-  }
-
-  let token = req.headers.authorization.split(" ")[1];
-
-  jwt.verify(token, secret, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: "Unauthorized!" });
-    }
-    req._id = decoded._id;
-    next();
-  });
-};
+const jwt = require("jsonwebtoken");
+const { secret } = require("../util/security");
 
 createUser = async (req, res) => {
   const body = req.body;
@@ -127,10 +107,6 @@ deleteUser = async (req, res) => {
       return res.status(400).json({ success: false, error: err });
     }
 
-    if (!user) {
-      return res.status(404).json({ success: false, error: `User not found` });
-    }
-
     return res.status(200).json({ success: true, data: user });
   }).catch((err) => console.log(err));
 };
@@ -173,8 +149,16 @@ getUsers = async (req, res) => {
     if (!users.length) {
       return res.status(404).json({ success: false, error: `User not found` });
     }
-    return res.status(200).json({ success: true, data: users });
-  }).catch((err) => console.log(err));
+  }).populate('jobs', "-users").exec((err, populatedUser) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err });
+    }
+
+    if (!populatedUser) {
+      return res.status(404).json({ success: false, error: `User not found` });
+    }
+    return res.status(200).json({ success: true, data: populatedUser });
+  });
 };
 
 login = async (req, res) => {
@@ -207,9 +191,8 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  verifyToken,
   getUsers,
   getUserById,
   getUserByEmail,
-  login,
+  login
 };
