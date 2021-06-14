@@ -3,25 +3,12 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import configureStore from "./redux/configureStore";
+import reduxStore from "./redux/reduxStore";
 import { Provider } from "react-redux";
-
-const loadState = () => {
-  try {
-    const serialisedState = window.sessionStorage.getItem("app_state");
-    if (!serialisedState) return undefined;
-    return JSON.parse(serialisedState);
-  } catch (err) {
-    return undefined;
-  }
-};
-
-const oldState = loadState();
-const store = configureStore(oldState);
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
+    <Provider store={reduxStore}>
       <App />
     </Provider>
   </React.StrictMode>,
