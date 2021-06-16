@@ -15,23 +15,27 @@ const Login = () => {
   });
 
   const login_handler = async (e) => {
-    e.preventDefault();
-    const response = await fetch("/api/user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: values.username, password: values.pwd }),
-    });
-
-    const body = await response.text();
-    setValues({ ...values, responseToPost: body });
-    if (JSON.parse(body)["accessToken"]) {
-      const accessToken = JSON.parse(body)["accessToken"];
-      dispatch(has_login_token(accessToken));
-      alert("Welcome");
+    if (values.pwd == "" || values.username == "") {
+      alert("Please enter all fields");
     } else {
-      alert("wrong username or password");
+      e.preventDefault();
+      const response = await fetch("/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: values.username, password: values.pwd }),
+      });
+
+      const body = await response.text();
+      setValues({ ...values, responseToPost: body });
+      if (JSON.parse(body)["accessToken"]) {
+        const accessToken = JSON.parse(body)["accessToken"];
+        dispatch(has_login_token(accessToken));
+        alert("Welcome");
+      } else {
+        alert("wrong username or password");
+      }
     }
   };
 
