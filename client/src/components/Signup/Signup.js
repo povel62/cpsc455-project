@@ -42,52 +42,48 @@ const Signup = () => {
   };
 
   return (
-    <div className="signupContainer">
-      <div className="signupPage">
-        <h1>SIGNUP PAGE</h1>
-        <form>
-          <input
-            type="text"
-            placeholder="First Name"
-            onChange={(e) =>
-              setValues({ ...values, firstname: e.target.value })
-            }
-          ></input>
-          <br />
-          <input
-            type="text"
-            placeholder="Last Name"
-            onChange={(e) => setValues({ ...values, lastname: e.target.value })}
-          ></input>
-          <br />
-          <input
-            type="text"
-            placeholder="e-mail"
-            onChange={(e) => setValues({ ...values, username: e.target.value })}
-          ></input>
-          <br />
-          <input
-            type="password"
-            placeholder="password"
-            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
-          ></input>
-          <br />
-          <input
-            type="date"
-            onChange={(e) => setValues({ ...values, dob: e.target.value })}
-          ></input>
-          <hr />
-          <Button
-            type="submit"
-            onClick={signup_handler}
-            variant="contained"
-            color="primary"
-            component="span"
-          >
-            Sign Up
-          </Button>
-        </form>
-      </div>
+    <div className="signupPage">
+      <h1>SIGNUP PAGE</h1>
+      <form>
+        <input
+          type="text"
+          placeholder="First Name"
+          onChange={(e) => setValues({ ...values, firstname: e.target.value })}
+        ></input>
+        <br />
+        <input
+          type="text"
+          placeholder="Last Name"
+          onChange={(e) => setValues({ ...values, lastname: e.target.value })}
+        ></input>
+        <br />
+        <input
+          type="text"
+          placeholder="e-mail"
+          onChange={(e) => setValues({ ...values, username: e.target.value })}
+        ></input>
+        <br />
+        <input
+          type="password"
+          placeholder="password"
+          onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+        ></input>
+        <br />
+        <input
+          type="date"
+          onChange={(e) => setValues({ ...values, dob: e.target.value })}
+        ></input>
+        <hr />
+        <Button
+          type="submit"
+          onClick={signup_handler}
+          variant="contained"
+          color="primary"
+          component="span"
+        >
+          Sign Up
+        </Button>
+      </form>
     </div>
   );
 };

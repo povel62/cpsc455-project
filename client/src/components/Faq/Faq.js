@@ -4,7 +4,7 @@ import "./Faq.css";
 const Faq = () => {
   return (
     <div className="Faq">
-      <div className="container">
+      <div className="containerFaq">
         <h1>BLACK BOX ML: FAQ</h1>
         <p>Q: How can I see the system in action?</p>
         <p>

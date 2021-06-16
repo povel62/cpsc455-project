@@ -4,7 +4,7 @@ import "./Instructions.css";
 const Instructions = () => {
   return (
     <div className="Instructions">
-      <div className="container">
+      <div className="containerInstructions">
         <h1>BLACK BOX ML: INSTRUCTIONS</h1>
         <p>
           Step 1. All you need to get started is a CSV file formatted as
