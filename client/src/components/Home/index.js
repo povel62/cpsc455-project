@@ -1,6 +1,6 @@
 import React from "react";
-import UploadButtons from "./Upload_button";
-import "../../css/index.css";
+import UploadButtons from "../Upload_button/Upload_button";
+import "./index.css";
 
 const Home = () => {
   return (
