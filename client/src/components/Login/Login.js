@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { has_login_token } from "../redux/actions/actions";
-import "../css/Login.css";
+import { has_login_token } from "../../redux/actions/actions";
+import "./Login.css";
 import Button from "@material-ui/core/Button";
 
 const Login = () => {

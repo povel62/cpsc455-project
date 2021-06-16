@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../css/Signup.css";
+import "./Signup.css";
 import Button from "@material-ui/core/Button";
 
 const Signup = () => {
