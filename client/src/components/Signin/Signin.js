@@ -1,41 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Signin.css";
-/*import { useDispatch } from "react-redux";
-import { has_login_token } from "../../redux/actions/actions";
-import Button from "@material-ui/core/Button";*/
+import Signup from "../Signup/Signup";
+import Login from "../Login/Login";
+import Button from "@material-ui/core/Button";
 
 const Signin = () => {
+  const [showSignup, setIsUser] = useState(false);
+  const [showLogin, setShowLogin] = useState(true);
   return (
-    <div>
-      <br />
-      <br />
-      <div className="container">
-        <form>
-          <input type="text" name="username" placeholder="Username" required />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
-          <input type="submit" value="Login" />
-        </form>
-      </div>
-
-      <div className="bottom-container">
-        <div className="row">
-          <div className="col">
-            <a style="color:white" className="btn">
-              Sign up
-            </a>
-          </div>
-          <div className="col">
-            <a style="color:white" className="btn">
-              Forgot password?
-            </a>
-          </div>
-        </div>
-      </div>
+    <div className="containerSignin">
+      {showSignup ? <Signup /> : ""}
+      {showLogin ? <Login /> : ""}
+      <Button
+        variant="contained"
+        color="primary"
+        component="span"
+        onClick={() => {
+          setIsUser(!showSignup);
+          setShowLogin(!showLogin);
+        }}
+      >
+        {showSignup ? "Log in" : "Sign up"}
+      </Button>
     </div>
   );
 };

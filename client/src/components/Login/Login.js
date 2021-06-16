@@ -36,24 +36,24 @@ const Login = () => {
   };
 
   return (
-    <div className="loginContainer">
-      <div className="loginPage">
-        <h1>LOGIN PAGE</h1>
-        <form>
-          <input
-            type="text"
-            id="email_text"
-            placeholder="e-mail"
-            onChange={(e) => setValues({ ...values, username: e.target.value })}
-          ></input>
-          <br />
-          <input
-            type="password"
-            placeholder="password"
-            id="password_text"
-            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
-          ></input>
-          <hr />
+    <div className="loginPage">
+      <h1>LOGIN PAGE</h1>
+      <form>
+        <input
+          type="text"
+          id="email_text"
+          placeholder="e-mail"
+          onChange={(e) => setValues({ ...values, username: e.target.value })}
+        ></input>
+        <br />
+        <input
+          type="password"
+          placeholder="password"
+          id="password_text"
+          onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+        ></input>
+        <hr />
+        <div className="buttons">
           <Button
             type="submit"
             onClick={login_handler}
@@ -63,9 +63,17 @@ const Login = () => {
           >
             Login
           </Button>
-          <br />
-        </form>
-      </div>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            component="span"
+          >
+            Login as Guest
+          </Button>
+        </div>
+        <br />
+      </form>
     </div>
   );
 };
