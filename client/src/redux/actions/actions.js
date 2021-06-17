@@ -25,3 +25,10 @@ export const cache_datasets = (s) => {
     payload: s,
   };
 };
+
+export const cache_files = (s) => {
+  return {
+    type: "CACHE_FILES",
+    payload: s,
+  };
+};

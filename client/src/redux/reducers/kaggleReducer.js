@@ -1,7 +1,5 @@
 const kaggleReducer = (state = {}, action) => {
   let newState = JSON.parse(JSON.stringify(state));
-  console.log(state);
-  console.log(newState);
   switch (action.type) {
     case "GET_CREDENTIALS":
       newState.kapi = action.payload;
@@ -11,6 +9,9 @@ const kaggleReducer = (state = {}, action) => {
       break;
     case "CACHE_DATASETS":
       newState.datasets = action.payload;
+      break;
+    case "CACHE_FILES":
+      newState.files = action.payload;
       break;
   }
   return newState;
