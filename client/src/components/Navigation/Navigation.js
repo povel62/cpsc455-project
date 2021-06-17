@@ -6,6 +6,7 @@ import Faq from "../Faq/Faq";
 import Instructions from "../Instructions/Instructions";
 import Login from "../Login/Login";
 import Home from "../Home/index";
+import KaggleDashBoard from "../KaggleDashboard/KaggleDashboard";
 
 const Navigation = () => {
   const [selectedTab, setselectedTab] = React.useState(0);
@@ -27,12 +28,14 @@ const Navigation = () => {
         <Tab label="FAQ" />
         <Tab label="Sign up" />
         <Tab label="Login" />
+        <Tab label="Kaggle Dashboard" />
       </Tabs>
       {selectedTab === 0 && <Home />}
       {selectedTab === 1 && <Instructions />}
       {selectedTab === 2 && <Faq />}
       {selectedTab === 3 && <Signup />}
       {selectedTab === 4 && <Login />}
+      {selectedTab === 5 && <KaggleDashBoard />}
     </div>
   );
 };
