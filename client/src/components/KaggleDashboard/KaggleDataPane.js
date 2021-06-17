@@ -1,24 +1,12 @@
-import { React, useState } from "react";
+import { React } from "react";
 import { useSelector } from "react-redux";
 import { compType, dataType } from "./kaggleApi";
 import { List, ListItem } from "@material-ui/core";
-import KaggleListEntry from "./KaggleListEntry";
+import KaggleDataEntry from "./KaggleDataEntry";
 
 const KaggleDataPane = () => {
   let files = useSelector((state) => state.kaggleReducer.files);
   let Formatted = null;
-  const [selected, setSelected] = useState(-1);
-  const [mode, setMode] = useState("");
-
-  const handleSelect = (idx, type) => {
-    if (selected === idx && mode === type) {
-      setSelected(-1);
-      setMode("");
-    } else {
-      setSelected(idx);
-      setMode(type);
-    }
-  };
 
   const handleIncommingFiles = (files) => {
     if (files.type === dataType) {
@@ -28,23 +16,11 @@ const KaggleDataPane = () => {
     }
   };
 
-  //   <ListItem button onClick={(e) => console.log(e)} selected={false} id={i}>
-  //           {entry.name}
-  //         </ListItem>
-
   const handleDatasetFiles = (data) => {
     let entries = [];
     for (let [i, entry] of data.entries()) {
       entries.push(
-        <KaggleListEntry
-          key={i}
-          id={i}
-          text={entry.name}
-          handleSelect={handleSelect}
-          mode={mode}
-          selected={selected}
-          type={dataType}
-        />
+        <KaggleDataEntry key={i} id={i} text={entry.name} type={dataType} />
       );
     }
     return entries;

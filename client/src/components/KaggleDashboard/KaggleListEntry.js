@@ -3,7 +3,11 @@ import { ListItem } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { NavigateNext } from "@material-ui/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { select_source, cache_files } from "../../redux/actions/actions";
+import {
+  select_source,
+  cache_files,
+  select_datafile,
+} from "../../redux/actions/actions";
 import axios from "axios";
 import { credentials, kaggleBaseUrl, dataType } from "./kaggleApi";
 
@@ -20,6 +24,7 @@ const KaggleListEntry = (props) => {
   };
 
   const handleSelect = (idx = props.id, type = props.type) => {
+    dispatch(select_datafile({ index: -1, mode: "" }));
     if (
       !selected_source ||
       !(selected_source.index === idx && selected_source.mode === type)

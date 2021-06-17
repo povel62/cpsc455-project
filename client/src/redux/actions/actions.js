@@ -33,6 +33,13 @@ export const cache_files = (s) => {
   };
 };
 
+export const cache_file = (s) => {
+  return {
+    type: "CACHE_FILE",
+    payload: s,
+  };
+};
+
 export const select_source = (s) => {
   return {
     type: "SELECT_SOURCE",
