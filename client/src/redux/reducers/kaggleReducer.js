@@ -13,6 +13,15 @@ const kaggleReducer = (state = {}, action) => {
     case "CACHE_FILES":
       newState.files = action.payload;
       break;
+    case "CACHE_FILE":
+      newState.file = action.payload;
+      break;
+    case "SELECT_SOURCE":
+      newState.source = action.payload;
+      break;
+    case "SELECT_DATAFILE":
+      newState.dataFile = action.payload;
+      break;
   }
   return newState;
 };

@@ -25,7 +25,7 @@ const KaggleSearchPane = () => {
   const [showCompetitions, setshowCompetitions] = useState(false);
   const [selected, setSelected] = useState(-1);
   const [fetched, setFetched] = useState(false);
-  const [mode, setMode] = useState("DATA");
+  const [mode, setMode] = useState("");
 
   let dispatch = useDispatch();
 
@@ -53,7 +53,7 @@ const KaggleSearchPane = () => {
     if (selected === idx && mode === type) {
       setSelected(-1);
       setMode("");
-      // todo set selected comp to null
+      dispatch(cache_files(null));
     } else {
       setSelected(idx);
       setMode(type);
@@ -66,7 +66,7 @@ const KaggleSearchPane = () => {
         .then((res) => {
           console.log(res);
           if (res.status === 200) {
-            dispatch(cache_files(res.data));
+            dispatch(cache_files({ type: type, data: res.data }));
           }
         })
         .catch((err) => {
@@ -100,7 +100,7 @@ const KaggleSearchPane = () => {
       })
       .then((res) => {
         if (res.status === 200) {
-          // TODO dataset and competition formatted differently
+          // TODO dataset and competition formatted
           dispatch(cache_datasets(res.data));
         }
       })
@@ -128,7 +128,7 @@ const KaggleSearchPane = () => {
         <KaggleListEntry
           key={i}
           id={i}
-          text={entry.ref}
+          text={entry.title}
           handleSelect={handleSelect}
           mode={mode}
           selected={selected}
@@ -156,7 +156,13 @@ const KaggleSearchPane = () => {
 
   return (
     <div className="KagglePanel">
-      <Button onClick={() => HandleRefresh()}>Refresh</Button>
+      <Button
+        onClick={() => HandleRefresh()}
+        variant="contained"
+        color="default"
+      >
+        Refresh
+      </Button>
       <div className="searchArea">
         <InputBase
           className="serarchText"
@@ -169,6 +175,7 @@ const KaggleSearchPane = () => {
         </IconButton>
       </div>
       <List
+        style={{ maxHeight: "100%", overflow: "auto" }}
         aria-labelledby="nested-list-subheader"
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">

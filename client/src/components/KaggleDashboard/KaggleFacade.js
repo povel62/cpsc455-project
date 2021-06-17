@@ -1,7 +1,7 @@
 // demo data for testing
 
 // Competition get with no params: 
-const fakeCompetition = [
+const fakeCompetitions = [
     {
         "ref": "contradictory-my-dear-watson",
         "tags": [
@@ -993,7 +993,7 @@ const fakeCompetition = [
 ]
 
 // Dataset get with no params: https://www.kaggle.com/api/v1/datasets/list
-const fakeDataset = [
+const fakeDatasets = [
     {
         "id": 1187302,
         "ref": "gpreda/reddit-vaccine-myths",
