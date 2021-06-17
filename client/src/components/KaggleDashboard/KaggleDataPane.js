@@ -70,16 +70,7 @@ const KaggleDataPane = () => {
   };
 
   if (files) {
-    Formatted = (
-      <List
-        onClickAway={() => {
-          setMode("");
-          setSelected(-1);
-        }}
-      >
-        {handleIncommingFiles(files)}
-      </List>
-    );
+    Formatted = <List>{handleIncommingFiles(files)}</List>;
   }
 
   return (

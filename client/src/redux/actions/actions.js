@@ -32,3 +32,17 @@ export const cache_files = (s) => {
     payload: s,
   };
 };
+
+export const select_source = (s) => {
+  return {
+    type: "SELECT_SOURCE",
+    payload: s,
+  };
+};
+
+export const select_datafile = (s) => {
+  return {
+    type: "SELECT_DATAFILE",
+    payload: s,
+  };
+};
