@@ -8,42 +8,59 @@ const { secret } = require("../util/security");
 createUser = async (req, res) => {
   const body = req.body;
 
-  if (!body) {
-    return res.status(400).json({
-      success: false,
-      error: "You must provide a user",
-    });
-  }
-  let newUser = body;
+  await User.findOne({ email: body.email }, (err, user) => {
+    if (user) {
+      if (!user.guest) {
+        return res.status(400).json({
+          success: false,
+          error: `User: ${body.email} already exists`,
+        });
+      } else {
+        user.guest = false;
 
-  if (newUser.password) {
-    newUser.password = await bcrypt.hash(newUser.password, salt);
-  }
+        user.fname = body.fname;
+        user.lname = body.lname;
+        user.email = body.email;
+        user.dob = body.dob;
 
-  let user = new User(newUser);
+        if (body.kusername) {
+          user.kusername = body.kusername;
+        }
+        if (body.kapi) {
+          user.kapi = body.kapi;
+        }
+      }
+    } else {
+      if (!body) {
+        return res.status(400).json({
+          success: false,
+          error: "You must provide a user",
+        });
+      }
+      user = new User(body);
+      validateGuest(body, user);
+      if (user.password) {
+        newUser.password = bcrypt.hash(newUser.password, salt);
+      }
+    }
 
-  if (!user) {
-    return res.status(400).json({ success: false, error: err });
-  }
-
-  validateGuest(newUser, user);
-
-  user
-    .save()
-    .then(() => {
-      return res.status(201).json({
-        success: true,
-        id: user._id,
-        message: "User created!",
+    user
+      .save()
+      .then(() => {
+        return res.status(201).json({
+          success: true,
+          id: user._id,
+          message: "User created!",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(400).json({
+          error,
+          message: "User not created!",
+        });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-      return res.status(400).json({
-        error,
-        message: "User not created!",
-      });
-    });
+  });
 };
 
 updateUser = async (req, res) => {
@@ -63,7 +80,6 @@ updateUser = async (req, res) => {
         message: "User not found!",
       });
     }
-
     if (user.guest === true) {
       return res.status(403).json({
         message: "Forbidden for guest users",
@@ -149,16 +165,20 @@ getUsers = async (req, res) => {
     if (!users.length) {
       return res.status(404).json({ success: false, error: `User not found` });
     }
-  }).populate('jobs', "-users").exec((err, populatedUser) => {
-    if (err) {
-      return res.status(400).json({ success: false, error: err });
-    }
+  })
+    .populate("jobs", "-users")
+    .exec((err, populatedUser) => {
+      if (err) {
+        return res.status(400).json({ success: false, error: err });
+      }
 
-    if (!populatedUser) {
-      return res.status(404).json({ success: false, error: `User not found` });
-    }
-    return res.status(200).json({ success: true, data: populatedUser });
-  });
+      if (!populatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: `User not found` });
+      }
+      return res.status(200).json({ success: true, data: populatedUser });
+    });
 };
 
 login = async (req, res) => {
@@ -194,5 +214,5 @@ module.exports = {
   getUsers,
   getUserById,
   getUserByEmail,
-  login
+  login,
 };
