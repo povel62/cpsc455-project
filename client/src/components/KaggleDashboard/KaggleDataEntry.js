@@ -22,7 +22,7 @@ const KaggleDataEntry = (props) => {
     ) {
       dispatch(select_datafile({ index: idx, mode: type }));
     } else {
-      dispatch(select_datafile({ index: -1, mode: "" }));
+      dispatch(select_datafile(null));
       dispatch(cache_file(null));
     }
   };

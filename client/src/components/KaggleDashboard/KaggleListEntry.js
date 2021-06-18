@@ -24,7 +24,7 @@ const KaggleListEntry = (props) => {
   };
 
   const handleSelect = (idx = props.id, type = props.type) => {
-    dispatch(select_datafile({ index: -1, mode: "" }));
+    dispatch(select_datafile(null));
     if (
       !selected_source ||
       !(selected_source.index === idx && selected_source.mode === type)

@@ -11,17 +11,15 @@ import KaggleSearchPane from "./KaggleSearchPane";
 const KaggleDashBoard = () => {
   return (
     <div className="KaggleDash">
-      <Grid container spaceing={3}>
+      <Grid container spacing={3}>
         <Grid item xs>
           <KaggleSearchPane />
         </Grid>
         <Grid item xs>
           <KaggleDataPane />
-          {/* TODO put a standard list if selected is not -1, get list of data from redux */}
         </Grid>
         <Grid item xs>
           <KaggleActionPane />
-          {/* TODO a widget with buttons to do actions with datasets from kaggle to do ops from notepad */}
         </Grid>
       </Grid>
     </div>

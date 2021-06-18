@@ -1,7 +1,7 @@
 import { React } from "react";
 import { useSelector } from "react-redux";
 import { compType, dataType } from "./kaggleApi";
-import { List, ListItem } from "@material-ui/core";
+import { List, Paper } from "@material-ui/core";
 import KaggleDataEntry from "./KaggleDataEntry";
 
 const KaggleDataPane = () => {
@@ -32,14 +32,7 @@ const KaggleDataPane = () => {
     let entries = [];
     for (let [i, entry] of data.entries()) {
       entries.push(
-        <ListItem
-          button
-          onClick={(e) => console.log(e)}
-          selected={false}
-          id={i}
-        >
-          {entry.name}
-        </ListItem>
+        <KaggleDataEntry key={i} id={i} text={entry.name} type={compType} />
       );
     }
     return entries;
@@ -50,10 +43,12 @@ const KaggleDataPane = () => {
   }
 
   return (
-    <div className="KagglePanel">
-      <h4>Supported Data Files:</h4>
-      {Formatted}
-    </div>
+    <Paper>
+      <div className="KagglePanel">
+        <h4>Supported Data Files:</h4>
+        {Formatted}
+      </div>
+    </Paper>
   );
 };
 

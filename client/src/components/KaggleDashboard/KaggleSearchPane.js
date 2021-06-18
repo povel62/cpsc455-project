@@ -9,6 +9,7 @@ import {
   InputBase,
   IconButton,
   Button,
+  Paper,
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -107,58 +108,60 @@ const KaggleSearchPane = () => {
   };
 
   return (
-    <div
-      className="KagglePanel"
-      style={{ maxHeight: "100%", overflow: "auto" }}
-      onLoad={() => Setup()}
-    >
-      <Button onClick={() => GetKaggle()} variant="contained" color="default">
-        Refresh
-      </Button>
-      <div className="searchArea">
-        <InputBase
-          className="serarchText"
-          placeholder="Search Kaggle"
-          inputProps={{ "aria-label": "search kaggle box" }}
-          onChange={handleSearch}
-        />
-        <IconButton type="button" className="searchBtn" aria-label="search">
-          <Search />
-        </IconButton>
-      </div>
-      <List
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            Kaggle competitions and dataset sources
-          </ListSubheader>
-        }
+    <Paper>
+      <div
+        className="KagglePanel"
+        style={{ maxHeight: "100%", overflow: "auto" }}
+        onLoad={() => Setup()}
       >
-        <ListItem button onClick={handleDatasetClick}>
-          Personal Datasets
-          {showDatasets ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={showDatasets} timeout="auto" unmountOnExit>
-          <div className="datasetList">
-            <List>{datasetEntries}</List>
-          </div>
-        </Collapse>
-        <Divider />
-        <ListItem
-          button
-          onClick={handleCompetitionClick}
-          className="nestedItem"
+        <Button onClick={() => GetKaggle()} variant="contained" color="default">
+          Refresh
+        </Button>
+        <div className="searchArea">
+          <InputBase
+            className="serarchText"
+            placeholder="Search Kaggle"
+            inputProps={{ "aria-label": "search kaggle box" }}
+            onChange={handleSearch}
+          />
+          <IconButton type="button" className="searchBtn" aria-label="search">
+            <Search />
+          </IconButton>
+        </div>
+        <List
+          aria-labelledby="nested-list-subheader"
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              Kaggle competitions and dataset sources
+            </ListSubheader>
+          }
         >
-          Competitions
-          {showCompetitions ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={showCompetitions} timeout="auto" unmountOnExit>
-          <div className="competitionList">
-            <List>{competitionEntries}</List>
-          </div>
-        </Collapse>
-      </List>
-    </div>
+          <ListItem button onClick={handleDatasetClick}>
+            Personal Datasets
+            {showDatasets ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={showDatasets} timeout="auto" unmountOnExit>
+            <div className="datasetList">
+              <List>{datasetEntries}</List>
+            </div>
+          </Collapse>
+          <Divider />
+          <ListItem
+            button
+            onClick={handleCompetitionClick}
+            className="nestedItem"
+          >
+            Competitions
+            {showCompetitions ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={showCompetitions} timeout="auto" unmountOnExit>
+            <div className="competitionList">
+              <List>{competitionEntries}</List>
+            </div>
+          </Collapse>
+        </List>
+      </div>
+    </Paper>
   );
 };
 
