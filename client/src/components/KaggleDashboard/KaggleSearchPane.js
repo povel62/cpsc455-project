@@ -31,6 +31,7 @@ import "./KaggleDashboard.css";
 const KaggleSearchPane = () => {
   const [showDatasets, setShowDatasets] = useState(false);
   const [showCompetitions, setshowCompetitions] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [fetched, setFetched] = useState(false);
 
   let dispatch = useDispatch();
@@ -69,12 +70,12 @@ const KaggleSearchPane = () => {
     }
     let compConfig = {
       auth: credentials,
-      params: { group: config.compFilter },
+      params: { group: config.compFilter, search: searchTerm },
     };
 
     let dataConfig = {
       auth: credentials,
-      params: { group: config.dataFilter },
+      params: { group: config.dataFilter, search: searchTerm },
     };
 
     let comps = axios
@@ -107,8 +108,7 @@ const KaggleSearchPane = () => {
   };
 
   const handleSearch = (e) => {
-    console.log(e.target.value);
-    // TODO prefix case insensative search
+    setSearchTerm(e.target.value.trim());
   };
 
   const handleKaggleCompSelect = async (e) => {
@@ -169,7 +169,12 @@ const KaggleSearchPane = () => {
               inputProps={{ "aria-label": "search kaggle box" }}
               onChange={handleSearch}
             />
-            <IconButton type="button" className="searchBtn" aria-label="search">
+            <IconButton
+              type="button"
+              className="searchBtn"
+              aria-label="search"
+              onClick={GetKaggle}
+            >
               <Search />
             </IconButton>
             <Button
