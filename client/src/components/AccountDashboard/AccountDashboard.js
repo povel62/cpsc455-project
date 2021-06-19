@@ -17,9 +17,18 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
+  const submitEditInfo = () => {
+    setEditInfo(!editInfo);
+    alert("should submit a put req");
+  };
+
   return (
     <div className="accountDashboard">
-      <button onClick={toggleEditInfo}> {editInfo ? "Submit" : "Edit"} </button>
+      {editInfo ? (
+        <button onClick={submitEditInfo}> Submit </button>
+      ) : (
+        <button onClick={toggleEditInfo}> Edit </button>
+      )}
       <div>
         <h1>Email: </h1>
         {editInfo ? (
