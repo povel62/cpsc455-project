@@ -7,12 +7,13 @@ const Signup = () => {
     response: "",
     post: "",
     responseToPost: "",
-    username: "",
+    email: "",
     guest: true,
     pwd: "",
     firstname: "",
     lastname: "",
-    dob: "",
+    kusername: "",
+    kapi: "",
   });
 
   const signup_handler = async (e) => {
@@ -26,9 +27,10 @@ const Signup = () => {
         guest: values.guest,
         fname: values.firstname,
         lname: values.lastname,
-        email: values.username,
+        email: values.email,
         password: values.pwd,
-        dob: values.dob,
+        kusername: values.kusername,
+        kapi: values.kapi,
       }),
     });
 
@@ -60,7 +62,7 @@ const Signup = () => {
         <input
           type="text"
           placeholder="e-mail"
-          onChange={(e) => setValues({ ...values, username: e.target.value })}
+          onChange={(e) => setValues({ ...values, email: e.target.value })}
         ></input>
         <br />
         <input
@@ -70,9 +72,17 @@ const Signup = () => {
         ></input>
         <br />
         <input
-          type="date"
-          onChange={(e) => setValues({ ...values, dob: e.target.value })}
+          type="text"
+          placeholder="kaggle Username"
+          onChange={(e) => setValues({ ...values, kusername: e.target.value })}
         ></input>
+        <br />
+        <input
+          type="text"
+          placeholder="kaggle API"
+          onChange={(e) => setValues({ ...values, kapi: e.target.value })}
+        ></input>
+        <br />
         <hr />
         <Button
           type="submit"

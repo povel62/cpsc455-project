@@ -5,9 +5,9 @@
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
+    "@testing-library/user-event": "^13.1.9",
     "eslint-plugin-react": "^7.24.0",
     "material-table": "^1.69.3",
     "prettier-eslint": "^12.0.0",
@@ -19,7 +19,7 @@
     "react-scripts": "4.0.3",
     "reactjs-popup": "^2.0.4",
     "styled-components": "^5.3.0",
-    "web-vitals": "^1.0.1",
+    "web-vitals": "^2.0.1",
     "xlsx": "^0.17.0"
   },
   "scripts": {
@@ -50,10 +50,10 @@
   },
   "proxy": "http://localhost:5000/",
   "devDependencies": {
-    "eslint": "^7.27.0",
+    "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "prettier": "^2.3.0",
+    "prettier": "^2.3.1",
     "prettier-eslint-cli": "^5.0.1"
   }
 }

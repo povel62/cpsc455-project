@@ -1,13 +1,16 @@
 import React, { useState } from "react";
+import "./AccountDashboard.css";
 
 const AccountDashboard = () => {
   const [values, setValues] = useState({
     response: "",
     post: "",
     responseToPost: "",
-    email: "",
+    email: "test@email",
     guest: false,
     pwd: "",
+    kusername: "test K user",
+    kapi: "test k api",
   });
 
   const [editInfo, setEditInfo] = useState(false);
@@ -15,17 +18,49 @@ const AccountDashboard = () => {
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
   return (
-    <div class="container">
-      <button onClick={toggleEditInfo}> {editInfo ? "Edit" : "Submit"} </button>
+    <div className="accountDashboard">
+      <button onClick={toggleEditInfo}> {editInfo ? "Submit" : "Edit"} </button>
       <div>
         <h1>Email: </h1>
         {editInfo ? (
-          <h1>admin@admin</h1>
-        ) : (
           <input
             type="text"
+            placeholder={values.email}
             onChange={(e) => setValues({ ...values, email: e.target.value })}
           ></input>
+        ) : (
+          <p>{values.email}</p>
+        )}
+        <h1>Password: </h1>
+        {editInfo ? (
+          <input
+            type="text"
+            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+          ></input>
+        ) : (
+          "*********"
+        )}
+        <h1>kaggle username: </h1>
+        {editInfo ? (
+          <input
+            type="text"
+            placeholder={values.kusername}
+            onChange={(e) =>
+              setValues({ ...values, kusername: e.target.value })
+            }
+          ></input>
+        ) : (
+          <p>{values.kusername}</p>
+        )}
+        <h1>kaggle Api: </h1>
+        {editInfo ? (
+          <input
+            type="text"
+            placeholder={values.kapi}
+            onChange={(e) => setValues({ ...values, kapi: e.target.value })}
+          ></input>
+        ) : (
+          <p>{values.kapi}</p>
         )}
       </div>
     </div>
