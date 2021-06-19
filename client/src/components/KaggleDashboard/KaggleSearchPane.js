@@ -19,6 +19,9 @@ import {
   cache_datasets,
   set_loading,
   set_userFilter,
+  select_source,
+  select_datafile,
+  cache_files,
 } from "../../redux/actions/actions";
 import KaggleListEntry from "./KaggleListEntry";
 import axios from "axios";
@@ -53,7 +56,11 @@ const KaggleSearchPane = () => {
   };
 
   const GetKaggle = (config) => {
+    setFetched(false);
+    dispatch(select_source({ index: -1, mode: "" }));
     dispatch(set_loading(true));
+    dispatch(select_datafile(null));
+    dispatch(cache_files(null));
     if (!config) {
       config = {
         compFilter: userFilter ? userFilter.compFilter : "general",
