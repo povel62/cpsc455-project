@@ -39,7 +39,9 @@ const KaggleDataPane = () => {
   };
 
   if (files) {
-    Formatted = <List>{handleIncommingFiles(files)}</List>;
+    Formatted = (
+      <List className="KaggleList">{handleIncommingFiles(files)}</List>
+    );
   }
 
   return (

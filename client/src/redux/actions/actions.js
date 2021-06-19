@@ -53,3 +53,17 @@ export const select_datafile = (s) => {
     payload: s,
   };
 };
+
+export const set_loading = (s) => {
+  return {
+    type: "SET_LOADING",
+    payload: s,
+  };
+};
+
+export const set_userFilter = (s) => {
+  return {
+    type: "SET_USERFILTER",
+    payload: s,
+  };
+};

@@ -7,12 +7,24 @@ import Instructions from "../Instructions/Instructions";
 import Login from "../Login/Login";
 import Home from "../Home/index";
 import KaggleDashBoard from "../KaggleDashboard/KaggleDashboard";
+import { useDispatch, useSelector } from "react-redux";
+import { set_userFilter } from "../../redux/actions/actions";
 
 const Navigation = () => {
+  let dispatch = useDispatch();
   const [selectedTab, setselectedTab] = React.useState(0);
+  let userFilter = useSelector((state) => state.kaggleReducer.userFilter);
 
   const handleChange = (event, newValue) => {
     setselectedTab(newValue);
+    if (!userFilter) {
+      dispatch(
+        set_userFilter({
+          dataFilter: "public",
+          compFilter: "general",
+        })
+      );
+    }
   };
 
   return (

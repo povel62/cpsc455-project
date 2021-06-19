@@ -16,10 +16,8 @@ const KaggleActionPane = () => {
     if (!datafile) {
       return null;
     } else if (datafile.mode === "COMPETITION") {
-      console.log(files.data[datafile.index]);
       return files.data[datafile.index];
     } else {
-      console.log(files.data.datasetFiles[datafile.index]);
       return files.data.datasetFiles[datafile.index];
     }
   };

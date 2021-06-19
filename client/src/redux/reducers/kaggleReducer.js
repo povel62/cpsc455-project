@@ -22,6 +22,11 @@ const kaggleReducer = (state = {}, action) => {
     case "SELECT_DATAFILE":
       newState.dataFile = action.payload;
       break;
+    case "SET_LOADING":
+      newState.loading = action.payload;
+      break;
+    case "SET_USERFILTER":
+      newState.userFilter = action.payload;
   }
   return newState;
 };
