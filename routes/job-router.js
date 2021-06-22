@@ -6,6 +6,8 @@ const GenericCtrl = require("../controllers/generic-ctrl");
 const router = express.Router();
 
 router.post("/user/:id/job", JobCtrl.createJob);
+router.post("/user/:id/job/upload", JobCtrl.uploadJob);
+router.put("/job/:id/status/:statusName", JobCtrl.updateJobStatus);
 router.put("/job/:id", JobCtrl.updateJob);
 router.delete("/job/:id", GenericCtrl.verifyToken, JobCtrl.deleteJob);
 router.get("/job/:id", JobCtrl.getJobById);
