@@ -8,7 +8,7 @@ const { secret } = require("../util/security");
 createUser = async (req, res) => {
   const body = req.body;
 
-  await User.findOne({ email: body.email }, (err, user) => {
+  await User.findOne({ email: body.email }, async (err, user) => {
     if (user) {
       if (!user.guest) {
         return res.status(400).json({
@@ -37,11 +37,12 @@ createUser = async (req, res) => {
           error: "You must provide a user",
         });
       }
-      user = new User(body);
-      validateGuest(body, user);
-      if (user.password) {
-        newUser.password = bcrypt.hash(newUser.password, salt);
+      let newUser = body;
+      if (newUser.password) {
+        newUser.password = await bcrypt.hash(newUser.password, salt);
       }
+      user = new User(newUser);
+      validateGuest(body, user);
     }
 
     user

@@ -3,8 +3,10 @@ import { useDispatch } from "react-redux";
 import { has_login_token } from "../../redux/actions/actions";
 import "./Login.css";
 import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
 
 const Login = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [values, setValues] = useState({
     response: "",
@@ -15,28 +17,31 @@ const Login = () => {
   });
 
   const login_handler = async (e) => {
-    if (values.pwd == "" || values.username == "") {
-      alert("Please enter all fields");
-    } else {
-      e.preventDefault();
-      const response = await fetch("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: values.username, password: values.pwd }),
-      });
+    // if (values.pwd == "" || values.username == "") {
+    //   // alert("Please enter all fields");
+    // } else {
+    e.preventDefault();
+    const response = await fetch("/api/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:
+        values.pwd === ""
+          ? JSON.stringify({ email: values.username })
+          : JSON.stringify({ email: values.username, password: values.pwd }),
+    });
 
-      const body = await response.text();
-      setValues({ ...values, responseToPost: body });
-      if (JSON.parse(body)["accessToken"]) {
-        const accessToken = JSON.parse(body)["accessToken"];
-        dispatch(has_login_token(accessToken));
-        alert("Welcome");
-      } else {
-        alert("wrong username or password");
-      }
+    const body = await response.text();
+    setValues({ ...values, responseToPost: body });
+    if (JSON.parse(body)["accessToken"]) {
+      const accessToken = JSON.parse(body)["accessToken"];
+      dispatch(has_login_token(accessToken));
+      history.push("/home");
+    } else {
+      alert("wrong username or password");
     }
+    // }
   };
 
   return (
@@ -69,6 +74,7 @@ const Login = () => {
           </Button>
           <Button
             type="submit"
+            onClick={login_handler}
             variant="contained"
             color="primary"
             component="span"
