@@ -24,13 +24,6 @@ const AccountDashboard = () => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ email: values.username, password: values.pwd }),
-    //   params: id,
-    // });
-
     alert(login_token);
   };
   const closeEditInfo = () => {
