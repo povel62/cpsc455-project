@@ -63,7 +63,7 @@ const Tutorial = () => {
             color="textSecondary"
             gutterBottom
           >
-            1
+            2
           </Typography>
           <Typography variant="h5" component="h2">
             Tutorial Overview
