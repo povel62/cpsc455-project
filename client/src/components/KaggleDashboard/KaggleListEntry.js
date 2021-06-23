@@ -13,6 +13,7 @@ import axios from "axios";
 import { credentials, kaggleBaseUrl, dataType } from "./kaggleApi";
 
 const KaggleListEntry = (props) => {
+  let email = useSelector((state) => state.loginReducer.email);
   let selected_source = useSelector((state) => state.kaggleReducer.source);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
@@ -35,9 +36,9 @@ const KaggleListEntry = (props) => {
       dispatch(select_source({ index: idx, mode: type }));
       const mid =
         type === dataType ? "/datasets/list/" : "/competitions/data/list/";
-      const end = type === dataType ? datasets[idx].ref : competitions[idx].id;
+      const end = type === dataType ? datasets[idx].ref : competitions[idx].ref;
       axios
-        .get(kaggleBaseUrl + mid + end, { auth: credentials })
+        .get(kaggleBaseUrl + mid + end, { auth: credentials(email) })
         .then((res) => {
           if (res.status === 200) {
             dispatch(cache_files({ type: type, data: res.data }));
@@ -45,6 +46,7 @@ const KaggleListEntry = (props) => {
           }
         })
         .catch((err) => {
+          console.log(kaggleBaseUrl + mid + end);
           console.log(err);
         });
       return;

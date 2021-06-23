@@ -1,42 +1,30 @@
 const express = require("express");
 
 const KaggleCtrl = require("../controllers/kaggle-ctrl");
+const GenericCtrl = require("../controllers/generic-ctrl");
 
 const router = express.Router();
 
-router.get("/competitions/list", KaggleCtrl.getCompetitions);
-router.get("/competitions/submissions/list", KaggleCtrl.getSubmissions);
-
-router.get("/competitions/data/list/:id", KaggleCtrl.getDataListById);
-router.get(
-  "/competitions/data/download/:id/:filename",
-  KaggleCtrl.getCompetitionFile
-);
-router.get(
-  "/competitions/data/download/:id/",
-  KaggleCtrl.getAllCompetitionFiles
-);
-
-router.get("/datasets/list", KaggleCtrl.getDatasets);
-router.get(
-  "/datasets/list/:ownerSlug/:datasetSlug",
-  KaggleCtrl.getDatasetFileList
-);
-router.get("/datasets/view/:ownerSlug/:datasetSlug", KaggleCtrl.viewDataset);
-router.get(
-  "/datasets/download/:ownerSlug/:datasetSlug/:fileName",
-  KaggleCtrl.getDatasetFile
-);
-router.get(
-  "/datasets/download/:ownerSlug/:datasetSlug",
-  KaggleCtrl.getDatasetFiles
-);
-
-router.post("/competitions/upload", KaggleCtrl.competitionUpload);
-router.post("/datasets/create/new", KaggleCtrl.datasetCreate);
 router.post(
-  "/datasets/upload/file/:contentLength/:lastModifiedDateUtc",
-  KaggleCtrl.datasetUpload
+  "/kaggle/checkAccount/:id",
+  GenericCtrl.verifyToken,
+  KaggleCtrl.checkAccount
 );
+router.post(
+  "/kaggle/competitions/submit",
+  GenericCtrl.verifyToken,
+  KaggleCtrl.competitionUploadSubmit
+);
+router.post(
+  "/kaggle/datasets/version/new",
+  GenericCtrl.verifyToken,
+  KaggleCtrl.datasetCreateVersion
+);
+router.get(
+  "/kaggle/getKaggleFile",
+  GenericCtrl.verifyToken,
+  KaggleCtrl.getKaggleFile
+);
+router.post("/kaggle/job", KaggleCtrl.createKaggleJob);
 
 module.exports = router;

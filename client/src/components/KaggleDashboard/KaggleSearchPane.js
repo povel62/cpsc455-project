@@ -38,6 +38,7 @@ const KaggleSearchPane = () => {
   let userFilter = useSelector((state) => state.kaggleReducer.userFilter);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
+  let email = useSelector((state) => state.loginReducer.email);
 
   let datasetEntries = [];
   let competitionEntries = [];
@@ -69,12 +70,12 @@ const KaggleSearchPane = () => {
       };
     }
     let compConfig = {
-      auth: credentials,
+      auth: credentials(email),
       params: { group: config.compFilter, search: searchTerm },
     };
 
     let dataConfig = {
-      auth: credentials,
+      auth: credentials(email),
       params: { group: config.dataFilter, search: searchTerm },
     };
 
@@ -103,7 +104,7 @@ const KaggleSearchPane = () => {
 
     Promise.all([comps, datasets]).then(() => {
       setFetched(true);
-      dispatch(set_loading(null));
+      dispatch(set_loading(false));
     });
   };
 

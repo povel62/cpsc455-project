@@ -5,8 +5,9 @@ import "./KaggleDashboard.css";
 import KaggleDataPane from "./KaggleDataPane";
 import KaggleSearchPane from "./KaggleSearchPane";
 import { Backdrop, CircularProgress } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import { set_loading } from "../../redux/actions/actions";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -17,9 +18,13 @@ const useStyles = makeStyles((theme) => ({
 
 const KaggleDashBoard = () => {
   const classes = useStyles();
+  let dispatch = useDispatch();
   let loading = useSelector((state) => state.kaggleReducer.loading);
+  const init = () => {
+    dispatch(set_loading(false));
+  };
   return (
-    <div className="KaggleDash">
+    <div className="KaggleDash" onLoad={init}>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
