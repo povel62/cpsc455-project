@@ -24,7 +24,6 @@ const AccountDashboard = () => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    // const id = parseJWT(login_token);
     // const response = fetch("/api/user/login", {
     //   method: "PUT",
     //   headers: {
