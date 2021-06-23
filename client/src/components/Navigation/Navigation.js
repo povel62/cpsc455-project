@@ -5,7 +5,11 @@ import Faq from "../Faq/Faq";
 import Instructions from "../Instructions/Instructions";
 import Home from "../Home/index";
 import { useDispatch } from "react-redux";
-import { setLoginToken, setEmail, set_userFilter } from "../../redux/actions/actions";
+import {
+  setLoginToken,
+  setEmail,
+  set_userFilter,
+} from "../../redux/actions/actions";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -86,7 +90,6 @@ export default function Navigation(props) {
   };
 
   const handleChange = (event, newValue) => {
-    setSelectedTab(newValue);
     if (!userFilter) {
       dispatch(
         set_userFilter({
@@ -94,6 +97,8 @@ export default function Navigation(props) {
           compFilter: "general",
         })
       );
+    }
+    setSelectedTab(newValue);
   };
 
   return (
@@ -128,7 +133,7 @@ export default function Navigation(props) {
                 AutoML
               </IconButton>
               {/* <Typography variant="h6" className={classes.title}>
-               
+
               </Typography> */}
             </Grid>
             <Grid xs={8} item>
@@ -200,4 +205,3 @@ export default function Navigation(props) {
 Navigation.propTypes = {
   isUserNewlyRegistred: PropTypes.bool,
 };
-}
