@@ -24,7 +24,6 @@ const AccountDashboard = () => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    // const response = fetch("/api/user/login", {
     //   method: "PUT",
     //   headers: {
     //     "Content-Type": "application/json",
