@@ -29,7 +29,7 @@ const Tutorial = () => {
   });
 
   const classes = useStyles();
-  // const bull = <span className={classes.bullet}>•</span>;
+
   const stepClickHandler = () => {};
   const overviewClickHandler = () => {};
   return (
