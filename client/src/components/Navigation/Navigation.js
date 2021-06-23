@@ -7,6 +7,7 @@ import Home from "../Home/index";
 import Signin from "../Signin/Signin";
 import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import ControlDashboard from "../ControlDashboard/ControlDashboard";
+import Tutorial from "../Tutorial/Tutorial";
 
 const Navigation = () => {
   const [selectedTab, setselectedTab] = React.useState(0);
@@ -29,6 +30,7 @@ const Navigation = () => {
         <Tab label="Sign in" />
         <Tab label="Account" />
         <Tab label="Dashboard" />
+        <Tab label="Tutorial" />
       </Tabs>
       {selectedTab === 0 && <Home />}
       {selectedTab === 1 && <Instructions />}
@@ -36,6 +38,7 @@ const Navigation = () => {
       {selectedTab === 3 && <Signin />}
       {selectedTab === 4 && <AccountDashboard />}
       {selectedTab === 5 && <ControlDashboard />}
+      {selectedTab === 6 && <Tutorial />}
     </div>
   );
 };
