@@ -24,7 +24,6 @@ const AccountDashboard = () => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    //   method: "PUT",
     //   headers: {
     //     "Content-Type": "application/json",
     //   },
