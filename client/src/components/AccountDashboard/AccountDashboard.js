@@ -5,14 +5,6 @@ import { useSelector } from "react-redux";
 const AccountDashboard = () => {
   const login_token = useSelector((state) => state.loginReducer);
 
-  // function parseJwt = (token) => {
-  //   try {
-  //     return JSON.parse(atob(token.split(".")[1]));
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // };
-
   const [values, setValues] = useState({
     response: "",
     post: "",
