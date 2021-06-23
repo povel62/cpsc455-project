@@ -21,6 +21,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { signupUser } from "../../api/UserService";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -97,35 +98,27 @@ export default function Signup() {
   };
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const response = await fetch("/api/user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(
-        values.isKaggleUser
-          ? {
-              guest: values.guest,
-              fname: values.fname,
-              lname: values.lname,
-              email: values.email,
-              password: values.password,
-              dob: values.dob,
-              kusername: values.kaggleUsername,
-              kapi: values.kaggleApiKey,
-            }
-          : {
-              guest: values.guest,
-              fname: values.fname,
-              lname: values.lname,
-              email: values.email,
-              password: values.password,
-              dob: values.dob,
-            }
-      ),
-    });
-
-    const body = await response.json();
+    const body = await signupUser(
+      values.isKaggleUser
+        ? {
+            guest: values.guest,
+            fname: values.fname,
+            lname: values.lname,
+            email: values.email,
+            password: values.password,
+            dob: values.dob,
+            kusername: values.kaggleUsername,
+            kapi: values.kaggleApiKey,
+          }
+        : {
+            guest: values.guest,
+            fname: values.fname,
+            lname: values.lname,
+            email: values.email,
+            password: values.password,
+            dob: values.dob,
+          }
+    );
     if (body.success) {
       setOpen(true);
       setSnackBarContent({

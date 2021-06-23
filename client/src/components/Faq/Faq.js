@@ -1,9 +1,39 @@
 import React from "react";
 import "./Faq.css";
+import Fab from "@material-ui/core/Fab";
+import { makeStyles } from "@material-ui/core/styles";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import { useHistory } from "react-router-dom";
+
+const useStyles = makeStyles((theme) => ({
+  margin: {
+    margin: theme.spacing(1),
+  },
+}));
 
 const Faq = () => {
+  const classes = useStyles();
+  let history = useHistory();
+
   return (
     <div className="Faq">
+      <div style={{ float: "left" }}>
+        <Fab
+          variant="extended"
+          color="red"
+          aria-label="add"
+          className={classes.margin}
+          fullWidth
+          onClick={() => {
+            history.push({
+              pathname: "/",
+            });
+          }}
+        >
+          <ArrowBackIosIcon />
+          Go back to Sign In
+        </Fab>
+      </div>
       <div className="containerFaq">
         <h1>BLACK BOX ML: FAQ</h1>
         <p>Q: How can I see the system in action?</p>

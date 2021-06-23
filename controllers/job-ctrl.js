@@ -26,8 +26,6 @@ createJob = async (req, res) => {
   newJob.users = [req.params.id];
   let job = new Job(newJob);
 
-  console.log("job: " + job);
-
   if (!job) {
     return res.status(400).json({ success: false, error: err });
   }
@@ -43,7 +41,6 @@ createJob = async (req, res) => {
       });
     })
     .catch((error) => {
-      console.log(error);
       return res.status(400).json({
         error,
         message: "Job not created!",
@@ -64,8 +61,6 @@ uploadJob = async (req, res) => {
   newJob.users = [req.params.id];
   let job = new Job(newJob);
 
-  console.log("job: " + job);
-
   if (!job) {
     return res.status(400).json({ success: false, error: err });
   }
@@ -85,7 +80,6 @@ uploadJob = async (req, res) => {
       });
     })
     .catch((error) => {
-      console.log(error);
       return res.status(400).json({
         error,
         message: "Job not created!",
@@ -205,7 +199,9 @@ deleteJob = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, data: job });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getJobById = async (req, res) => {
@@ -218,7 +214,9 @@ getJobById = async (req, res) => {
       return res.status(404).json({ success: false, error: `Job not found` });
     }
     return res.status(200).json({ success: true, data: job });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getJobs = async (req, res) => {

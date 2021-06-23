@@ -16,6 +16,7 @@ import ml7 from "./background-images/ml7.png";
 import ml8 from "./background-images/ml8.png";
 import ml9 from "./background-images/ml9.png";
 import ml10 from "./background-images/ml10.png";
+import Faq from "./components/Faq/Faq";
 
 class App extends Component {
   render() {
@@ -44,10 +45,17 @@ class App extends Component {
         <div className="root">
           <Router>
             <Switch>
-              <AuthRoute path="/home" type="private">
-                <Navigation />
-              </AuthRoute>
+              <AuthRoute
+                path="/home"
+                type="private"
+                render={(props) => (
+                  <Navigation {...props.history.location.state} />
+                )}
+              ></AuthRoute>
 
+              <AuthRoute path="/faq">
+                <Faq />
+              </AuthRoute>
               {/* <AuthRoute path="/login" type="guest">
             <LoginPage />
           </AuthRoute> */}

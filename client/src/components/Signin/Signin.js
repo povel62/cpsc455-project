@@ -16,9 +16,12 @@ import Slide from "@material-ui/core/Slide";
 import { useDispatch } from "react-redux";
 import { setLoginToken, setEmail } from "../../redux/actions/actions";
 import { useHistory } from "react-router-dom";
-
+import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { loginUser, signupUser } from "../../api/UserService";
+import Fab from "@material-ui/core/Fab";
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -51,13 +54,18 @@ const useStyles = makeStyles((theme) => ({
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
+  margin: {
+    margin: theme.spacing(1),
+    backgroundColor: "#88B7B5",
+  },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
 }));
 
-export default function Signin(props) {
-  console.log(props);
+export default function Signin() {
+  const [isGuest, setIsGuest] = React.useState(false);
+
   const dispatch = useDispatch();
   let history = useHistory();
   const [values, setValues] = useState({
@@ -82,23 +90,45 @@ export default function Signin(props) {
 
     setOpen(false);
   };
+
   const handleLogin = async (e) => {
+    let userNewlyRegistred = false;
     e.preventDefault();
-    const response = await fetch("/api/user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: values.email, password: values.password }),
-    });
-    const body = await response.json();
+    if (!isGuest && values.password === "") {
+      setSnackBarContent({
+        content: "Password cannot be empty for a regular user.",
+        severity: "error",
+      });
+      setOpen(true);
+      return;
+    }
+    let body = await loginUser(
+      isGuest
+        ? { email: values.email }
+        : { email: values.email, password: values.password }
+    );
+    if (body.error && body.error === "User not found" && isGuest) {
+      body = await signupUser({ email: values.email });
+
+      if (body.success) {
+        userNewlyRegistred = true;
+        body = await loginUser({ email: values.email });
+      } else {
+        setOpen(true);
+        setSnackBarContent({ content: body.error, severity: "error" });
+      }
+    } else if (body.error) {
+      setOpen(true);
+      setSnackBarContent({ content: body.error, severity: "error" });
+    }
     if (body.accessToken) {
       dispatch(setLoginToken(body.accessToken));
       dispatch(setEmail(body.data.email));
-      history.push("/home");
-    } else {
-      setOpen(true);
-      setSnackBarContent({ content: body.error, severity: "error" });
+      history.push({
+        pathname: "/home",
+        state: { isUserNewlyRegistred: userNewlyRegistred },
+        // state: { },
+      });
     }
   };
   const classes = useStyles();
@@ -120,8 +150,24 @@ export default function Signin(props) {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              Sign in {isGuest ? `as Guest` : ``}
             </Typography>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isGuest}
+                    onChange={(event) => {
+                      setIsGuest(event.target.checked);
+                    }}
+                    name="isGuest"
+                    color="primary"
+                  />
+                }
+                label="Go Incognito?"
+              />
+            </Grid>
+
             <form className={classes.form} noValidate>
               <TextField
                 variant="outlined"
@@ -137,20 +183,22 @@ export default function Signin(props) {
                   setValues({ ...values, email: e.target.value })
                 }
               />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(e) =>
-                  setValues({ ...values, password: e.target.value })
-                }
-              />
+              {!isGuest && (
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={(e) =>
+                    setValues({ ...values, password: e.target.value })
+                  }
+                />
+              )}
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
@@ -177,8 +225,34 @@ export default function Signin(props) {
                   </Link>
                 </Grid>
               </Grid>
+              <br />
+              <br />
+              <br />
+              <Grid
+                container
+                direction="column"
+                justify="space-between"
+                alignItems="center"
+              >
+                <Fab
+                  variant="extended"
+                  color="red"
+                  aria-label="add"
+                  className={classes.margin}
+                  fullWidth
+                  onClick={() => {
+                    history.push({
+                      pathname: "/faq",
+                    });
+                  }}
+                >
+                  What is AutoML?
+                </Fab>
+              </Grid>
             </form>
           </div>
+          <br />
+
           <Box mt={8}>
             <Copyright />
           </Box>

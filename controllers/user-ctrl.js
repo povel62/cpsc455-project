@@ -55,7 +55,6 @@ createUser = async (req, res) => {
         });
       })
       .catch((error) => {
-        console.log(error);
         return res.status(400).json({
           error,
           message: "User not created!",
@@ -125,7 +124,9 @@ deleteUser = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, data: user });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getUserById = async (req, res) => {
@@ -142,7 +143,9 @@ getUserById = async (req, res) => {
     } catch (error) {
       return res.status(400).json({ success: false, error: error });
     }
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getUserByEmail = async (req, res) => {
@@ -155,7 +158,9 @@ getUserByEmail = async (req, res) => {
       return res.status(404).json({ success: false, error: `User not found` });
     }
     return res.status(200).json({ success: true, data: user });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getUsers = async (req, res) => {
@@ -193,21 +198,44 @@ login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, error: `User not found` });
     } else if (!user.guest || user.guest === false) {
-      let passCorrect = bcrypt.compareSync(body.password, user.password, salt);
+      if (user.password === undefined || user.password === "") {
+        return res.status(404).json({
+          success: false,
+          error: `User is already registered as a regualar user. Please sign in as a regular user.`,
+        });
+      }
+      let passCorrect = false;
+      try {
+        passCorrect = bcrypt.compareSync(body.password, user.password, salt);
+      } catch (e) {
+        return res.status(404).json({
+          success: false,
+          error: `User is already registered as a regualar user. Please sign in as a regular user.`,
+        });
+      }
       if (!passCorrect) {
         return res
           .status(404)
           .json({ success: false, error: `Password not correct` });
       }
+    } else if (
+      user.guest &&
+      body.password !== undefined &&
+      body.password !== ""
+    ) {
+      return res
+        .status(404)
+        .json({ success: false, error: `This is a guest user.` });
     }
     return res.status(200).json({
       success: true,
       data: user,
       accessToken: jwt.sign({ _id: user._id }, secret, { expiresIn: 86400 }),
     });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
-
 module.exports = {
   createUser,
   updateUser,
