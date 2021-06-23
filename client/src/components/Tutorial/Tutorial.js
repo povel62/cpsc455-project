@@ -33,6 +33,7 @@ const Tutorial = () => {
   const classes = useStyles();
   // const bull = <span className={classes.bullet}>•</span>;
   const stepClickHandler = () => {};
+  const overviewClickHandler = () => {};
   return (
     <div className="container">
       <Card className={classes.root} variant="outlined" alignSelf="center">
@@ -69,7 +70,9 @@ const Tutorial = () => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">Learn More</Button>
+          <Button size="small" onClick={overviewClickHandler}>
+            Learn More
+          </Button>
         </CardActions>
       </Card>
     </div>
