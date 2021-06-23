@@ -1,4 +1,4 @@
-const loginUser = async (bodyObj) => {
+export const loginUser = async (bodyObj) => {
   const response = await fetch("/api/user/login", {
     method: "POST",
     headers: {
@@ -9,7 +9,7 @@ const loginUser = async (bodyObj) => {
   return response.json();
 };
 
-const signupUser = async (bodyObj) => {
+export const signupUser = async (bodyObj) => {
   const response = await fetch("/api/user", {
     method: "POST",
     headers: {
@@ -18,9 +18,4 @@ const signupUser = async (bodyObj) => {
     body: JSON.stringify(bodyObj),
   });
   return response.json();
-};
-
-module.exports = {
-  loginUser,
-  signupUser,
 };
