@@ -51,6 +51,7 @@ const rows = [
 export default function ControlDashboard() {
   return (
     <div className="controlDashboard">
+      <button> Refresh </button>
       <TableContainer className="table" component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>

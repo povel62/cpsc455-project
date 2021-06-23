@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "./AccountDashboard.css";
+import { useSelector } from "react-redux";
 
 const AccountDashboard = () => {
+  const login_token = useSelector((state) => state.loginReducer);
+
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -17,15 +20,31 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
-  const submitEditInfo = () => {
+  const submitEditInfo = (e) => {
+    e.preventDefault();
     setEditInfo(!editInfo);
-    alert("should submit a put req");
+
+    // const response = await fetch("/api/user/login", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ email: values.username, password: values.pwd }),
+    // });
+
+    alert(login_token);
+  };
+  const closeEditInfo = () => {
+    setEditInfo(!editInfo);
   };
 
   return (
     <div className="accountDashboard">
       {editInfo ? (
-        <button onClick={submitEditInfo}> Submit </button>
+        <div>
+          <button onClick={submitEditInfo}> Submit </button>
+          <button onClick={closeEditInfo}> Close </button>
+        </div>
       ) : (
         <button onClick={toggleEditInfo}> Edit </button>
       )}
@@ -34,7 +53,7 @@ const AccountDashboard = () => {
         {editInfo ? (
           <input
             type="text"
-            placeholder={values.email}
+            defaultValue={values.email}
             onChange={(e) => setValues({ ...values, email: e.target.value })}
           ></input>
         ) : (
@@ -53,7 +72,7 @@ const AccountDashboard = () => {
         {editInfo ? (
           <input
             type="text"
-            placeholder={values.kusername}
+            defaultValue={values.kusername}
             onChange={(e) =>
               setValues({ ...values, kusername: e.target.value })
             }
@@ -65,7 +84,7 @@ const AccountDashboard = () => {
         {editInfo ? (
           <input
             type="text"
-            placeholder={values.kapi}
+            defaultValue={values.kapi}
             onChange={(e) => setValues({ ...values, kapi: e.target.value })}
           ></input>
         ) : (

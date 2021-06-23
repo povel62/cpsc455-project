@@ -32,6 +32,7 @@ const Login = () => {
       if (JSON.parse(body)["accessToken"]) {
         const accessToken = JSON.parse(body)["accessToken"];
         dispatch(has_login_token(accessToken));
+        console.log(accessToken);
         alert("Welcome");
       } else {
         alert("wrong username or password");
