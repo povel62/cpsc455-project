@@ -3,8 +3,10 @@ import { useDispatch } from "react-redux";
 import { has_login_token } from "../../redux/actions/actions";
 import "./Login.css";
 import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
 
 const Login = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [values, setValues] = useState({
     response: "",
@@ -15,13 +17,19 @@ const Login = () => {
   });
 
   const login_handler = async (e) => {
+    // if (values.pwd == "" || values.username == "") {
+    //   // alert("Please enter all fields");
+    // } else {
     e.preventDefault();
     const response = await fetch("/api/user/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: values.username, password: values.pwd }),
+      body:
+        values.pwd === ""
+          ? JSON.stringify({ email: values.username })
+          : JSON.stringify({ email: values.username, password: values.pwd }),
     });
 
     const body = await response.text();
@@ -29,31 +37,32 @@ const Login = () => {
     if (JSON.parse(body)["accessToken"]) {
       const accessToken = JSON.parse(body)["accessToken"];
       dispatch(has_login_token(accessToken));
-      alert("Welcome");
+      history.push("/home");
     } else {
       alert("wrong username or password");
     }
+    // }
   };
 
   return (
-    <div className="loginContainer">
-      <div className="loginPage">
-        <h1>LOGIN PAGE</h1>
-        <form>
-          <input
-            type="text"
-            id="email_text"
-            placeholder="e-mail"
-            onChange={(e) => setValues({ ...values, username: e.target.value })}
-          ></input>
-          <br />
-          <input
-            type="password"
-            placeholder="password"
-            id="password_text"
-            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
-          ></input>
-          <hr />
+    <div className="loginPage">
+      <h1>LOGIN PAGE</h1>
+      <form>
+        <input
+          type="text"
+          id="email_text"
+          placeholder="e-mail"
+          onChange={(e) => setValues({ ...values, username: e.target.value })}
+        ></input>
+        <br />
+        <input
+          type="password"
+          placeholder="password"
+          id="password_text"
+          onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+        ></input>
+        <hr />
+        <div className="buttons">
           <Button
             type="submit"
             onClick={login_handler}
@@ -63,9 +72,18 @@ const Login = () => {
           >
             Login
           </Button>
-          <br />
-        </form>
-      </div>
+          <Button
+            type="submit"
+            onClick={login_handler}
+            variant="contained"
+            color="primary"
+            component="span"
+          >
+            Login as Guest
+          </Button>
+        </div>
+        <br />
+      </form>
     </div>
   );
 };

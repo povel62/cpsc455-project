@@ -1,22 +1,92 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Navigation.css";
 import { Tabs, Tab } from "@material-ui/core";
-import Signup from "../Signup/Signup";
 import Faq from "../Faq/Faq";
 import Instructions from "../Instructions/Instructions";
-import Login from "../Login/Login";
 import Home from "../Home/index";
+import { useDispatch } from "react-redux";
+import { setLoginToken, setEmail, set_userFilter } from "../../redux/actions/actions";
+import { useSelector } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import Grid from "@material-ui/core/Grid";
+import { useHistory } from "react-router-dom";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import PropTypes from "prop-types";
 import KaggleDashBoard from "../KaggleDashboard/KaggleDashboard";
-import { useDispatch, useSelector } from "react-redux";
-import { set_userFilter } from "../../redux/actions/actions";
 
-const Navigation = () => {
-  let dispatch = useDispatch();
-  const [selectedTab, setselectedTab] = React.useState(0);
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
+
+export default function Navigation(props) {
+  let history = useHistory();
+  const fname = useSelector((state) => state.loginReducer.email);
+  const dispatch = useDispatch();
+  const classes = useStyles();
   let userFilter = useSelector((state) => state.kaggleReducer.userFilter);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  // eslint-disable-next-line no-unused-vars
+  const [snackbarOpen, setSnackbarOpen] = useState(props.isUserNewlyRegistred);
+  useEffect(() => {
+    setSnackbarOpen(props.isUserNewlyRegistred);
+  });
+
+  React.useEffect(() => {
+    setSnackbarOpen(props.isUserNewlyRegistred);
+  }, [props.isUserNewlyRegistred]);
+  React.useEffect(() => {
+    setSnackBarContent({
+      content: `${fname} successfuly registered as a guest user`,
+      severity: "success",
+    });
+  }, [fname]);
+
+  // eslint-disable-next-line no-unused-vars
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: `${fname} successfuly registered as a guest user`,
+    severity: "success",
+  });
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    history.push({
+      state: { isUserNewlyRegistred: false },
+    });
+    setSnackbarOpen(false);
+  };
 
   const handleChange = (event, newValue) => {
-    setselectedTab(newValue);
+    setSelectedTab(newValue);
     if (!userFilter) {
       dispatch(
         set_userFilter({
@@ -24,32 +94,110 @@ const Navigation = () => {
           compFilter: "general",
         })
       );
-    }
   };
 
   return (
-    <div>
-      <Tabs
-        className="containerTab"
-        value={selectedTab}
-        onChange={handleChange}
-        inkBarStyle={{ background: "blue" }}
+    <div className={classes.root}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
       >
-        <Tab label="Home" />
-        <Tab label="Instructions" />
-        <Tab label="FAQ" />
-        <Tab label="Sign up" />
-        <Tab label="Login" />
-        <Tab label="Kaggle Dashboard" />
-      </Tabs>
-      {selectedTab === 0 && <Home />}
-      {selectedTab === 1 && <Instructions />}
-      {selectedTab === 2 && <Faq />}
-      {selectedTab === 3 && <Signup />}
-      {selectedTab === 4 && <Login />}
-      {selectedTab === 5 && <KaggleDashBoard />}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
+      <AppBar position="static">
+        <Toolbar>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid xs item>
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="menu"
+              >
+                AutoML
+              </IconButton>
+              {/* <Typography variant="h6" className={classes.title}>
+               
+              </Typography> */}
+            </Grid>
+            <Grid xs={8} item>
+              <Grid container justify={"center"}>
+                <div style={{ alignItems: "center" }}>
+                  <Tabs
+                    className="containerTab"
+                    value={selectedTab}
+                    onChange={handleChange}
+                  >
+                    <Tab label="Home" />
+                    <Tab label="Instructions" />
+                    <Tab label="FAQ" />
+                    <Tab label="Kaggle Dashboard" />
+                  </Tabs>
+                </div>
+              </Grid>
+            </Grid>
+            <Grid item xs style={{ textAlign: "end" }}>
+              <div>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle /> {fname}
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(setLoginToken(""));
+                      dispatch(setEmail(""));
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </div>
+            </Grid>
+          </Grid>
+        </Toolbar>
+      </AppBar>
+      <>
+        {selectedTab === 0 && <Home />}
+        {selectedTab === 1 && <Instructions />}
+        {selectedTab === 2 && <Faq />}
+        {selectedTab === 3 && <KaggleDashBoard />}
+      </>
     </div>
   );
+}
+Navigation.propTypes = {
+  isUserNewlyRegistred: PropTypes.bool,
 };
-
-export default Navigation;
+}

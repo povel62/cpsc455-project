@@ -8,42 +8,59 @@ const { secret } = require("../util/security");
 createUser = async (req, res) => {
   const body = req.body;
 
-  if (!body) {
-    return res.status(400).json({
-      success: false,
-      error: "You must provide a user",
-    });
-  }
-  let newUser = body;
+  await User.findOne({ email: body.email }, async (err, user) => {
+    if (user) {
+      if (!user.guest) {
+        return res.status(400).json({
+          success: false,
+          error: `User: ${body.email} already exists`,
+        });
+      } else {
+        user.guest = false;
 
-  if (newUser.password) {
-    newUser.password = await bcrypt.hash(newUser.password, salt);
-  }
+        user.fname = body.fname;
+        user.lname = body.lname;
+        user.email = body.email;
+        user.dob = body.dob;
 
-  let user = new User(newUser);
+        if (body.kusername) {
+          user.kusername = body.kusername;
+        }
+        if (body.kapi) {
+          user.kapi = body.kapi;
+        }
+      }
+    } else {
+      if (!body) {
+        return res.status(400).json({
+          success: false,
+          error: "You must provide a user",
+        });
+      }
+      let newUser = body;
+      if (newUser.password) {
+        newUser.password = await bcrypt.hash(newUser.password, salt);
+      }
+      user = new User(newUser);
+      validateGuest(body, user);
+    }
 
-  if (!user) {
-    return res.status(400).json({ success: false, error: err });
-  }
-
-  validateGuest(newUser, user);
-
-  user
-    .save()
-    .then(() => {
-      return res.status(201).json({
-        success: true,
-        id: user._id,
-        message: "User created!",
+    user
+      .save()
+      .then(() => {
+        return res.status(201).json({
+          success: true,
+          id: user._id,
+          message: "User created!",
+        });
+      })
+      .catch((error) => {
+        return res.status(400).json({
+          error,
+          message: "User not created!",
+        });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-      return res.status(400).json({
-        error,
-        message: "User not created!",
-      });
-    });
+  });
 };
 
 updateUser = async (req, res) => {
@@ -63,7 +80,6 @@ updateUser = async (req, res) => {
         message: "User not found!",
       });
     }
-
     if (user.guest === true) {
       return res.status(403).json({
         message: "Forbidden for guest users",
@@ -108,7 +124,9 @@ deleteUser = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, data: user });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getUserById = async (req, res) => {
@@ -125,7 +143,9 @@ getUserById = async (req, res) => {
     } catch (error) {
       return res.status(400).json({ success: false, error: error });
     }
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getUserByEmail = async (req, res) => {
@@ -138,7 +158,9 @@ getUserByEmail = async (req, res) => {
       return res.status(404).json({ success: false, error: `User not found` });
     }
     return res.status(200).json({ success: true, data: user });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
 
 getUsers = async (req, res) => {
@@ -149,16 +171,20 @@ getUsers = async (req, res) => {
     if (!users.length) {
       return res.status(404).json({ success: false, error: `User not found` });
     }
-  }).populate('jobs', "-users").exec((err, populatedUser) => {
-    if (err) {
-      return res.status(400).json({ success: false, error: err });
-    }
+  })
+    .populate("jobs", "-users")
+    .exec((err, populatedUser) => {
+      if (err) {
+        return res.status(400).json({ success: false, error: err });
+      }
 
-    if (!populatedUser) {
-      return res.status(404).json({ success: false, error: `User not found` });
-    }
-    return res.status(200).json({ success: true, data: populatedUser });
-  });
+      if (!populatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: `User not found` });
+      }
+      return res.status(200).json({ success: true, data: populatedUser });
+    });
 };
 
 login = async (req, res) => {
@@ -172,21 +198,44 @@ login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, error: `User not found` });
     } else if (!user.guest || user.guest === false) {
-      let passCorrect = bcrypt.compareSync(body.password, user.password, salt);
+      if (user.password === undefined || user.password === "") {
+        return res.status(404).json({
+          success: false,
+          error: `User is already registered as a regualar user. Please sign in as a regular user.`,
+        });
+      }
+      let passCorrect = false;
+      try {
+        passCorrect = bcrypt.compareSync(body.password, user.password, salt);
+      } catch (e) {
+        return res.status(404).json({
+          success: false,
+          error: `User is already registered as a regualar user. Please sign in as a regular user.`,
+        });
+      }
       if (!passCorrect) {
         return res
           .status(404)
           .json({ success: false, error: `Password not correct` });
       }
+    } else if (
+      user.guest &&
+      body.password !== undefined &&
+      body.password !== ""
+    ) {
+      return res
+        .status(404)
+        .json({ success: false, error: `This is a guest user.` });
     }
     return res.status(200).json({
       success: true,
       data: user,
       accessToken: jwt.sign({ _id: user._id }, secret, { expiresIn: 86400 }),
     });
-  }).catch((err) => console.log(err));
+  }).catch((err) => {
+    return res.status(400).json({ success: false, error: err });
+  });
 };
-
 module.exports = {
   createUser,
   updateUser,
@@ -194,5 +243,5 @@ module.exports = {
   getUsers,
   getUserById,
   getUserByEmail,
-  login
+  login,
 };
