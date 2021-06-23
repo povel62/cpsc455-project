@@ -20,17 +20,27 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
+  // const parseJwt = (token) => {
+  //   try {
+  //     return JSON.parse(atob(token.split(".")[1]));
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // };
+
   const submitEditInfo = (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    // const response = await fetch("/api/user/login", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ email: values.username, password: values.pwd }),
-    // });
+    //const id = parseJWT(login_token);
+    const response = await fetch("/api/user/login", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: values.username, password: values.pwd }),
+      //params: id,
+    });
 
     alert(login_token);
   };
