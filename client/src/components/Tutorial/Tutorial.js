@@ -25,9 +25,7 @@ const Tutorial = () => {
     title: {
       fontSize: 14,
     },
-    pos: {
-      //margin: 20,
-    },
+    pos: {},
   });
 
   const classes = useStyles();
