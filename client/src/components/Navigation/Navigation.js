@@ -1,22 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Navigation.css";
 import { Tabs, Tab } from "@material-ui/core";
 import Faq from "../Faq/Faq";
 import Instructions from "../Instructions/Instructions";
 import Home from "../Home/index";
 import { useDispatch } from "react-redux";
-import { setLoginToken } from "../../redux/actions/actions";
+import { setLoginToken, setEmail } from "../../redux/actions/actions";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-// import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-// import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Grid from "@material-ui/core/Grid";
+import { useHistory } from "react-router-dom";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import PropTypes from "prop-types";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Navigation() {
+export default function Navigation(props) {
+  let history = useHistory();
   const fname = useSelector((state) => state.loginReducer.email);
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -40,9 +47,40 @@ export default function Navigation() {
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  // eslint-disable-next-line no-unused-vars
+  const [snackbarOpen, setSnackbarOpen] = useState(props.isUserNewlyRegistred);
+  useEffect(() => {
+    setSnackbarOpen(props.isUserNewlyRegistred);
+  });
+
+  React.useEffect(() => {
+    setSnackbarOpen(props.isUserNewlyRegistred);
+  }, [props.isUserNewlyRegistred]);
+  React.useEffect(() => {
+    setSnackBarContent({
+      content: `${fname} successfuly registered as a guest user`,
+      severity: "success",
+    });
+  }, [fname]);
+
+  // eslint-disable-next-line no-unused-vars
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: `${fname} successfuly registered as a guest user`,
+    severity: "success",
+  });
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    history.push({
+      state: { isUserNewlyRegistred: false },
+    });
+    setSnackbarOpen(false);
   };
 
   const handleChange = (event, newValue) => {
@@ -51,6 +89,18 @@ export default function Navigation() {
 
   return (
     <div className={classes.root}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
       <AppBar position="static">
         <Toolbar>
           <Grid
@@ -114,7 +164,12 @@ export default function Navigation() {
                   onClose={handleClose}
                 >
                   <MenuItem onClick={handleClose}>My account</MenuItem>
-                  <MenuItem onClick={() => dispatch(setLoginToken(""))}>
+                  <MenuItem
+                    onClick={() => {
+                      dispatch(setLoginToken(""));
+                      dispatch(setEmail(""));
+                    }}
+                  >
                     Logout
                   </MenuItem>
                 </Menu>
@@ -131,3 +186,6 @@ export default function Navigation() {
     </div>
   );
 }
+Navigation.propTypes = {
+  isUserNewlyRegistred: PropTypes.bool,
+};
