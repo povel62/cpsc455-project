@@ -37,19 +37,20 @@ const KaggleListEntry = (props) => {
       const mid =
         type === dataType ? "/datasets/list/" : "/competitions/data/list/";
       const end = type === dataType ? datasets[idx].ref : competitions[idx].ref;
-      axios
-        .get(kaggleBaseUrl + mid + end, { auth: credentials(email) })
-        .then((res) => {
-          if (res.status === 200) {
-            dispatch(cache_files({ type: type, data: res.data }));
-            dispatch(set_loading(false));
-          }
-        })
-        .catch((err) => {
-          console.log(kaggleBaseUrl + mid + end);
-          console.log(err);
-        });
-      return;
+      credentials(email).then((auth) => {
+        axios
+          .get(kaggleBaseUrl + mid + end, { auth: auth })
+          .then((res) => {
+            if (res.status === 200) {
+              dispatch(cache_files({ type: type, data: res.data }));
+              dispatch(set_loading(false));
+            }
+          })
+          .catch((err) => {
+            console.log(kaggleBaseUrl + mid + end);
+            console.log(err);
+          });
+      });
     } else {
       dispatch(select_source({ index: -1, mode: "" }));
       dispatch(cache_files(null));

@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import { CloudDownload, AddCircle } from "@material-ui/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { credentials, kaggleBaseUrl } from "./kaggleApi";
+import { credentials, kaggleBaseUrl, competitionAuth } from "./kaggleApi";
 import axios from "axios";
 import { set_loading } from "../../redux/actions/actions";
 
@@ -60,43 +60,51 @@ const KaggleActionPane = () => {
       //   .then((res) => {
       //     console.log(res);
       //   });
-      axios
-        .get(url, {
-          responseType: "blob",
-          auth: credentials(email),
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": "true",
-            "Content-Type": "*",
-          },
-          crossdomain: true,
-        })
-        .then((res) => {
-          if (res.code === 403) {
-            console.log("unauthorized");
-            // TODO put message about joining competition and accepting rules prior to data download
-          } else {
-            const addr = window.URL.createObjectURL(new Blob([res.data]));
-            const link = document.createElement("a");
-            link.href = addr;
-            link.setAttribute("download", file.name);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(addr);
-          }
-        });
+      credentials(email).then((auth) => {
+        axios
+          .get(url, {
+            responseType: "blob",
+            auth: auth,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Credentials": "true",
+              "Content-Type": "*",
+            },
+            crossdomain: true,
+          })
+          .then((res) => {
+            if (res.code === 403) {
+              console.log("unauthorized");
+              // TODO put message about joining competition and accepting rules prior to data download
+            } else {
+              const addr = window.URL.createObjectURL(new Blob([res.data]));
+              const link = document.createElement("a");
+              link.href = addr;
+              link.setAttribute("download", file.name);
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              window.URL.revokeObjectURL(addr);
+            }
+          });
+      });
     }
   };
 
   const createJob = () => {
-    setJobOpen(true);
-    let file = fileRef();
-    if (file && file.columns && file.columns[0]) {
-      setTarget(file.columns[0].name);
-    } else {
-      setTarget("");
-    }
+    competitionAuth(competitions[+source.index].ref).then((entered) => {
+      if (entered === true) {
+        setJobOpen(true);
+        let file = fileRef();
+        if (file && file.columns && file.columns[0]) {
+          setTarget(file.columns[0].name);
+        } else {
+          setTarget("");
+        }
+      } else {
+        // TODO put competition rule signup link here
+      }
+    });
   };
 
   const getColumns = () => {

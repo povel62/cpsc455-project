@@ -69,42 +69,44 @@ const KaggleSearchPane = () => {
         dataFilter: userFilter ? userFilter.dataFilter : "public",
       };
     }
-    let compConfig = {
-      auth: credentials(email),
-      params: { group: config.compFilter, search: searchTerm },
-    };
+    credentials(email).then((auth) => {
+      let compConfig = {
+        auth: auth,
+        params: { group: config.compFilter, search: searchTerm },
+      };
 
-    let dataConfig = {
-      auth: credentials(email),
-      params: { group: config.dataFilter, search: searchTerm },
-    };
+      let dataConfig = {
+        auth: auth,
+        params: { group: config.dataFilter, search: searchTerm },
+      };
 
-    let comps = axios
-      .get(kaggleBaseUrl + "/competitions/list", compConfig)
-      .then((res) => {
-        if (res.status === 200) {
-          dispatch(cache_competitions(res.data));
-          return res.data;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
+      let comps = axios
+        .get(kaggleBaseUrl + "/competitions/list", compConfig)
+        .then((res) => {
+          if (res.status === 200) {
+            dispatch(cache_competitions(res.data));
+            return res.data;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      let datasets = axios
+        .get(kaggleBaseUrl + "/datasets/list", dataConfig)
+        .then((res) => {
+          if (res.status === 200) {
+            dispatch(cache_datasets(res.data));
+            return res.data;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      Promise.all([comps, datasets]).then(() => {
+        setFetched(true);
+        dispatch(set_loading(false));
       });
-    let datasets = axios
-      .get(kaggleBaseUrl + "/datasets/list", dataConfig)
-      .then((res) => {
-        if (res.status === 200) {
-          dispatch(cache_datasets(res.data));
-          return res.data;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    Promise.all([comps, datasets]).then(() => {
-      setFetched(true);
-      dispatch(set_loading(false));
     });
   };
 
