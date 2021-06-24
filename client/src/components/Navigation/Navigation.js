@@ -115,12 +115,15 @@ export default function Navigation(props) {
                 className={classes.menuButton}
                 color="inherit"
                 aria-label="menu"
+                onClick={() => {
+                  setSelectedTab(-1);
+                  history.push({
+                    pathname: "/",
+                  });
+                }}
               >
-                AutoML
+                <img width="50" height="50" src="../logo.png" />
               </IconButton>
-              {/* <Typography variant="h6" className={classes.title}>
-               
-              </Typography> */}
             </Grid>
             <Grid xs={8} item>
               <Grid container justify={"center"}>
@@ -179,9 +182,9 @@ export default function Navigation(props) {
         </Toolbar>
       </AppBar>
       <>
-        {selectedTab === 0 && <Home />}
-        {selectedTab === 1 && <Instructions />}
-        {selectedTab === 2 && <Faq />}
+        {selectedTab === 0 && <Home isLanding={false} />}
+        {selectedTab === 0 && <Instructions />}
+        {selectedTab === 1 && <Faq />}
       </>
     </div>
   );
