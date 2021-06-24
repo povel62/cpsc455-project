@@ -36,20 +36,24 @@ const credentials = (email) => {
   });
 };
 
-const competitionAuth = (ref) => {
+const competitionAuth = (ref, email) => {
   return new Promise((resolve) => {
-    axios
-      .get(kaggleBaseUrl + `/competitions/submissions/list/${ref}`)
-      .then((res) => {
-        if (res.status === 200) {
-          resolve(true);
-        } else {
+    credentials(email).then((auth) => {
+      axios
+        .get(kaggleBaseUrl + `/competitions/submissions/list/${ref}`, {
+          auth: auth,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        })
+        .catch(() => {
           resolve(false);
-        }
-      })
-      .catch(() => {
-        resolve(false);
-      });
+        });
+    });
   });
 };
 

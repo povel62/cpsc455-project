@@ -176,7 +176,7 @@ const KaggleSearchPane = () => {
               type="button"
               className="searchBtn"
               aria-label="search"
-              onClick={GetKaggle}
+              onClick={() => GetKaggle()}
             >
               <Search />
             </IconButton>

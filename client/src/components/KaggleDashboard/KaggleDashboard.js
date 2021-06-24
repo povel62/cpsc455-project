@@ -4,6 +4,7 @@ import KaggleActionPane from "./KaggleActionPane";
 import "./KaggleDashboard.css";
 import KaggleDataPane from "./KaggleDataPane";
 import KaggleSearchPane from "./KaggleSearchPane";
+import PropTypes from "prop-types";
 import {
   Backdrop,
   CircularProgress,
@@ -29,12 +30,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const KaggleDashBoard = () => {
+const KaggleDashBoard = (props) => {
   const classes = useStyles();
   let loading = useSelector((state) => state.kaggleReducer.loading);
   let email = useSelector((state) => state.loginReducer.email);
   const [enabled, setEnabled] = useState(false);
   const [checked, setChecked] = useState(false);
+
+  KaggleDashBoard.propTypes = {
+    tab: PropTypes.number.isRequired,
+    setTab: PropTypes.func.isRequired,
+  };
 
   if (!checked) {
     set_loading(true);
@@ -65,7 +71,7 @@ const KaggleDashBoard = () => {
               <KaggleDataPane />
             </Grid>
             <Grid item xs>
-              <KaggleActionPane />
+              <KaggleActionPane tab={props.tab} setTab={props.setTab} />
             </Grid>
           </Grid>
         </div>

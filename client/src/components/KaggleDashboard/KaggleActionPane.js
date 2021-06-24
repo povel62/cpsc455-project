@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Paper,
   Button,
@@ -11,24 +12,64 @@ import {
   InputLabel,
   FormControl,
   MenuItem,
+  CircularProgress,
+  Tooltip,
 } from "@material-ui/core";
-import { CloudDownload, AddCircle } from "@material-ui/icons";
-import { useSelector, useDispatch } from "react-redux";
+import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
+import { useSelector } from "react-redux";
 import { credentials, kaggleBaseUrl, competitionAuth } from "./kaggleApi";
 import axios from "axios";
-import { set_loading } from "../../redux/actions/actions";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
+import { green, red } from "@material-ui/core/colors";
 
-const KaggleActionPane = () => {
+const useStyles = makeStyles(() => ({
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "75%",
+    bottom: "25%",
+    left: "75%",
+    right: "25%",
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+  buttonFail: {
+    backgroundColor: red[500],
+    "&:hover": {
+      backgroundColor: red[700],
+    },
+  },
+}));
+
+const KaggleActionPane = (props) => {
+  const classes = useStyles();
   let files = useSelector((state) => state.kaggleReducer.files);
   let datafile = useSelector((state) => state.kaggleReducer.dataFile);
   let source = useSelector((state) => state.kaggleReducer.source);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
   let email = useSelector((state) => state.loginReducer.email);
-  let dispatch = useDispatch();
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
   const [target, setTarget] = useState("");
+  const [submittingJob, setSubmittingJob] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [fail, setFail] = useState(false);
+
+  KaggleActionPane.propTypes = {
+    tab: PropTypes.number.isRequired,
+    setTab: PropTypes.func.isRequired,
+  };
+
+  const buttonClassname = clsx({
+    [classes.buttonSuccess]: success,
+    [classes.buttonFail]: fail,
+  });
 
   const fileRef = () => {
     if (!datafile) {
@@ -92,19 +133,34 @@ const KaggleActionPane = () => {
   };
 
   const createJob = () => {
-    competitionAuth(competitions[+source.index].ref).then((entered) => {
-      if (entered === true) {
-        setJobOpen(true);
-        let file = fileRef();
-        if (file && file.columns && file.columns[0]) {
-          setTarget(file.columns[0].name);
-        } else {
-          setTarget("");
+    setFail(false);
+    setSuccess(false);
+    setTime(5);
+    if (datafile.mode === "COMPEITION") {
+      competitionAuth(competitions[+source.index].ref, email).then(
+        (entered) => {
+          if (entered === true) {
+            setJobOpen(true);
+            let file = fileRef();
+            if (file && file.columns && file.columns[0]) {
+              setTarget(file.columns[0].name);
+            } else {
+              setTarget("");
+            }
+          } else {
+            // TODO put competition rule signup link here
+          }
         }
+      );
+    } else {
+      setJobOpen(true);
+      let file = fileRef();
+      if (file && file.columns && file.columns[0]) {
+        setTarget(file.columns[0].name);
       } else {
-        // TODO put competition rule signup link here
+        setTarget("");
       }
-    });
+    }
   };
 
   const getColumns = () => {
@@ -163,8 +219,9 @@ const KaggleActionPane = () => {
 
   const handleEnqueue = (e) => {
     e.preventDefault();
-    setJobOpen(false);
-    dispatch(set_loading(true));
+    setSuccess(false);
+    setFail(false);
+    setSubmittingJob(true);
     axios
       .post("/api/kaggle/job", {
         target: target,
@@ -172,15 +229,19 @@ const KaggleActionPane = () => {
         searchTime: time,
       })
       .then((res) => {
-        // TODO go to finished screen if 200
-        console.log(res);
+        if (res.status === 200) {
+          setSuccess(true);
+          // goto dashboard if sucess to see pending job
+          props.setTab(0);
+        } else {
+          setFail(true);
+        }
       })
-      .catch((err) => {
-        console.log(err);
-        // TODO error message
+      .catch(() => {
+        setFail(true);
       })
       .finally(() => {
-        dispatch(set_loading(false));
+        setSubmittingJob(false);
       });
   };
 
@@ -217,16 +278,34 @@ const KaggleActionPane = () => {
               </Grid>
               <Grid item xs={6}>
                 <br />
-                <Button variant="contained" color="primary" type="submit">
-                  Queue Job
-                </Button>
+                <Tooltip
+                  open={true}
+                  title={fail ? "Failed to submit job" : ""}
+                  placement="right"
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submittingJob}
+                    className={buttonClassname}
+                  >
+                    Queue Job
+                  </Button>
+                </Tooltip>
+                {submittingJob && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
               </Grid>
             </Grid>
           </form>
         </DialogContent>
       </Dialog>
       <Paper>
-        <h4>Controls</h4>
+        <h4>Options</h4>
         {datafile && (
           <div>
             <h4>{fileRef().description}</h4>
@@ -245,7 +324,14 @@ const KaggleActionPane = () => {
               startIcon={<AddCircle />}
               onClick={() => createJob()}
             >
-              Create Job from File
+              Create Training Job
+            </Button>
+            <Button
+              variant="contained"
+              color="default"
+              startIcon={<CloudUpload />}
+            >
+              Submit Prediction
             </Button>
           </div>
         )}
