@@ -15,12 +15,33 @@ const KaggleDataEntry = (props) => {
     type: PropTypes.string.isRequired,
   };
 
-  const handleSelect = (idx = props.id, type = props.type) => {
+  const acceptableFileType = (text) => {
+    let arr = text.split(".");
+    if (arr.length === 0) {
+      return false;
+    } else {
+      let res = arr[arr.length - 1].toLowerCase() === "csv" ? true : false;
+      return res;
+    }
+  };
+
+  const handleSelect = (
+    idx = props.id,
+    type = props.type,
+    text = props.text
+  ) => {
     if (
       !selected_data ||
       !(selected_data.index === idx && selected_data.mode === type)
     ) {
-      dispatch(select_datafile({ index: idx, mode: type }));
+      dispatch(
+        select_datafile({
+          index: idx,
+          mode: type,
+          text: text,
+          accepted: acceptableFileType(text),
+        })
+      );
     } else {
       dispatch(select_datafile(null));
       dispatch(cache_file(null));

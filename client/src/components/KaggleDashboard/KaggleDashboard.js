@@ -1,5 +1,5 @@
 import { Grid } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import KaggleActionPane from "./KaggleActionPane";
 import "./KaggleDashboard.css";
 import KaggleDataPane from "./KaggleDataPane";
@@ -15,10 +15,19 @@ import {
   CardActions,
   Button,
 } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { KaggleAuthCheck } from "./kaggleApi";
-import { set_loading } from "../../redux/actions/actions";
+import {
+  cache_competitions,
+  cache_datasets,
+  cache_file,
+  cache_files,
+  select_datafile,
+  select_source,
+  set_loading,
+  set_userFilter,
+} from "../../redux/actions/actions";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -34,6 +43,7 @@ const KaggleDashBoard = (props) => {
   const classes = useStyles();
   let loading = useSelector((state) => state.kaggleReducer.loading);
   let email = useSelector((state) => state.loginReducer.email);
+  let dispatch = useDispatch();
   const [enabled, setEnabled] = useState(false);
   const [checked, setChecked] = useState(false);
 
@@ -50,6 +60,24 @@ const KaggleDashBoard = (props) => {
       set_loading(false);
     });
   }
+
+  useEffect(() => {
+    return () => {
+      dispatch(select_source(null));
+      dispatch(select_datafile(null));
+      dispatch(cache_file(null));
+      dispatch(cache_files(null));
+      dispatch(cache_datasets(null));
+      dispatch(cache_competitions(null));
+      dispatch(
+        set_userFilter({
+          dataFilter: "public",
+          compFilter: "general",
+        })
+      );
+    };
+  }, []);
+
   return (
     <div className="KaggleDash">
       <Backdrop className={classes.backdrop} open={loading}>

@@ -14,6 +14,7 @@ import {
   MenuItem,
   CircularProgress,
   Tooltip,
+  ButtonGroup,
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
 import { useSelector } from "react-redux";
@@ -52,6 +53,7 @@ const KaggleActionPane = (props) => {
   let datafile = useSelector((state) => state.kaggleReducer.dataFile);
   let source = useSelector((state) => state.kaggleReducer.source);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
+  let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let email = useSelector((state) => state.loginReducer.email);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
@@ -60,6 +62,8 @@ const KaggleActionPane = (props) => {
   const [submittingJob, setSubmittingJob] = useState(false);
   const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
+  const [predictOpen, setPredictOpen] = useState(false);
+  const [selectJob, setSelectJob] = useState({});
 
   KaggleActionPane.propTypes = {
     tab: PropTypes.number.isRequired,
@@ -78,6 +82,16 @@ const KaggleActionPane = (props) => {
       return files.data[datafile.index];
     } else {
       return files.data.datasetFiles[datafile.index];
+    }
+  };
+
+  const sourceRef = () => {
+    if (!datafile) {
+      return null;
+    } else if (datafile.mode === "COMPETITION") {
+      return competitions[datafile.index].ref;
+    } else {
+      return datasets[datafile.index].ref;
     }
   };
 
@@ -136,7 +150,7 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSuccess(false);
     setTime(5);
-    if (datafile.mode === "COMPEITION") {
+    if (datafile.mode === "COMPETITION") {
       competitionAuth(competitions[+source.index].ref, email).then(
         (entered) => {
           if (entered === true) {
@@ -163,10 +177,29 @@ const KaggleActionPane = (props) => {
     }
   };
 
+  const createPredict = () => {
+    setFail(false);
+    setSelectJob(null);
+    setSuccess(false);
+    // TODO fetch available jobs
+    if (datafile.mode === "COMPETITION") {
+      competitionAuth(competitions[+source.index].ref, email).then(
+        (entered) => {
+          if (entered === true) {
+            setPredictOpen(true);
+          } else {
+            // TODO put competition rule signup link here
+          }
+        }
+      );
+    } else {
+      setPredictOpen(true);
+    }
+  };
+
   const getColumns = () => {
     let col = [];
     if (fileRef() && fileRef().columns) {
-      console.log(fileRef().columns);
       let ref = fileRef().columns;
       ref.forEach((ele) => {
         col.push(ele.name);
@@ -222,11 +255,17 @@ const KaggleActionPane = (props) => {
     setSuccess(false);
     setFail(false);
     setSubmittingJob(true);
+    let sourceType = datafile ? datafile.mode : "invalid";
+    // TODO send filename too
     axios
       .post("/api/kaggle/job", {
         target: target,
         nickname: nickname,
         searchTime: time,
+        fileref: fileRef(),
+        sourceType: sourceType,
+        sourceref: sourceRef(),
+        email: email,
       })
       .then((res) => {
         if (res.status === 200) {
@@ -243,6 +282,41 @@ const KaggleActionPane = (props) => {
       .finally(() => {
         setSubmittingJob(false);
       });
+  };
+
+  const handlePredict = (e) => {
+    e.preventDefault();
+    setSuccess(false);
+    setFail(false);
+    setSubmittingJob(true);
+    let sourceType = datafile ? datafile.mode : "invalid";
+    axios
+      .post("/api/kaggle/predict", {
+        job: selectJob,
+        fileref: fileRef(),
+        sourceType: sourceType,
+        sourceref: sourceRef(),
+        email: email,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          setSuccess(true);
+          // goto dashboard if sucess to see pending job
+          props.setTab(0);
+        } else {
+          setFail(true);
+        }
+      })
+      .catch(() => {
+        setFail(true);
+      })
+      .finally(() => {
+        setSubmittingJob(false);
+      });
+  };
+
+  const handleSelectJob = (txt) => {
+    setSelectJob(txt);
   };
 
   return (
@@ -304,35 +378,84 @@ const KaggleActionPane = (props) => {
           </form>
         </DialogContent>
       </Dialog>
+      <Dialog open={predictOpen} onClose={() => setPredictOpen(false)}>
+        <DialogTitle>
+          Submit Prediction File for Automatic Classification
+        </DialogTitle>
+        <DialogContent>
+          <form onSubmit={(e) => handlePredict(e)}>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <InputLabel>Completed Training Jobs</InputLabel>
+                <Select
+                  onChange={(e) => handleSelectJob(e.target.value)}
+                  value={selectJob}
+                >
+                  <MenuItem value={"Demo Job"} key={1}>
+                    Demo Job
+                  </MenuItem>
+                  <MenuItem value={"car model"} key={2}>
+                    car model
+                  </MenuItem>
+                </Select>
+              </Grid>
+              <Grid item xs={6}>
+                <Tooltip
+                  open={true}
+                  title={fail ? "Failed to submit prediction file" : ""}
+                  placement="right"
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submittingJob}
+                    className={buttonClassname}
+                  >
+                    Predict
+                  </Button>
+                </Tooltip>
+              </Grid>
+            </Grid>
+          </form>
+          <br />
+        </DialogContent>
+      </Dialog>
       <Paper>
         <h4>Options</h4>
         {datafile && (
           <div>
             <h4>{fileRef().description}</h4>
             <h5>Size: {fileRef().totalBytes} bytes</h5>
-            <Button
-              variant="contained"
-              color="default"
-              startIcon={<CloudDownload />}
-              onClick={() => fileDownload()}
+            <ButtonGroup
+              size="medium"
+              color="primary"
+              aria-label="medium contained button group"
             >
-              Download File
-            </Button>
-            <Button
-              variant="contained"
-              color="default"
-              startIcon={<AddCircle />}
-              onClick={() => createJob()}
-            >
-              Create Training Job
-            </Button>
-            <Button
-              variant="contained"
-              color="default"
-              startIcon={<CloudUpload />}
-            >
-              Submit Prediction
-            </Button>
+              <Button
+                variant="contained"
+                startIcon={<CloudDownload />}
+                onClick={() => fileDownload()}
+              >
+                Download File
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<AddCircle />}
+                onClick={() => createJob()}
+                disabled={!datafile.accepted}
+              >
+                Create Training Job
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<CloudUpload />}
+                onClick={() => createPredict()}
+                disabled={!datafile.accepted}
+              >
+                Auto Classify
+              </Button>
+            </ButtonGroup>
           </div>
         )}
       </Paper>

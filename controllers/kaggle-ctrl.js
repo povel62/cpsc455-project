@@ -26,6 +26,12 @@ createKaggleJob = async (req, res) => {
   return res.status(501).json({ success: false, error: `Not Implemented` });
 };
 
+createKagglePrediction = async (req, res) => {
+  let body = req.body;
+  console.log(body);
+  return res.status(501).json({ success: false, error: `Not Implemented` });
+};
+
 getKaggleFile = async (req, res) => {
   if (!req.params.id) {
     return res.status(400).json({ success: false, error: `Bad Request` });
@@ -67,4 +73,5 @@ module.exports = {
   datasetCreateVersion,
   getKaggleFile,
   createKaggleJob,
+  createKagglePrediction,
 };

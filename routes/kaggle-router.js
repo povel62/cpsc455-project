@@ -27,4 +27,7 @@ router.get(
 );
 router.post("/kaggle/job", KaggleCtrl.createKaggleJob);
 
+router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
+
+
 module.exports = router;
