@@ -31,7 +31,7 @@ const Faq = () => {
           }}
         >
           <ArrowBackIosIcon />
-          Go back to Sign In
+          Go back
         </Fab>
       </div>
       <div className="containerFaq">

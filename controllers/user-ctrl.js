@@ -4,10 +4,16 @@ const salt = 10;
 const { validateGuest } = require("../util/validation");
 const jwt = require("jsonwebtoken");
 const { secret } = require("../util/security");
+const validator = require("email-validator");
 
 createUser = async (req, res) => {
   const body = req.body;
-
+  if (!validator.validate(body.email)) {
+    return res.status(400).json({
+      success: false,
+      error: "User email is not valid!",
+    });
+  }
   await User.findOne({ email: body.email }, async (err, user) => {
     if (user) {
       if (!user.guest) {

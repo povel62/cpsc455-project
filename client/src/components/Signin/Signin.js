@@ -20,7 +20,8 @@ import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { loginUser, signupUser } from "../../api/UserService";
-import Fab from "@material-ui/core/Fab";
+import Paper from "@material-ui/core/Paper";
+import PropTypes from "prop-types";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -30,7 +31,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="https://github.com/povel62/cpsc455-project">
         Byte Mechanics
       </Link>{" "}
       {new Date().getFullYear()}
@@ -63,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Signin() {
+export default function Signin(props) {
   const [isGuest, setIsGuest] = React.useState(false);
 
   const dispatch = useDispatch();
@@ -73,11 +74,7 @@ export default function Signin() {
     password: "",
   });
 
-  const [open, setOpen] = React.useState(
-    history.location && history.location.signUpSuccessful !== undefined
-      ? history.location.signUpSuccessful
-      : false
-  );
+  const [open, setOpen] = React.useState(props.signUpSuccessful);
   const [snackBarContent, setSnackBarContent] = React.useState({
     content: "Sign Up was successful! Now you can sign in..",
     severity: "success",
@@ -94,6 +91,16 @@ export default function Signin() {
   const handleLogin = async (e) => {
     let userNewlyRegistred = false;
     e.preventDefault();
+
+    if (values.email === "") {
+      setOpen(true);
+      setSnackBarContent({
+        content: "Email field can't be empty",
+        severity: "warning",
+      });
+      return;
+    }
+
     if (!isGuest && values.password === "") {
       setSnackBarContent({
         content: "Password cannot be empty for a regular user.",
@@ -144,112 +151,110 @@ export default function Signin() {
         <Container component="main" maxWidth="xs">
           <CssBaseline />
           <div className={classes.paper}>
-            <h1 className="glitched neonText">AutoML</h1>
+            <img width="100" height="100" src="../logo.png" />
 
-            <Avatar className={classes.avatar}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in {isGuest ? `as Guest` : ``}
-            </Typography>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={isGuest}
-                    onChange={(event) => {
-                      setIsGuest(event.target.checked);
-                    }}
-                    name="isGuest"
-                    color="primary"
-                  />
-                }
-                label="Go Incognito?"
-              />
-            </Grid>
-
-            <form className={classes.form} noValidate>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                onChange={(e) =>
-                  setValues({ ...values, email: e.target.value })
-                }
-              />
-              {!isGuest && (
+            <div
+              style={{
+                width: "100%",
+                borderRadius: ".25rem",
+                background:
+                  // "linear-gradient(120deg , #e0c3fc 0%, #8ec5fc 100%)",
+                  "linear-gradient(40deg ,#45cafc,#303f9f)",
+                // "linear-gradient(to right bottom, #430089, #82ffa1)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Avatar className={classes.avatar}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in {isGuest ? `as Guest` : ``}
+              </Typography>
+            </div>
+            <Paper style={{ padding: 22 }}>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isGuest}
+                      onChange={(event) => {
+                        setIsGuest(event.target.checked);
+                      }}
+                      name="isGuest"
+                      color="primary"
+                    />
+                  }
+                  label="Go Incognito?"
+                />
+              </Grid>
+              <form className={classes.form} noValidate>
                 <TextField
                   variant="outlined"
                   margin="normal"
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
                   onChange={(e) =>
-                    setValues({ ...values, password: e.target.value })
+                    setValues({ ...values, email: e.target.value })
                   }
                 />
-              )}
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                onClick={handleLogin}
-              >
-                Sign In
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="/signup" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-              <br />
-              <br />
-              <br />
-              <Grid
-                container
-                direction="column"
-                justify="space-between"
-                alignItems="center"
-              >
-                <Fab
-                  variant="extended"
-                  color="red"
-                  aria-label="add"
-                  className={classes.margin}
+                {!isGuest && (
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    onChange={(e) =>
+                      setValues({ ...values, password: e.target.value })
+                    }
+                  />
+                )}
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                />
+                <Button
+                  type="submit"
                   fullWidth
-                  onClick={() => {
-                    history.push({
-                      pathname: "/faq",
-                    });
-                  }}
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  onClick={handleLogin}
                 >
-                  What is AutoML?
-                </Fab>
-              </Grid>
-            </form>
+                  Sign In
+                </Button>
+                <Grid container>
+                  <Grid item xs>
+                    <Link href="#" variant="body2">
+                      Forgot password?
+                    </Link>
+                  </Grid>
+                  <Grid item>
+                    <Link
+                      onClick={() => {
+                        if (props.callback) {
+                          props.callback();
+                        }
+                      }}
+                      variant="body2"
+                    >
+                      {"Don't have an account? Sign Up"}
+                    </Link>
+                  </Grid>
+                </Grid>
+              </form>
+            </Paper>
           </div>
           <br />
 
@@ -261,3 +266,8 @@ export default function Signin() {
     </>
   );
 }
+
+Signin.propTypes = {
+  callback: PropTypes.func,
+  signUpSuccessful: PropTypes.bool,
+};
