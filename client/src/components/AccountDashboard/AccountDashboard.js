@@ -20,20 +20,11 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
-  // const parseJwt = (token) => {
-  //   try {
-  //     return JSON.parse(atob(token.split(".")[1]));
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // };
-
-  const submitEditInfo = (e) => {
+  const submitEditInfo = async (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    //const id = parseJWT(login_token);
-    const response = await fetch("/api/user/login", {
+    const response = await fetch("/api/user/" + login_token, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +33,7 @@ const AccountDashboard = () => {
       //params: id,
     });
 
-    alert(login_token);
+    alert(response.status);
   };
   const closeEditInfo = () => {
     setEditInfo(!editInfo);

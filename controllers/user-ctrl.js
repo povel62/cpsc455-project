@@ -49,6 +49,11 @@ createUser = async (req, res) => {
 updateUser = async (req, res) => {
   const body = req.body;
 
+  const token = req.params.id.split(".")[0];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded.user_data.user_id;
+
+  console.log(userId);
   if (!body) {
     return res.status(400).json({
       success: false,
@@ -149,16 +154,20 @@ getUsers = async (req, res) => {
     if (!users.length) {
       return res.status(404).json({ success: false, error: `User not found` });
     }
-  }).populate('jobs', "-users").exec((err, populatedUser) => {
-    if (err) {
-      return res.status(400).json({ success: false, error: err });
-    }
+  })
+    .populate("jobs", "-users")
+    .exec((err, populatedUser) => {
+      if (err) {
+        return res.status(400).json({ success: false, error: err });
+      }
 
-    if (!populatedUser) {
-      return res.status(404).json({ success: false, error: `User not found` });
-    }
-    return res.status(200).json({ success: true, data: populatedUser });
-  });
+      if (!populatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: `User not found` });
+      }
+      return res.status(200).json({ success: true, data: populatedUser });
+    });
 };
 
 login = async (req, res) => {
@@ -194,5 +203,5 @@ module.exports = {
   getUsers,
   getUserById,
   getUserByEmail,
-  login
+  login,
 };
