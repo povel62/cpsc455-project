@@ -15,6 +15,8 @@ import {
   CircularProgress,
   Tooltip,
   ButtonGroup,
+  Typography,
+  DialogActions,
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
 import { useSelector } from "react-redux";
@@ -64,6 +66,7 @@ const KaggleActionPane = (props) => {
   const [fail, setFail] = useState(false);
   const [predictOpen, setPredictOpen] = useState(false);
   const [selectJob, setSelectJob] = useState({});
+  const [offboard, setOffboard] = useState(false);
 
   KaggleActionPane.propTypes = {
     tab: PropTypes.number.isRequired,
@@ -129,8 +132,7 @@ const KaggleActionPane = (props) => {
           })
           .then((res) => {
             if (res.code === 403) {
-              console.log("unauthorized");
-              // TODO put message about joining competition and accepting rules prior to data download
+              setOffboard(true);
             } else {
               const addr = window.URL.createObjectURL(new Blob([res.data]));
               const link = document.createElement("a");
@@ -162,7 +164,7 @@ const KaggleActionPane = (props) => {
               setTarget("");
             }
           } else {
-            // TODO put competition rule signup link here
+            setOffboard(true);
           }
         }
       );
@@ -188,7 +190,7 @@ const KaggleActionPane = (props) => {
           if (entered === true) {
             setPredictOpen(true);
           } else {
-            // TODO put competition rule signup link here
+            setOffboard(true);
           }
         }
       );
@@ -315,6 +317,19 @@ const KaggleActionPane = (props) => {
       });
   };
 
+  const offboardToKaggle = () => {
+    try {
+      let url = competitions[source.index].url;
+      if (url) {
+        const kaggleWindow = window.open(url, "_blank", "noopener,noreferrer");
+        if (kaggleWindow) kaggleWindow.opener = null;
+      }
+    } catch (e) {
+      // TODO error
+      console.log(e);
+    }
+  };
+
   const handleSelectJob = (txt) => {
     setSelectJob(txt);
   };
@@ -439,26 +454,74 @@ const KaggleActionPane = (props) => {
               >
                 Download File
               </Button>
-              <Button
-                variant="contained"
-                startIcon={<AddCircle />}
-                onClick={() => createJob()}
-                disabled={!datafile.accepted}
+              <Tooltip
+                title={"Limited to CSV files"}
+                placement="bottom"
+                disableFocusListener={datafile.accepted}
+                disableHoverListener={datafile.accepted}
+                disableTouchListener={datafile.accepted}
               >
-                Create Training Job
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<CloudUpload />}
-                onClick={() => createPredict()}
-                disabled={!datafile.accepted}
+                <span>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddCircle />}
+                    onClick={() => createJob()}
+                    disabled={!datafile.accepted}
+                  >
+                    Create Training Job
+                  </Button>
+                </span>
+              </Tooltip>
+              <Tooltip
+                title={"Limited to CSV files"}
+                placement="bottom"
+                disableFocusListener={datafile.accepted}
+                disableHoverListener={datafile.accepted}
+                disableTouchListener={datafile.accepted}
               >
-                Auto Classify
-              </Button>
+                <span>
+                  <Button
+                    variant="contained"
+                    startIcon={<CloudUpload />}
+                    onClick={() => createPredict()}
+                    disabled={!datafile.accepted}
+                  >
+                    Auto Classify
+                  </Button>
+                </span>
+              </Tooltip>
             </ButtonGroup>
           </div>
         )}
       </Paper>
+      <Dialog open={offboard} onClose={() => setOffboard(false)}>
+        <DialogTitle gutterBottom variant="h5" component="h2">
+          You must accept the competition rules
+        </DialogTitle>
+        <DialogContent>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <Typography variant="body2" color="textSecondary" component="p">
+                Unfortunately, due to Kaggle’s policies, you must read and
+                accept the competition rules to access these files. We cannot
+                accept the rules on your behalf or show you the rules. You must
+                visit the competition page from the official Kaggle site before
+                using this tool.
+              </Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            size="small"
+            color="primary"
+            variant="contained"
+            onClick={() => offboardToKaggle()}
+          >
+            Open competition page
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
