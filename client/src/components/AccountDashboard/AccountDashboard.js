@@ -24,12 +24,13 @@ const AccountDashboard = () => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    const response = await fetch("/api/user/" + login_token, {
+    const response = await fetch("/api/user/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + login_token,
       },
-      body: JSON.stringify({ email: values.username, password: values.pwd }),
+      body: JSON.stringify({ email: values.email }),
       //params: id,
     });
 
