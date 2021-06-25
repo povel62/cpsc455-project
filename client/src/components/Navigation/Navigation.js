@@ -198,9 +198,9 @@ export default function Navigation(props) {
       </AppBar>
       <>
         {selectedTab === 0 && <Home isLanding={false} />}
-        {selectedTab === 0 && <Instructions />}
-        {selectedTab === 1 && <Faq />}
-        {selectedTab === 2 && (
+        {selectedTab === 1 && <Instructions />}
+        {selectedTab === 2 && <Faq />}
+        {selectedTab === 3 && (
           <KaggleDashBoard tab={selectedTab} setTab={setSelectedTab} />
         )}
       </>
