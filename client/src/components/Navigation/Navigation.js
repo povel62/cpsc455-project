@@ -5,7 +5,11 @@ import Faq from "../Faq/Faq";
 import Instructions from "../Instructions/Instructions";
 import Home from "../Home/index";
 import { useDispatch } from "react-redux";
-import { setLoginToken, setEmail } from "../../redux/actions/actions";
+import {
+  setLoginToken,
+  setEmail,
+  set_userFilter,
+} from "../../redux/actions/actions";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -19,6 +23,7 @@ import { useHistory } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import PropTypes from "prop-types";
+import KaggleDashBoard from "../KaggleDashboard/KaggleDashboard";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -41,6 +46,7 @@ export default function Navigation(props) {
   const fname = useSelector((state) => state.loginReducer.email);
   const dispatch = useDispatch();
   const classes = useStyles();
+  let userFilter = useSelector((state) => state.kaggleReducer.userFilter);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -84,6 +90,14 @@ export default function Navigation(props) {
   };
 
   const handleChange = (event, newValue) => {
+    if (!userFilter) {
+      dispatch(
+        set_userFilter({
+          dataFilter: "public",
+          compFilter: "general",
+        })
+      );
+    }
     setSelectedTab(newValue);
   };
 
@@ -136,6 +150,7 @@ export default function Navigation(props) {
                     <Tab label="Home" />
                     <Tab label="Instructions" />
                     <Tab label="FAQ" />
+                    <Tab label="Kaggle Dashboard" />
                   </Tabs>
                 </div>
               </Grid>
@@ -183,8 +198,11 @@ export default function Navigation(props) {
       </AppBar>
       <>
         {selectedTab === 0 && <Home isLanding={false} />}
-        {selectedTab === 0 && <Instructions />}
-        {selectedTab === 1 && <Faq />}
+        {selectedTab === 1 && <Instructions />}
+        {selectedTab === 2 && <Faq />}
+        {selectedTab === 3 && (
+          <KaggleDashBoard tab={selectedTab} setTab={setSelectedTab} />
+        )}
       </>
     </div>
   );

@@ -5,6 +5,7 @@ const userRouter = require("./routes/user-router");
 const jobRouter = require("./routes/job-router");
 const kaggleRouter = require("./routes/kaggle-router");
 const app = express();
+let cors = require("cors");
 const port = process.env.PORT || 5000;
 
 // const MongoClient = require('mongodb').MongoClient;
@@ -26,6 +27,7 @@ mongoose.connect(uri, { useNewUrlParser: true }).catch((e) => {
 // eslint-disable-next-line no-unused-vars
 const db = mongoose.connection;
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -42,8 +44,7 @@ app.post("/api/world", (req, res) => {
 
 app.use("/api", userRouter);
 app.use("/api", jobRouter);
-
-app.use("/kagglev1", kaggleRouter);
+app.use("/api", kaggleRouter);
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files
