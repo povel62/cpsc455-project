@@ -244,6 +244,7 @@ const KaggleActionPane = (props) => {
       return (
         <div>
           <TextField
+            required
             onChange={(e) => handleColumn(e.target.value)}
             label={"Target Column"}
           ></TextField>{" "}
