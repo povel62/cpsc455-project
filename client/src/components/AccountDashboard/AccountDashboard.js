@@ -1,10 +1,34 @@
 import React, { useState } from "react";
 import "./AccountDashboard.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import TextField from "@material-ui/core/TextField";
+import { setEmail } from "../../redux/actions/actions";
+// import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import FilledInput from "@material-ui/core/FilledInput";
+import InputLabel from "@material-ui/core/InputLabel";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
+// const useStyles = makeStyles((theme) => ({
+//   root: {
+//     "& > *": {
+//       margin: theme.spacing(1),
+//       width: "25ch",
+//     },
+//     submit: {
+//       margin: theme.spacing(3, 0, 2),
+//     },
+//   },
+// }));
 
 const AccountDashboard = () => {
+  // const classes = useStyles();
   const login_token = useSelector((state) => state.loginReducer);
 
+  const dispatch = useDispatch();
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -14,6 +38,9 @@ const AccountDashboard = () => {
     pwd: "",
     kusername: "test K user",
     kapi: "test k api",
+    showPassword: false,
+    fname: "",
+    lname: "",
   });
 
   const [editInfo, setEditInfo] = useState(false);
@@ -33,64 +60,181 @@ const AccountDashboard = () => {
       body: JSON.stringify({ email: values.email }),
     });
 
+    if (response.status === 200) {
+      dispatch(setEmail(values.email));
+    }
+
     alert(response.status);
   };
   const closeEditInfo = () => {
     setEditInfo(!editInfo);
   };
 
+  const handleClickShowPassword = () => {
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   return (
     <div className="accountDashboard">
-      {editInfo ? (
-        <div>
-          <button onClick={submitEditInfo}> Submit </button>
-          <button onClick={closeEditInfo}> Close </button>
-        </div>
-      ) : (
-        <button onClick={toggleEditInfo}> Edit </button>
-      )}
-      <div>
-        <h1>Email: </h1>
+      <br />
+      <br />
+      <div className="innerAccountDashboard">
         {editInfo ? (
-          <input
-            type="text"
-            defaultValue={values.email}
-            onChange={(e) => setValues({ ...values, email: e.target.value })}
-          ></input>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="First Name"
+              defaultValue={values.fname}
+              onChange={(e) => setValues({ ...values, fname: e.target.value })}
+            />
+            <br />
+          </div>
         ) : (
-          <p>{values.email}</p>
+          <p>
+            <strong>First Name:</strong> {values.fname}
+          </p>
         )}
-        <h1>Password: </h1>
+
         {editInfo ? (
-          <input
-            type="text"
-            onChange={(e) => setValues({ ...values, pwd: e.target.value })}
-          ></input>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Last Name"
+              defaultValue={values.lname}
+              onChange={(e) => setValues({ ...values, lname: e.target.value })}
+            />
+            <br />
+            <br />
+          </div>
         ) : (
-          "*********"
+          <p>
+            <strong>Last Name:</strong> {values.lname}
+          </p>
         )}
-        <h1>kaggle username: </h1>
+
         {editInfo ? (
-          <input
-            type="text"
-            defaultValue={values.kusername}
-            onChange={(e) =>
-              setValues({ ...values, kusername: e.target.value })
-            }
-          ></input>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Email"
+              defaultValue={values.email}
+              onChange={(e) => setValues({ ...values, email: e.target.value })}
+            />
+            <br />
+            <br />
+          </div>
         ) : (
-          <p>{values.kusername}</p>
+          <p>
+            <strong>Email:</strong> {values.email}
+          </p>
         )}
-        <h1>kaggle Api: </h1>
         {editInfo ? (
-          <input
-            type="text"
-            defaultValue={values.kapi}
-            onChange={(e) => setValues({ ...values, kapi: e.target.value })}
-          ></input>
+          <div>
+            <InputLabel htmlFor="filled-adornment-password">
+              Password
+            </InputLabel>
+            <FilledInput
+              label="Password"
+              id="standard-adornment-password"
+              type={values.showPassword ? "text" : "password"}
+              value={values.password}
+              onChange={(e) => setValues({ ...values, pwd: e.target.value })}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            <br />
+            <br />
+          </div>
         ) : (
-          <p>{values.kapi}</p>
+          <p>
+            <strong>Password:</strong>*********
+          </p>
         )}
+        {editInfo ? (
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Kaggle username"
+              defaultValue={values.kusername}
+              onChange={(e) =>
+                setValues({ ...values, kusername: e.target.value })
+              }
+            />
+            <br />
+            <br />
+          </div>
+        ) : (
+          <p>
+            <strong>kaggle username: </strong>
+            {values.kusername}
+          </p>
+        )}
+        {editInfo ? (
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Kaggle API"
+              defaultValue={values.kapi}
+              onChange={(e) => setValues({ ...values, kapi: e.target.value })}
+            />
+            <br />
+            <br />
+          </div>
+        ) : (
+          <p>
+            <strong>kaggle Api: </strong>
+            {values.kapi}
+          </p>
+        )}
+        <br />
+        <br />
+        {editInfo ? (
+          <div className="buttonContainer">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={submitEditInfo}
+            >
+              Submit
+            </Button>
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={closeEditInfo}
+            >
+              Close
+            </Button>
+          </div>
+        ) : (
+          <div>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={toggleEditInfo}
+            >
+              Edit
+            </Button>
+          </div>
+        )}
+        <br />
       </div>
     </div>
   );
