@@ -6,48 +6,12 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-//import { useHistory, withRouter } from "react-router-dom";
-
-//function Navigation(props) {
-
-//import { createBrowserHistory } from "history";
-// import Step from "./Step";
-// import Overview from "./Overview";
 import { useState } from "react";
 
 const Tutorial = () => {
   const [show, setShow] = useState(false);
 
-  // const showModal = () => {
-  //   //loadDetails();
-  //   setShow(true);
-  // };
-
-  // const hideModal = () => {
-  //   setShow(false);
-  // };
-
   const [overview, setOverview] = useState(false);
-
-  // const hideOverview = () => {
-  //   //loadDetails();
-  //   setOverview(false);
-  // };
-
-  // const navigate = () => {
-  //   createBrowserHistory.push("../Instructions.Instructions.js");
-  // };
-
-  // const history = useHistory();
-
-  // const redirect = (path) => {
-  //   history.push(path);
-  // };
-
-  // const showOverview = () => {
-  //   var iframe = document.getElementById("iframe_overview");
-  //   iframe.style.visibility = "visible";
-  // };
 
   const useStyles = makeStyles({
     root: {
@@ -73,7 +37,7 @@ const Tutorial = () => {
 
   return (
     <div className="container">
-      <div>
+      <div className="upper_box">
         <Card className={classes.root} variant="outlined" alignSelf="center">
           <CardContent>
             <Typography
@@ -88,10 +52,13 @@ const Tutorial = () => {
             </Typography>
           </CardContent>
           <CardActions>
-            {/* <Step show={show} handleClose={hideModal}>
-            <p></p>
-          </Step> */}
-            <Button size="small" onClick={() => setShow(true)}>
+            <Button
+              size="small"
+              onClick={() => {
+                setShow(true);
+                setOverview(false);
+              }}
+            >
               Learn More
             </Button>
           </CardActions>
@@ -111,10 +78,13 @@ const Tutorial = () => {
             </Typography>
           </CardContent>
           <CardActions>
-            {/* <Overview show={overview} handleClose={hideOverview}>
-            <p></p>
-        </Overview> */}
-            <Button size="small" onClick={() => setOverview(true)}>
+            <Button
+              size="small"
+              onClick={() => {
+                setOverview(true);
+                setShow(false);
+              }}
+            >
               Learn More
             </Button>
           </CardActions>
@@ -122,28 +92,29 @@ const Tutorial = () => {
         <br />
         <br />
       </div>
+      <div className="bottom_box">
+        {overview ? (
+          <p>
+            <iframe
+              width="1280"
+              height="720"
+              src="https://www.youtube.com/embed/llqWTJGUFeE"
+              id="iframe_overview"
+            ></iframe>
+          </p>
+        ) : null}
 
-      {overview ? (
-        <p>
-          <iframe
-            width="700"
-            height="700"
-            src="https://www.youtube.com/embed/llqWTJGUFeE"
-            id="iframe_overview"
-          ></iframe>
-        </p>
-      ) : null}
-
-      {show ? (
-        <p>
-          <iframe
-            width="600"
-            height="1024"
-            src="../Instructions/Instructions"
-            id="iframe_step"
-          ></iframe>
-        </p>
-      ) : null}
+        {show ? (
+          <p>
+            <iframe
+              width="1280"
+              height="720"
+              src="../Instructions/Instructions"
+              id="iframe_step"
+            ></iframe>
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 };
