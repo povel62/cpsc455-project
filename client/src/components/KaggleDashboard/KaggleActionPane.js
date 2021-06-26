@@ -127,30 +127,31 @@ const KaggleActionPane = (props) => {
     let file = fileRef();
     let url = "";
     if (file) {
-      if (datafile.mode === "COMPETITION") {
-        competitionAuth(competitions[+source.index].ref, email).then(
-          (entered) => {
-            if (entered === false) {
-              setOffboard(true);
-            } else {
-              url = `/competitions/data/download/${
-                competitions[+source.index].ref
-              }/${file.name}`;
-              if (download) {
-                fileDownload(url, file);
+      return new Promise((resolve) => {
+        if (datafile.mode === "COMPETITION") {
+          competitionAuth(competitions[+source.index].ref, email).then(
+            (entered) => {
+              if (entered === false) {
+                setOffboard(true);
+              } else {
+                url = `/competitions/data/download/${
+                  competitions[+source.index].ref
+                }/${file.name}`;
+                if (download) {
+                  fileDownload(url, file);
+                }
+                resolve(url);
               }
-
-              return url;
             }
+          );
+        } else {
+          url = `/datasets/download/${file.datasetRef}/${file.name}`;
+          if (download) {
+            fileDownload(url, file);
           }
-        );
-      } else {
-        url = `/datasets/download/${file.datasetRef}/${file.name}`;
-        if (download) {
-          fileDownload(url, file);
+          resolve(url);
         }
-        return url;
-      }
+      });
     }
   };
 
@@ -270,24 +271,26 @@ const KaggleActionPane = (props) => {
       .get("/api/user", { params: { email: email } })
       .then((user) => {
         let id = user.data.data.id;
-        axios
-          .post(`/api/kaggle/${id}/job`, {
-            status: "CREATED",
-            targetColumnName: target,
-            name: nickname,
-            durationLimit: time,
-            kaggleSrc: handleDownload(),
-            kaggleType: sourceType,
-            kaggleId: sourceRef(),
-          })
-          .then((res) => {
-            if (res.status === 201) {
-              setSuccess(true);
-              props.setTab(0); // goto dashboard if sucess to see pending job
-            } else {
-              setFail(true);
-            }
-          });
+        handleDownload().then((src) => {
+          axios
+            .post(`/api/kaggle/${id}/job`, {
+              status: "CREATED",
+              targetColumnName: target,
+              name: nickname,
+              durationLimit: time,
+              kaggleSrc: src,
+              kaggleType: sourceType,
+              kaggleId: sourceRef(),
+            })
+            .then((res) => {
+              if (res.status === 201) {
+                setSuccess(true);
+                props.setTab(0); // goto dashboard if sucess to see pending job
+              } else {
+                setFail(true);
+              }
+            });
+        });
       })
       .catch(() => {
         setFail(true);
