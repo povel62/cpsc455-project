@@ -80,8 +80,6 @@ export default function AccountDashboard() {
     if (response.status === 200) {
       dispatch(setEmail(values.email));
     }
-
-    alert(response.status);
   };
   const closeEditInfo = () => {
     setEditInfo(!editInfo);
