@@ -6,17 +6,17 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import { useHistory, withRouter } from "react-router-dom";
+//import { useHistory, withRouter } from "react-router-dom";
 
 //function Navigation(props) {
 
 //import { createBrowserHistory } from "history";
 // import Step from "./Step";
 // import Overview from "./Overview";
-//import { useState } from "react";
+import { useState } from "react";
 
 const Tutorial = () => {
-  // const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false);
 
   // const showModal = () => {
   //   //loadDetails();
@@ -27,7 +27,7 @@ const Tutorial = () => {
   //   setShow(false);
   // };
 
-  // const [overview, setOverview] = useState(false);
+  const [overview, setOverview] = useState(false);
 
   // const hideOverview = () => {
   //   //loadDetails();
@@ -38,16 +38,16 @@ const Tutorial = () => {
   //   createBrowserHistory.push("../Instructions.Instructions.js");
   // };
 
-  const history = useHistory();
+  // const history = useHistory();
 
-  const redirect = (path) => {
-    history.push(path);
-  };
+  // const redirect = (path) => {
+  //   history.push(path);
+  // };
 
-  const showOverview = () => {
-    var iframe = document.getElementById("iframe_overview");
-    iframe.style.visibility = "visible";
-  };
+  // const showOverview = () => {
+  //   var iframe = document.getElementById("iframe_overview");
+  //   iframe.style.visibility = "visible";
+  // };
 
   const useStyles = makeStyles({
     root: {
@@ -91,10 +91,7 @@ const Tutorial = () => {
             {/* <Step show={show} handleClose={hideModal}>
             <p></p>
           </Step> */}
-            <Button
-              size="small"
-              onClick={() => redirect("../Instructions/Instructions.js")}
-            >
+            <Button size="small" onClick={() => setShow(true)}>
               Learn More
             </Button>
           </CardActions>
@@ -117,7 +114,7 @@ const Tutorial = () => {
             {/* <Overview show={overview} handleClose={hideOverview}>
             <p></p>
         </Overview> */}
-            <Button size="small" onClick={showOverview}>
+            <Button size="small" onClick={() => setOverview(true)}>
               Learn More
             </Button>
           </CardActions>
@@ -125,25 +122,30 @@ const Tutorial = () => {
         <br />
         <br />
       </div>
-      <div>
-        <iframe
-          width="600"
-          height="800"
-          src="https://www.youtube.com/embed/llqWTJGUFeE"
-          id="iframe_overview"
-          visibility="hidden"
-        ></iframe>
-      </div>
-      <div>
-        <iframe
-          width="600"
-          height="800"
-          src="../Instructions/Instructions"
-          visibility="hidden"
-        ></iframe>
-      </div>
+
+      {overview ? (
+        <p>
+          <iframe
+            width="700"
+            height="700"
+            src="https://www.youtube.com/embed/llqWTJGUFeE"
+            id="iframe_overview"
+          ></iframe>
+        </p>
+      ) : null}
+
+      {show ? (
+        <p>
+          <iframe
+            width="600"
+            height="1024"
+            src="../Instructions/Instructions"
+            id="iframe_step"
+          ></iframe>
+        </p>
+      ) : null}
     </div>
   );
 };
 
-export default withRouter(Tutorial);
+export default Tutorial;

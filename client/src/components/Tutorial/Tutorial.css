@@ -11,7 +11,7 @@
   flex-wrap: wrap;
 }
 
-.modal {
+/* .modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -309,4 +309,4 @@ h3.species {
   to {
     transform: rotate(360deg);
   }
-}
+} */
