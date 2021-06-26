@@ -8,7 +8,7 @@ const Signup = () => {
     post: "",
     responseToPost: "",
     email: "",
-    guest: true,
+    guest: false,
     pwd: "",
     firstname: "",
     lastname: "",

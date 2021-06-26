@@ -20,11 +20,22 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
-  const submitEditInfo = (e) => {
+
+  const submitEditInfo = async (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
 
-    alert(login_token);
+    const response = await fetch("/api/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + login_token,
+      },
+      body: JSON.stringify({ email: values.email }),
+      //params: id,
+    });
+
+    alert(response.status);
   };
   const closeEditInfo = () => {
     setEditInfo(!editInfo);

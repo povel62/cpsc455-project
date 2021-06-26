@@ -46,7 +46,14 @@ createUser = async (req, res) => {
     });
 };
 
-updateUser = async (req, res) => {
+update = async (req, res) => {
+  console.log("request received");
+
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+  console.log(userId);
+
   const body = req.body;
 
   if (!body) {
@@ -56,7 +63,98 @@ updateUser = async (req, res) => {
     });
   }
 
-  User.findOne({ _id: req.params.id }, (err, user) => {
+  console.log(body);
+
+  User.findOne({ _id: userId }, (err, user) => {
+    if (err) {
+      console.log("error1");
+      return res.status(404).json({
+        err,
+        message: "User not found!",
+      });
+    }
+
+    if (user.guest === true) {
+      return res.status(403).json({
+        message: "Forbidden for guest users",
+      });
+    }
+    if (body.fname) {
+      user.fname = body.fname;
+    }
+    if (body.lname) {
+      user.lname = body.lname;
+    }
+    if (body.email) {
+      user.email = body.email;
+    }
+    if (body.password) {
+      user.password = body.password;
+    }
+    if (body.dob) {
+      user.dob = body.dob;
+    }
+
+    if (body.kusername) {
+      user.kusername = body.kusername;
+    }
+    if (body.kapi) {
+      user.kapi = body.kapi;
+    }
+
+    user
+      .save()
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          id: user._id,
+          message: "User updated!",
+        });
+      })
+      .catch((error) => {
+        console.log("error2");
+        return res.status(404).json({
+          error,
+          message: "User not updated!",
+        });
+      });
+  });
+};
+
+updateUser = async (req, res) => {
+  console.log(req);
+  const body = req.body;
+
+  if (
+    !req.headers.authorization ||
+    req.headers.authorization.split(" ").length < 2
+  ) {
+    return res.status(403).send({ message: "No token provided!" });
+  }
+
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+
+  // jwt.verify(token, secret, (err, decoded) => {
+  //   if (err) {
+  //     return res.status(401).send({ message: "Unauthorized!" });
+  //   }
+  //   req._id = decoded._id;
+  //   console.log(decoded._id);
+  //   next();
+  // });
+
+  console.log(userId);
+
+  if (!body) {
+    return res.status(400).json({
+      success: false,
+      error: "You must provide a body to update",
+    });
+  }
+
+  User.findOne({ _id: userId }, (err, user) => {
     if (err) {
       return res.status(404).json({
         err,
@@ -149,16 +247,20 @@ getUsers = async (req, res) => {
     if (!users.length) {
       return res.status(404).json({ success: false, error: `User not found` });
     }
-  }).populate('jobs', "-users").exec((err, populatedUser) => {
-    if (err) {
-      return res.status(400).json({ success: false, error: err });
-    }
+  })
+    .populate("jobs", "-users")
+    .exec((err, populatedUser) => {
+      if (err) {
+        return res.status(400).json({ success: false, error: err });
+      }
 
-    if (!populatedUser) {
-      return res.status(404).json({ success: false, error: `User not found` });
-    }
-    return res.status(200).json({ success: true, data: populatedUser });
-  });
+      if (!populatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, error: `User not found` });
+      }
+      return res.status(200).json({ success: true, data: populatedUser });
+    });
 };
 
 login = async (req, res) => {
@@ -194,5 +296,6 @@ module.exports = {
   getUsers,
   getUserById,
   getUserByEmail,
-  login
+  login,
+  update,
 };
