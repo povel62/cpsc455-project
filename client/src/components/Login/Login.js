@@ -32,14 +32,16 @@ const Login = () => {
           : JSON.stringify({ email: values.username, password: values.pwd }),
     });
 
-    const body = await response.text();
-    setValues({ ...values, responseToPost: body });
-    if (JSON.parse(body)["accessToken"]) {
-      const accessToken = JSON.parse(body)["accessToken"];
-      dispatch(has_login_token(accessToken));
-      history.push("/home");
-    } else {
-      alert("wrong username or password");
+      const body = await response.text();
+      setValues({ ...values, responseToPost: body });
+      if (JSON.parse(body)["accessToken"]) {
+        const accessToken = JSON.parse(body)["accessToken"];
+        dispatch(has_login_token(accessToken));
+        console.log(accessToken);
+        alert("Welcome");
+      } else {
+        alert("wrong username or password");
+      }
     }
     // }
   };
