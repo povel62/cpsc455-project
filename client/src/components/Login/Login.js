@@ -17,9 +17,6 @@ const Login = () => {
   });
 
   const login_handler = async (e) => {
-    // if (values.pwd == "" || values.username == "") {
-    //   // alert("Please enter all fields");
-    // } else {
     e.preventDefault();
     const response = await fetch("/api/user/login", {
       method: "POST",

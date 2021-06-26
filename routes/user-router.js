@@ -6,7 +6,6 @@ const GenericCtrl = require("../controllers/generic-ctrl");
 const router = express.Router();
 
 router.post("/user", UserCtrl.createUser);
-//router.put("/user/:id", GenericCtrl.verifyToken, UserCtrl.updateUser);
 router.delete("/user/:id", GenericCtrl.verifyToken, UserCtrl.deleteUser);
 router.get("/user/:id", UserCtrl.getUserById);
 router.get("/user", UserCtrl.getUserByEmail);

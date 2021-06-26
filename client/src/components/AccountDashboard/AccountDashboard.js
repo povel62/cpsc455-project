@@ -9,7 +9,7 @@ const AccountDashboard = () => {
     response: "",
     post: "",
     responseToPost: "",
-    email: "test@email",
+    email: login_token.email,
     guest: false,
     pwd: "",
     kusername: "test K user",
@@ -20,7 +20,6 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
-
   const submitEditInfo = async (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
@@ -29,7 +28,7 @@ const AccountDashboard = () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + login_token,
+        Authorization: "Bearer " + login_token.accessToken,
       },
       body: JSON.stringify({ email: values.email }),
       //params: id,

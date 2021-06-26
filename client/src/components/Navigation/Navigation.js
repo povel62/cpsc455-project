@@ -3,6 +3,7 @@ import "./Navigation.css";
 import { Tabs, Tab } from "@material-ui/core";
 import Faq from "../Faq/Faq";
 import ControlDashboard from "../ControlDashboard/ControlDashboard";
+import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
 import { useDispatch } from "react-redux";
@@ -77,6 +78,11 @@ export default function Navigation(props) {
   });
 
   const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMyAccount = () => {
+    setSelectedTab(99);
     setAnchorEl(null);
   };
 
@@ -183,7 +189,7 @@ export default function Navigation(props) {
                   open={open}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem onClick={handleMyAccount}>My account</MenuItem>
                   <MenuItem
                     onClick={() => {
                       dispatch(setLoginToken(""));
@@ -207,6 +213,8 @@ export default function Navigation(props) {
         )}
 
         {selectedTab === 4 && <ControlDashboard />}
+
+        {selectedTab === 99 && <AccountDashboard />}
       </>
     </div>
   );
