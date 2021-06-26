@@ -1,5 +1,8 @@
-let { axios } = require("axios");
+let axios = require("axios");
+let request = require("request");
 let { PythonShell } = require("python-shell");
+const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
+const User = require("../models/user-model");
 
 checkAccount = async (req, res) => {
   // TODO do a vanilla comp list and check for unauthorized or not
@@ -22,8 +25,7 @@ datasetCreateVersion = async (req, res) => {
 
 validateKaggleJob = async (req, res, next) => {
   let body = req.body;
-  if(!body.kaggleId || !body.kaggleType || !body.kaggleSrc){
-
+  if (!body.kaggleId || !body.kaggleType || !body.kaggleSrc) {
     return res.status(400).json({ success: false, error: `Bad Request` });
   }
   next();
@@ -36,7 +38,7 @@ createKagglePrediction = async (req, res) => {
 };
 
 getKaggleFile = async (req, res) => {
-  if (!req.params.id) {
+  if (!req.query.url) {
     return res.status(400).json({ success: false, error: `Bad Request` });
   }
 
@@ -50,21 +52,21 @@ getKaggleFile = async (req, res) => {
     }
     try {
       const auth = { username: user.kusername, password: user.kapi };
-      const url = req.params.url;
-      // TODO fix download redirect
-      axios
-        .get(url, {
-          responseType: "blob",
+      const url = kaggleBaseUrl + req.query.url;
+      request(
+        {
+          url: url,
+          method: "GET",
           auth: auth,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-          },
-        })
-        .then((response) => {
-          res.download(response);
-          return res.status(200).json({ success: true, data: user });
-        });
+        },
+        function (error, response) {
+          if (error) {
+            console.error("error: " + response.statusCode);
+          }
+        }
+      ).pipe(res);
     } catch (error) {
+      console.log(error);
       return res.status(400).json({ success: false, error: error });
     }
   }).catch((err) => res.status(500).json({ success: false, error: err }));

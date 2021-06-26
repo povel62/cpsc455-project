@@ -11,6 +11,7 @@ import {
 } from "../../redux/actions/actions";
 import axios from "axios";
 import { credentials, kaggleBaseUrl, dataType } from "./kaggleApi";
+import { makeStyles } from "@material-ui/core/styles";
 
 const KaggleListEntry = (props) => {
   let email = useSelector((state) => state.loginReducer.email);
@@ -25,6 +26,14 @@ const KaggleListEntry = (props) => {
     text: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   };
+
+  const useStyles = makeStyles((theme) => ({
+    nested: {
+      paddingLeft: theme.spacing(4),
+    },
+  }));
+
+  const classes = useStyles();
 
   const handleSelect = (idx = props.id, type = props.type) => {
     dispatch(set_loading(true));
@@ -68,6 +77,7 @@ const KaggleListEntry = (props) => {
         selected_source.index === props.id &&
         selected_source.mode === props.type
       }
+      className={classes.nested}
     >
       {props.text} <NavigateNext />
     </ListItem>
