@@ -2,6 +2,7 @@ const express = require("express");
 
 const KaggleCtrl = require("../controllers/kaggle-ctrl");
 const GenericCtrl = require("../controllers/generic-ctrl");
+const JobCtrl = require("../controllers/job-ctrl");
 
 const router = express.Router();
 
@@ -25,9 +26,8 @@ router.get(
   GenericCtrl.verifyToken,
   KaggleCtrl.getKaggleFile
 );
-router.post("/kaggle/job", KaggleCtrl.createKaggleJob);
+router.post("/kaggle/:id/job", KaggleCtrl.validateKaggleJob, JobCtrl.createJob);
 
 router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
-
 
 module.exports = router;

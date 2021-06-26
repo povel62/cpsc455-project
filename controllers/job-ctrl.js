@@ -2,6 +2,7 @@ const Job = require("../models/job-model");
 const User = require("../models/user-model");
 const { addJobToUser } = require("./generic-ctrl");
 const mongoose = require("mongoose");
+const ObjectId = require('mongodb').ObjectID;
 
 const JobStatus = {
   CREATED: "CREATED",
@@ -41,6 +42,7 @@ createJob = async (req, res) => {
       });
     })
     .catch((error) => {
+      console.log(error);
       return res.status(400).json({
         error,
         message: "Job not created!",
@@ -243,6 +245,18 @@ getJobs = async (req, res) => {
     });
 };
 
+getUserJobs = async (req, res) => {
+  return await Job.find({users: {$elemMatch: { $eq: ObjectId(req.params.id)}}}, (err, job) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err });
+    }
+    if (!job.length) {
+      return res.status(404).json({ success: false, error: `Job not found` });
+    }
+    return res.status(200).json({success: true, data: job})
+  })
+};
+
 addUsersToJob = async (req, res) => {
   const body = req.body;
   return await User.find(
@@ -286,4 +300,5 @@ module.exports = {
   getJobById,
   addUsersToJob,
   uploadJob,
+  getUserJobs,
 };
