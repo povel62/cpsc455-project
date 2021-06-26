@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./Navigation.css";
 import { Tabs, Tab } from "@material-ui/core";
 import Faq from "../Faq/Faq";
-import Instructions from "../Instructions/Instructions";
+import ControlDashboard from "../ControlDashboard/ControlDashboard";
+import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
 import { useDispatch } from "react-redux";
 import {
@@ -148,9 +149,10 @@ export default function Navigation(props) {
                     onChange={handleChange}
                   >
                     <Tab label="Home" />
-                    <Tab label="Instructions" />
+                    <Tab label="Tutorial" />
                     <Tab label="FAQ" />
                     <Tab label="Kaggle Dashboard" />
+                    <Tab label="Control Dashboard" />
                   </Tabs>
                 </div>
               </Grid>
@@ -198,11 +200,13 @@ export default function Navigation(props) {
       </AppBar>
       <>
         {selectedTab === 0 && <Home isLanding={false} />}
-        {selectedTab === 1 && <Instructions />}
+        {selectedTab === 1 && <Tutorial />}
         {selectedTab === 2 && <Faq />}
         {selectedTab === 3 && (
           <KaggleDashBoard tab={selectedTab} setTab={setSelectedTab} />
         )}
+
+        {selectedTab === 4 && <ControlDashboard />}
       </>
     </div>
   );

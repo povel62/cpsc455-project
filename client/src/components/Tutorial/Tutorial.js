@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Tutorial.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -6,7 +6,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import { useState } from "react";
+import Instructions from "../Instructions/Instructions";
 
 const Tutorial = () => {
   const [show, setShow] = useState(false);
@@ -106,12 +106,7 @@ const Tutorial = () => {
 
         {show ? (
           <p>
-            <iframe
-              width="1280"
-              height="720"
-              src="../Instructions/Instructions"
-              id="iframe_step"
-            ></iframe>
+            <Instructions />
           </p>
         ) : null}
       </div>
