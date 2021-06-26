@@ -20,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
 import { useSelector } from "react-redux";
-import { credentials, kaggleBaseUrl, competitionAuth } from "./kaggleApi";
+import { competitionAuth } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -57,6 +57,7 @@ const KaggleActionPane = (props) => {
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let email = useSelector((state) => state.loginReducer.email);
+  let token = useSelector((state) => state.loginReducer.accessToken);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
@@ -100,23 +101,15 @@ const KaggleActionPane = (props) => {
   };
 
   const fileDownload = (url, file) => {
-    // TODO fix
-    credentials(email).then((auth) => {
+    axios.get("/api/user", { params: { email: email } }).then((user) => {
+      let id = user.data.data.id;
       axios
-        .get(url, {
-          responseType: "blob",
-          auth: auth,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": "true",
-            "Content-Type": "*",
-          },
-          crossdomain: true,
+        .get(`/api/kaggle/getKaggleFile/${id}`, {
+          auth: token,
+          params: { url: url },
         })
         .then((res) => {
-          if (res.code === 403) {
-            setOffboard(true);
-          } else {
+          if (res.status === 200) {
             const addr = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement("a");
             link.href = addr;
@@ -140,11 +133,9 @@ const KaggleActionPane = (props) => {
             if (entered === false) {
               setOffboard(true);
             } else {
-              url =
-                kaggleBaseUrl +
-                `/competitions/data/download/${
-                  competitions[+source.index].ref
-                }/${file.name}`;
+              url = `/competitions/data/download/${
+                competitions[+source.index].ref
+              }/${file.name}`;
               if (download) {
                 fileDownload(url, file);
               }
@@ -154,8 +145,7 @@ const KaggleActionPane = (props) => {
           }
         );
       } else {
-        url =
-          kaggleBaseUrl + `/datasets/download/${file.datasetRef}/${file.name}`;
+        url = `/datasets/download/${file.datasetRef}/${file.name}`;
         if (download) {
           fileDownload(url, file);
         }
