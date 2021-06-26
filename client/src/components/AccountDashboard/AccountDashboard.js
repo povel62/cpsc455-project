@@ -31,7 +31,6 @@ const AccountDashboard = () => {
         Authorization: "Bearer " + login_token.accessToken,
       },
       body: JSON.stringify({ email: values.email }),
-      //params: id,
     });
 
     alert(response.status);
