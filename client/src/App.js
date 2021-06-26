@@ -25,7 +25,6 @@ import { ThemeProvider } from "@material-ui/styles";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      // light: will be calculated from palette.primary.main,
       main: "#2196f3",
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
