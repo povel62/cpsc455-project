@@ -21,12 +21,8 @@ router.post(
   GenericCtrl.verifyToken,
   KaggleCtrl.datasetCreateVersion
 );
-router.get(
-  "/kaggle/getKaggleFile",
-  GenericCtrl.verifyToken,
-  KaggleCtrl.getKaggleFile
-);
-router.post("/kaggle/:id/job", KaggleCtrl.validateKaggleJob, JobCtrl.createJob);
+router.get("/kaggle/getKaggleFile/:id", KaggleCtrl.getKaggleFile);
+router.post("/kaggle/job/:id", KaggleCtrl.validateKaggleJob, JobCtrl.createJob);
 
 router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
 
