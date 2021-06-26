@@ -174,9 +174,7 @@ export default function Signup(props) {
               style={{
                 width: "100%",
                 borderRadius: ".25rem",
-                background:
-                  // "linear-gradient(120deg , #e0c3fc 0%, #8ec5fc 100%)",
-                  "linear-gradient(40deg ,#45cafc,#303f9f)",
+                background: "linear-gradient(40deg ,#45cafc,#303f9f)",
                 // "linear-gradient(to right bottom, #430089, #82ffa1)",
                 display: "flex",
                 flexDirection: "column",
