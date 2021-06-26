@@ -20,6 +20,7 @@ const AccountDashboard = () => {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
+
   const submitEditInfo = async (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
