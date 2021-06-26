@@ -20,10 +20,13 @@ datasetCreateVersion = async (req, res) => {
   return res.status(501).json({ success: false, error: `Not Implemented` });
 };
 
-createKaggleJob = async (req, res) => {
+validateKaggleJob = async (req, res, next) => {
   let body = req.body;
-  console.log(body);
-  return res.status(501).json({ success: false, error: `Not Implemented` });
+  if(!body.kaggleId || !body.kaggleType || !body.kaggleSrc){
+
+    return res.status(400).json({ success: false, error: `Bad Request` });
+  }
+  next();
 };
 
 createKagglePrediction = async (req, res) => {
@@ -72,6 +75,6 @@ module.exports = {
   competitionUploadSubmit,
   datasetCreateVersion,
   getKaggleFile,
-  createKaggleJob,
+  validateKaggleJob,
   createKagglePrediction,
 };

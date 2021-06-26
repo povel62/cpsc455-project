@@ -67,6 +67,7 @@ const KaggleActionPane = (props) => {
   const [predictOpen, setPredictOpen] = useState(false);
   const [selectJob, setSelectJob] = useState({});
   const [offboard, setOffboard] = useState(false);
+  const [jobs, setJobs] = useState([]);
 
   KaggleActionPane.propTypes = {
     tab: PropTypes.number.isRequired,
@@ -98,53 +99,68 @@ const KaggleActionPane = (props) => {
     }
   };
 
-  const fileDownload = () => {
-    // TODO probably broken and needs a fix for the cors issue!
+  const fileDownload = (url, file) => {
+    // TODO fix
+    credentials(email).then((auth) => {
+      axios
+        .get(url, {
+          responseType: "blob",
+          auth: auth,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": "true",
+            "Content-Type": "*",
+          },
+          crossdomain: true,
+        })
+        .then((res) => {
+          if (res.code === 403) {
+            setOffboard(true);
+          } else {
+            const addr = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement("a");
+            link.href = addr;
+            link.setAttribute("download", file.name);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(addr);
+          }
+        });
+    });
+  };
+
+  const handleDownload = (download) => {
     let file = fileRef();
     let url = "";
     if (file) {
       if (datafile.mode === "COMPETITION") {
-        url =
-          kaggleBaseUrl +
-          `/competitions/data/download/${competitions[+source.index].ref}/${
-            file.name
-          }`;
+        competitionAuth(competitions[+source.index].ref, email).then(
+          (entered) => {
+            if (entered === false) {
+              setOffboard(true);
+            } else {
+              url =
+                kaggleBaseUrl +
+                `/competitions/data/download/${
+                  competitions[+source.index].ref
+                }/${file.name}`;
+              if (download) {
+                fileDownload(url, file);
+              }
+
+              return url;
+            }
+          }
+        );
       } else {
         url =
           kaggleBaseUrl + `/datasets/download/${file.datasetRef}/${file.name}`;
+        if (download) {
+          fileDownload(url, file);
+        }
+        return url;
       }
-      // axios
-      //   .get("/api/kaggle/getKaggleFile", { params: { url: url }, auth: token })
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
-      credentials(email).then((auth) => {
-        axios
-          .get(url, {
-            responseType: "blob",
-            auth: auth,
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Credentials": "true",
-              "Content-Type": "*",
-            },
-            crossdomain: true,
-          })
-          .then((res) => {
-            if (res.code === 403) {
-              setOffboard(true);
-            } else {
-              const addr = window.URL.createObjectURL(new Blob([res.data]));
-              const link = document.createElement("a");
-              link.href = addr;
-              link.setAttribute("download", file.name);
-              document.body.appendChild(link);
-              link.click();
-              link.remove();
-              window.URL.revokeObjectURL(addr);
-            }
-          });
-      });
     }
   };
 
@@ -244,8 +260,10 @@ const KaggleActionPane = (props) => {
       return (
         <div>
           <TextField
+            required
             onChange={(e) => handleColumn(e.target.value)}
             label={"Target Column"}
+            title="Unable to automatically detect columns"
           ></TextField>{" "}
         </div>
       );
@@ -258,25 +276,28 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSubmittingJob(true);
     let sourceType = datafile ? datafile.mode : "invalid";
-    // TODO send filename too
     axios
-      .post("/api/kaggle/job", {
-        target: target,
-        nickname: nickname,
-        searchTime: time,
-        fileref: fileRef(),
-        sourceType: sourceType,
-        sourceref: sourceRef(),
-        email: email,
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setSuccess(true);
-          // goto dashboard if sucess to see pending job
-          props.setTab(0);
-        } else {
-          setFail(true);
-        }
+      .get("/api/user", { params: { email: email } })
+      .then((user) => {
+        let id = user.data.data.id;
+        axios
+          .post(`/api/kaggle/${id}/job`, {
+            status: "CREATED",
+            targetColumnName: target,
+            name: nickname,
+            durationLimit: time,
+            kaggleSrc: handleDownload(),
+            kaggleType: sourceType,
+            kaggleId: sourceRef(),
+          })
+          .then((res) => {
+            if (res.status === 201) {
+              setSuccess(true);
+              props.setTab(0); // goto dashboard if sucess to see pending job
+            } else {
+              setFail(true);
+            }
+          });
       })
       .catch(() => {
         setFail(true);
@@ -334,6 +355,38 @@ const KaggleActionPane = (props) => {
     setSelectJob(txt);
   };
 
+  const userJobItems = () => {
+    // jobs, setJobs;
+    axios.get("/api/user", { params: { email: email } }).then((user) => {
+      let id = user.data.data.id;
+      axios
+        .get(`/api/user/${id}/jobs`)
+        .then((data) => {
+          if (data.status === 200) {
+            let jobData = data.data.data;
+            console.log(data);
+            if (jobData) {
+              let elements = jobData.map((job, i) => {
+                if (job.status !== "COMPLETED")
+                  return (
+                    <MenuItem value={job.id} key={i}>
+                      {job.name}{" "}
+                    </MenuItem>
+                  );
+              });
+              setJobs(elements);
+              console.log(elements);
+            } else {
+              setJobs([]);
+            }
+          }
+        })
+        .catch(() => {
+          setJobs([]);
+        });
+    });
+  };
+
   return (
     <div className="KagglePanel">
       <Dialog open={jobOpen} onClose={() => setJobOpen(false)}>
@@ -355,7 +408,7 @@ const KaggleActionPane = (props) => {
               <Grid item xs={6}>
                 <br />
                 <FormControl>
-                  <InputLabel>Search Time</InputLabel>
+                  <InputLabel>Search Time Limit</InputLabel>
                   <Select
                     onChange={(e) => handleSearchTime(e.target.value)}
                     value={time}
@@ -369,7 +422,7 @@ const KaggleActionPane = (props) => {
                 <br />
                 <Tooltip
                   open={true}
-                  title={fail ? "Failed to submit job" : ""}
+                  title={fail ? "Failed to submit job." : ""}
                   placement="right"
                 >
                   <Button
@@ -401,17 +454,13 @@ const KaggleActionPane = (props) => {
           <form onSubmit={(e) => handlePredict(e)}>
             <Grid container spacing={3}>
               <Grid item xs={6}>
-                <InputLabel>Completed Training Jobs</InputLabel>
+                <InputLabel>Available Trained Jobs</InputLabel>
                 <Select
                   onChange={(e) => handleSelectJob(e.target.value)}
                   value={selectJob}
+                  required
                 >
-                  <MenuItem value={"Demo Job"} key={1}>
-                    Demo Job
-                  </MenuItem>
-                  <MenuItem value={"car model"} key={2}>
-                    car model
-                  </MenuItem>
+                  {jobs}
                 </Select>
               </Grid>
               <Grid item xs={6}>
@@ -450,7 +499,7 @@ const KaggleActionPane = (props) => {
               <Button
                 variant="contained"
                 startIcon={<CloudDownload />}
-                onClick={() => fileDownload()}
+                onClick={() => handleDownload(true)}
               >
                 Download File
               </Button>
@@ -483,7 +532,10 @@ const KaggleActionPane = (props) => {
                   <Button
                     variant="contained"
                     startIcon={<CloudUpload />}
-                    onClick={() => createPredict()}
+                    onClick={() => {
+                      userJobItems();
+                      createPredict();
+                    }}
                     disabled={!datafile.accepted}
                   >
                     Auto Classify
@@ -503,10 +555,7 @@ const KaggleActionPane = (props) => {
             <Grid item xs={12}>
               <Typography variant="body2" color="textSecondary" component="p">
                 Unfortunately, due to Kaggle’s policies, you must read and
-                accept the competition rules to access these files. We cannot
-                accept the rules on your behalf or show you the rules. You must
-                visit the competition page from the official Kaggle site before
-                using this tool.
+                accept the competition rules to access these files.
               </Typography>
             </Grid>
           </Grid>
