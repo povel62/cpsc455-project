@@ -35,7 +35,11 @@ const Faq = () => {
         </Fab>
       </div>
       <div className="containerFaq">
-        <h1>BLACK BOX ML: FAQ</h1>
+        <h1>
+          <u>BLACK BOX ML: FAQ</u>
+        </h1>
+        <br />
+        <br />
         <p>Q: How can I see the system in action?</p>
         <p>
           A: The demo link above allows you to upload didactic examples of the

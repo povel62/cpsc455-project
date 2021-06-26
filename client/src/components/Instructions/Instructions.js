@@ -5,6 +5,9 @@ const Instructions = () => {
   return (
     <div className="Instructions">
       <div className="containerInstructions">
+        <br />
+        <br />
+        <hr />
         <h1>BLACK BOX ML: INSTRUCTIONS</h1>
         <p>
           Step 1. All you need to get started is a CSV file formatted as
