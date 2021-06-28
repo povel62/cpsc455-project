@@ -105,15 +105,18 @@ const KaggleActionPane = (props) => {
       let id = user.data.data.id;
       axios
         .get(`/api/kaggle/getKaggleFile/${id}`, {
+          responseType: "arraybuffer",
           auth: token,
           params: { url: url },
         })
         .then((res) => {
           if (res.status === 200) {
+            let name =
+              datafile.mode === "COMPETITION" ? file.name + ".zip" : file.name;
             const addr = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement("a");
             link.href = addr;
-            link.setAttribute("download", file.name);
+            link.setAttribute("download", name);
             document.body.appendChild(link);
             link.click();
             link.remove();

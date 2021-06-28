@@ -1,4 +1,3 @@
-let axios = require("axios");
 let request = require("request");
 let { PythonShell } = require("python-shell");
 const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
@@ -53,11 +52,13 @@ getKaggleFile = async (req, res) => {
     try {
       const auth = { username: user.kusername, password: user.kapi };
       const url = kaggleBaseUrl + req.query.url;
+      // const filename = crypto.createHash("sha256").update(url).digest("hex");
       request(
         {
           url: url,
           method: "GET",
           auth: auth,
+          encoding: null,
         },
         function (error, response) {
           if (error) {
