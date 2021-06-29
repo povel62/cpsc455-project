@@ -14,6 +14,7 @@ const Job = new Schema(
     kaggleSrc: { type: String, required: false },
     targetColumnName: { type: String, required: false },
     targetColumnIndex: { type: Number, required: false },
+    headers: [{ type: String, required: false }],
     users: [{ type: Schema.Types.ObjectId, ref: "users" }],
   },
   { timestamps: true, toObject: { getters: true }, toJSON: { getters: true } }
