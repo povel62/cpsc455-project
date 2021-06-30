@@ -19,12 +19,13 @@ import {
   DialogActions,
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { competitionAuth } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
+import { set_loading } from "../../redux/actions/actions";
 
 const useStyles = makeStyles(() => ({
   buttonProgress: {
@@ -69,6 +70,8 @@ const KaggleActionPane = (props) => {
   const [selectJob, setSelectJob] = useState({});
   const [offboard, setOffboard] = useState(false);
   const [jobs, setJobs] = useState([]);
+  const [columnElement, setColumnElement] = useState(null);
+  let dispatch = useDispatch();
 
   KaggleActionPane.propTypes = {
     tab: PropTypes.number.isRequired,
@@ -112,7 +115,9 @@ const KaggleActionPane = (props) => {
         .then((res) => {
           if (res.status === 200) {
             let name =
-              datafile.mode === "COMPETITION" ? file.name + ".zip" : file.name;
+              res.headers["content-type"] === "application/zip"
+                ? file.name + ".zip"
+                : file.name;
             const addr = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement("a");
             link.href = addr;
@@ -162,30 +167,26 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSuccess(false);
     setTime(5);
+    dispatch(set_loading(true));
+    setTarget("");
     if (datafile.mode === "COMPETITION") {
       competitionAuth(competitions[+source.index].ref, email).then(
         (entered) => {
           if (entered === true) {
-            setJobOpen(true);
-            let file = fileRef();
-            if (file && file.columns && file.columns[0]) {
-              setTarget(file.columns[0].name);
-            } else {
-              setTarget("");
-            }
+            TargetColumn().then((col) => {
+              setJobOpen(true);
+              setColumnElement(col);
+            });
           } else {
             setOffboard(true);
           }
         }
       );
     } else {
-      setJobOpen(true);
-      let file = fileRef();
-      if (file && file.columns && file.columns[0]) {
-        setTarget(file.columns[0].name);
-      } else {
-        setTarget("");
-      }
+      TargetColumn().then((col) => {
+        setColumnElement(col);
+        setJobOpen(true);
+      });
     }
   };
 
@@ -210,14 +211,36 @@ const KaggleActionPane = (props) => {
   };
 
   const getColumns = () => {
-    let col = [];
-    if (fileRef() && fileRef().columns) {
-      let ref = fileRef().columns;
-      ref.forEach((ele) => {
-        col.push(ele.name);
-      });
-    }
-    return col;
+    return new Promise((resolve) => {
+      let col = [];
+      if (fileRef() && fileRef().columns) {
+        let ref = fileRef().columns;
+        ref.forEach((ele) => {
+          col.push(ele.name);
+        });
+      }
+      if (datafile && col.length === 0) {
+        // try to get columns via alternate method
+        axios.get("/api/user", { params: { email: email } }).then((user) => {
+          let id = user.data.data.id;
+          handleDownload().then((url) => {
+            axios
+              .get(`/api/kaggle/getCompetitionsColumns/${id}`, {
+                auth: token,
+                params: { url: url },
+              })
+              .then((res) => {
+                if (res.status === 200) {
+                  col = res.data.data;
+                  resolve(col);
+                }
+              });
+          });
+        });
+      } else {
+        resolve(col);
+      }
+    });
   };
 
   const handleColumn = (txt) => {
@@ -233,35 +256,42 @@ const KaggleActionPane = (props) => {
   };
 
   const TargetColumn = () => {
-    let col = getColumns();
-    if (col.length > 0) {
-      let options = col.map((ele, i) => {
+    return getColumns().then((col) => {
+      dispatch(set_loading(false));
+      if (col.length > 0) {
+        setTarget(col[0]);
+        let options = col.map((ele, i) => {
+          return (
+            <MenuItem key={i} value={ele}>
+              {ele}
+            </MenuItem>
+          );
+        });
         return (
-          <MenuItem key={i} value={ele}>
-            {ele}
-          </MenuItem>
+          <FormControl>
+            <InputLabel>Target Column</InputLabel>
+            <Select // controlled select is broken when it shouldn't be
+              // value={target}
+              onChange={(e) => handleColumn(e.target.value)}
+              required
+            >
+              {options}
+            </Select>
+          </FormControl>
         );
-      });
-      return (
-        <FormControl>
-          <InputLabel>Target Column</InputLabel>
-          <Select value={target} onChange={(e) => handleColumn(e.target.value)}>
-            {options}
-          </Select>
-        </FormControl>
-      );
-    } else {
-      return (
-        <div>
-          <TextField
-            required
-            onChange={(e) => handleColumn(e.target.value)}
-            label={"Target Column"}
-            title="Unable to automatically detect columns"
-          ></TextField>{" "}
-        </div>
-      );
-    }
+      } else {
+        return (
+          <div>
+            <TextField
+              required
+              onChange={(e) => handleColumn(e.target.value)}
+              label={"Target Column"}
+              title="Unable to automatically detect columns"
+            ></TextField>{" "}
+          </div>
+        );
+      }
+    });
   };
 
   const handleEnqueue = (e) => {
@@ -360,7 +390,6 @@ const KaggleActionPane = (props) => {
         .then((data) => {
           if (data.status === 200) {
             let jobData = data.data.data;
-            console.log(data);
             if (jobData) {
               let elements = jobData.map((job, i) => {
                 if (job.status !== "COMPLETED")
@@ -371,7 +400,6 @@ const KaggleActionPane = (props) => {
                   );
               });
               setJobs(elements);
-              console.log(elements);
             } else {
               setJobs([]);
             }
@@ -391,7 +419,7 @@ const KaggleActionPane = (props) => {
           <form onSubmit={(e) => handleEnqueue(e)}>
             <Grid container spacing={0}>
               <Grid item xs={6}>
-                {TargetColumn()}
+                {columnElement}
               </Grid>
               <br />
               <Grid item xs={6}>

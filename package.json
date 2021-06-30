@@ -19,6 +19,7 @@
     "email-validator": "^2.0.4",
     "eslint": "^7.28.0",
     "eslint-plugin-react": "^7.24.0",
+    "etl": "^0.6.12",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.6",
@@ -28,7 +29,8 @@
     "python-shell": "^3.0.0",
     "reactjs-popup": "^2.0.4",
     "request": "^2.88.2",
-    "underscore": "^1.13.1"
+    "underscore": "^1.13.1",
+    "unzip-stream": "^0.3.1"
   },
   "devDependencies": {
     "concurrently": "^4.0.1",
