@@ -35,6 +35,8 @@ app.use(
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(express.methodOverride());
+// app.use(express.multipart());
 
 // API calls
 app.get("/api/hello", (req, res) => {

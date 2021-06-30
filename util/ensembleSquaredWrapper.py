@@ -1,6 +1,7 @@
 import os
 import paramiko
 import subprocess
+import socket
 
 try:
     DEBUG = bool(int(os.environ['DEBUG']))
@@ -9,8 +10,8 @@ except:
 
 # RUN commands
 predict_command = "/opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
-        --error=/ubc/cs/research/plai-scratch/BlackBoxML/error_predict.err\
-        --output=/ubc/cs/research/plai-scratch/BlackBoxML/out_predict.out\
+        --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
+        --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
         /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
         {job_id} {job_name} {test_file_name} {timer} {target_col} {email}"
 
@@ -55,10 +56,20 @@ def local_train_pipeline(csv_file_name: str, target_col: str, email: str, job_id
 # RUN SLURM submission
 def run_borg_command(command: str):
     try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect('borg.cs.ubc.ca', username='', password='')
-        stdin, stdout, stderr = ssh.exec_command(command)
+        ssh1 = paramiko.SSHClient()
+        ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh1.connect('remote.cs.ubc.ca', username='blkbx-ml', password='1qaz2wsx')
+
+        vmtransport = ssh1.get_transport()
+        dest_addr = ('borg', 22)
+        local_addr = (socket.gethostbyname(socket.gethostname()), 22)
+        vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+        ssh2 = paramiko.SSHClient()
+        ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh2.connect('borg', username='blkbx-ml', password='1qaz2wsx', sock=vmchannel)
+
+        stdin, stdout, stderr = ssh2.exec_command(command)
 
         error = stderr.readlines()
         out = stdout.readlines()
@@ -68,17 +79,28 @@ def run_borg_command(command: str):
         print(command)
 
         stdin.close()
-
+        ssh2.close()
+        ssh1.close()
         return True, ''
     except Exception as e:
         return False, str(e)
 
 def run_ubc_command(command: str):
     try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect('remote.students.cs.ubc.ca', username='povel62', password='Harsh-2355')
-        stdin, stdout, stderr = ssh.exec_command(command)
+        ssh1 = paramiko.SSHClient()
+        ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh1.connect('remote.cs.ubc.ca', username='blkbx-ml', password='1qaz2wsx')
+        vmtransport = ssh1.get_transport()
+        dest_addr = ('borg', 22) #edited#
+        local_addr = (socket.gethostbyname(socket.gethostname()), 22) #edited#
+        vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+        ssh2 = paramiko.SSHClient()
+        ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh2.connect('borg', username='blkbx-ml', password='1qaz2wsx', sock=vmchannel)
+
+
+        stdin, stdout, stderr = ssh2.exec_command("cd /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets \n " + command)
 
         error = stderr.readlines()
         out = stdout.readlines()

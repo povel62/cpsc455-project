@@ -4,13 +4,39 @@ const { addJobToUser } = require("./generic-ctrl");
 const ObjectId = require("mongodb").ObjectID;
 let { PythonShell } = require("python-shell");
 var crypto = require("crypto");
+const { CSV_FILES } = require("../GlobalConstants");
 
 uploadFileToServer = (id, fileData, fileName) => {
   let options = {
     args: [id, fileData, fileName],
   };
 
-  PythonShell.run("./util/run_upload.py", options, function (err, results1) {
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run(
+        "./util/run_upload.py",
+        options,
+        function (err, results1) {
+          if (err) {
+            if (err != null) {
+              resolve(err);
+            }
+          }
+          resolve(results1);
+        }
+      );
+    } catch {
+      reject("error running python code'");
+    }
+  });
+};
+
+tryTest = async () => {
+  let options = {
+    args: ["ls"],
+  };
+
+  PythonShell.run("./util/run_test.py", options, function (err, results1) {
     if (err) {
       if (err != null) {
         return err;
@@ -19,6 +45,24 @@ uploadFileToServer = (id, fileData, fileName) => {
     return results1;
   });
 };
+
+// /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
+//          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
+//          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
+//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-search.sh\
+//          "60db93fc7622ea99f09845d8" "HEHE" "/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60db93fc7622ea99f09845d8/train.csv" "5" "Date" "povel62@yahoo.ca"
+
+// /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
+//          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error_predict.err\
+//          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out_predict.out\
+//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
+//          "60dcc25271a132cc9c05d1e2" "HEHE" "/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcc25271a132cc9c05d1e2/8f2e83efe416a93719a5.csv" "5" "Date" "povel62@yahoo.ca"
+
+//  /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
+//          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
+//          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
+//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
+//          60dcca95c81cf5d1580c45e4 HEHE /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcca95c81cf5d1580c45e4/829036a5f48b16b37684.csv 5 Date povel62@yahoo.ca
 
 runPhase = (
   fullFilePath,
@@ -40,18 +84,24 @@ runPhase = (
     ],
   };
 
-  PythonShell.run(
-    `./util/run_${isTrainPhase ? "train.py" : "predict.py"}`,
-    options,
-    function (err, results1) {
-      if (err) {
-        if (err != null) {
-          return err;
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run(
+        `./util/run_${isTrainPhase ? "train.py" : "predict.py"}`,
+        options,
+        function (err, results1) {
+          if (err) {
+            if (err != null) {
+              resolve(err);
+            }
+          }
+          resolve(results1);
         }
-      }
-      return results1;
+      );
+    } catch (err) {
+      reject("error running python code'");
     }
-  );
+  });
 };
 
 const JobStatus = {
@@ -91,7 +141,6 @@ createJob = async (req, res) => {
       });
     })
     .catch((error) => {
-      console.log(error);
       return res.status(400).json({
         error,
         message: "Job not created!",
@@ -115,8 +164,8 @@ uploadJob = async (req, res) => {
       message: "No file uploaded",
     });
   }
-  let fileData = req.files.file.data.toString("utf8");
 
+  let fileData = req.files.file.data.toString("utf8");
   let newJob = body;
   newJob.users = [req.params.id];
   let job = new Job(newJob);
@@ -133,13 +182,22 @@ uploadJob = async (req, res) => {
     .save()
     .then(() => {
       addJobToUser(req.params.id, job);
-      // TODO: According to status, upload training or pred file (upload code)
-      // uploadFileToServer(job._id, fileData, 'train.csv');
-      // runPhase(process.env.CSV_FILES + "/" + job._id + "/" + 'train.csv', job._id, job.durationLimit, job.targetColumnName, 'povel62@yahoo.ca', job.name, true)
-      return res.status(201).json({
-        success: true,
-        id: job._id,
-        message: "Job created!",
+      uploadFileToServer(job._id, fileData, "train.csv").then((s1) => {
+        runPhase(
+          CSV_FILES + "/" + job._id + "/" + "train.csv",
+          job._id,
+          job.durationLimit,
+          job.targetColumnName,
+          "povel62@yahoo.ca",
+          job.name,
+          true
+        ).then((s2) => {
+          return res.status(201).json({
+            success: true,
+            id: job._id,
+            message: "Job created!\n" + s1 + "\n" + s2,
+          });
+        });
       });
     })
     .catch((error) => {
@@ -174,37 +232,46 @@ uploadTestFile = async (req, res) => {
       fileData = tmpFileData;
     } else {
       let csvLinesArr = tmpFileData.split("\n");
-      csvLinesArr.split("\n").forEach((x, index) => {
+      csvLinesArr.forEach((x, index) => {
         if (index === 0) {
-          fileData += `,${job.targetColumnName}`;
+          fileData += x + `,${job.targetColumnName}\n`;
         } else if (index === csvLinesArr.length - 1) {
           // do nothing
         } else {
-          fileData += x + ",";
+          fileData += x + ",\n";
         }
       });
+      headers = fileData.split("\n")[0].split(",");
     }
-    headers = fileData.split("\n")[0].split(",");
     if (headers.length !== job.headers.length) {
       return res.status(400).json({
         success: false,
         message: "Job headers count is different from test file headers count!",
       });
     }
+
     job.predictionStartedAt = new Date().getTime();
     job.status = JobStatus.PREDICTING;
     job
       .save()
       .then(() => {
-        // TODO: According to status, upload training or pred file (upload code)
-        // let id = crypto.randomBytes(20).toString('hex');
-        // uploadFileToServer(job_id, fileData, id + '.csv');
-        // runPhase(process.env.CSV_FILES + "/" + job._id + "/" + id + '.csv', job._id, job.durationLimit, job.targetColumnName, 'povel62@yahoo.ca', job.name, false)
-
-        return res.status(200).json({
-          success: true,
-          id: job._id,
-          message: "Job updated!",
+        let id = crypto.randomBytes(10).toString("hex");
+        uploadFileToServer(job._id, fileData, id + ".csv").then((s1) => {
+          runPhase(
+            CSV_FILES + "/" + job._id + "/" + id + ".csv",
+            job._id,
+            job.durationLimit,
+            job.targetColumnName,
+            "povel62@yahoo.ca",
+            job.name,
+            false
+          ).then((s2) => {
+            return res.status(201).json({
+              success: true,
+              id: job._id,
+              message: "Job updated!\n" + s1 + "\n" + s2,
+            });
+          });
         });
       })
       .catch((error) => {
@@ -270,15 +337,6 @@ updateJob = async (req, res) => {
 };
 
 updateJobStatus = async (req, res) => {
-  const body = req.body;
-
-  if (!body) {
-    return res.status(400).json({
-      success: false,
-      error: "You must provide a body to update",
-    });
-  }
-
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
       return res.status(404).json({
@@ -286,14 +344,16 @@ updateJobStatus = async (req, res) => {
         message: "Job not found!",
       });
     }
-    if (Object.values(JobStatus).includes(req.params.statusName)) {
-      if (req.params.statusName) {
+    if (req.params.statusName) {
+      if (Object.values(JobStatus).includes(req.params.statusName)) {
         job.status = req.params.statusName;
         if (req.params.statusName === JobStatus.TRAINING)
           job.trainingStartedAt = new Date().getTime();
+        if (req.params.statusName === JobStatus.TRAINING_COMPLETED)
+          job.trainingFinishedAt = new Date().getTime();
         if (req.params.statusName === JobStatus.PREDICTING)
           job.predictionStartedAt = new Date().getTime();
-        if (req.params.statusName === JobStatus.COMPLETED)
+        if (req.params.statusName === JobStatus.PREDICTING_COMPLETED)
           job.predictionFinishedAt = new Date().getTime();
       }
     }

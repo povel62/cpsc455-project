@@ -6,6 +6,7 @@ const Job = new Schema(
     status: { type: String, required: true },
     durationLimit: { type: Number, required: false },
     trainingStartedAt: { type: Number, required: false },
+    trainingFinishedAt: { type: Number, required: false },
     predictionStartedAt: { type: Number, required: false },
     predictionFinishedAt: { type: Number, required: false },
     name: { type: String, required: true },
