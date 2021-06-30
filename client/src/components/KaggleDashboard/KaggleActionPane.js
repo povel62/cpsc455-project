@@ -195,7 +195,6 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSelectJob(null);
     setSuccess(false);
-    // TODO fetch available jobs
     if (datafile.mode === "COMPETITION") {
       competitionAuth(competitions[+source.index].ref, email).then(
         (entered) => {

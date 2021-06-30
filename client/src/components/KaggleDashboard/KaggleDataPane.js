@@ -6,14 +6,21 @@ import TreeView from "@material-ui/lab/TreeView";
 import KaggleDataEntry from "./KaggleDataEntry";
 import TreeItem from "@material-ui/lab/TreeItem";
 import { NavigateNext } from "@material-ui/icons";
+import { useDispatch } from "react-redux";
+import { select_datafile, cache_file } from "../../redux/actions/actions";
 
 const KaggleDataPane = () => {
   let files = useSelector((state) => state.kaggleReducer.files);
   let Formatted = null;
+  let dispatch = useDispatch();
+  const deselect = () => {
+    dispatch(select_datafile(null));
+    dispatch(cache_file(null));
+  };
 
   if (files) {
     Formatted = (
-      <TreeView className="KaggleList">{handleFiles(files)}</TreeView>
+      <TreeView className="KaggleList">{handleFiles(files, deselect)}</TreeView>
     );
   }
 
@@ -59,7 +66,7 @@ const buildTree = (path, root, i, id) => {
   return i;
 };
 
-const traverseTree = (ele, type) => {
+const traverseTree = (ele, type, deselect) => {
   if (ele.children.length === 0) {
     return (
       <KaggleDataEntry
@@ -77,14 +84,15 @@ const traverseTree = (ele, type) => {
         nodeId={ele.idx}
         label={ele.text}
         icon={<NavigateNext />}
+        onClick={() => deselect()}
       >
-        {ele.children.map((e) => traverseTree(e, type))}
+        {ele.children.map((e) => traverseTree(e, type, deselect))}
       </TreeItem>
     );
   }
 };
 
-const handleFiles = (files) => {
+const handleFiles = (files, deselect) => {
   let data = files.type === dataType ? files.data.datasetFiles : files.data;
   let entries = [];
   let root = [];
@@ -94,7 +102,11 @@ const handleFiles = (files) => {
     let path = entry.ref.split("/");
     i = buildTree(path, root, i, id);
   }
-  entries = root.map((ele) => traverseTree(ele, type));
+  entries = root.map((ele) => traverseTree(ele, type, deselect));
+  if (entries.length === 0) {
+    return <p>No supported files available</p>;
+  }
+
   return entries;
 };
 

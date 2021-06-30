@@ -1,12 +1,12 @@
 import React from "react";
-import TreeItem from "@material-ui/lab/TreeItem";
+import { ListItem } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
 import { select_datafile, cache_file } from "../../redux/actions/actions";
+import { NavigateNext } from "@material-ui/icons";
 
 const KaggleDataEntry = (props) => {
   let selected_data = useSelector((state) => state.kaggleReducer.dataFile);
-
   let dispatch = useDispatch();
   KaggleDataEntry.propTypes = {
     id: PropTypes.number.isRequired,
@@ -31,12 +31,6 @@ const KaggleDataEntry = (props) => {
     text = props.text
   ) => {
     if (!selected_data || !(selected_data.index === idx)) {
-      console.log({
-        index: idx,
-        mode: type,
-        text: text,
-        accepted: acceptableFileType(text),
-      });
       dispatch(
         select_datafile({
           index: idx,
@@ -52,11 +46,17 @@ const KaggleDataEntry = (props) => {
   };
 
   return (
-    <TreeItem
+    <ListItem
+      button
       onClick={() => handleSelect()}
-      nodeId={props.treeid}
-      label={props.text}
-    ></TreeItem>
+      selected={
+        selected_data &&
+        selected_data.index === props.id &&
+        selected_data.mode === props.type
+      }
+    >
+      {props.text} <NavigateNext />
+    </ListItem>
   );
 };
 
