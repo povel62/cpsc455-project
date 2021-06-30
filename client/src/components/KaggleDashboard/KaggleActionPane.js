@@ -94,12 +94,12 @@ const KaggleActionPane = (props) => {
   };
 
   const sourceRef = () => {
-    if (!datafile) {
+    if (!source) {
       return null;
-    } else if (datafile.mode === "COMPETITION") {
-      return competitions[datafile.index].ref;
+    } else if (source.mode === "COMPETITION") {
+      return competitions[source.index].ref;
     } else {
-      return datasets[datafile.index].ref;
+      return datasets[source.index].ref;
     }
   };
 
