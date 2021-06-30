@@ -1,0 +1,14 @@
+.controlDashboard {
+  display: flex;
+  position: relative;
+  background-color: #6e828b83;
+  padding: 20px 0 30px 0;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.table {
+  padding: 10px 0 30px 0;
+}

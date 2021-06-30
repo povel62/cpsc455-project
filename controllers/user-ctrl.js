@@ -69,7 +69,14 @@ createUser = async (req, res) => {
   });
 };
 
-updateUser = async (req, res) => {
+update = async (req, res) => {
+  console.log("request received");
+
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+  console.log(userId);
+
   const body = req.body;
 
   if (!body) {
@@ -79,24 +86,37 @@ updateUser = async (req, res) => {
     });
   }
 
-  User.findOne({ _id: req.params.id }, (err, user) => {
+  console.log(body);
+
+  User.findOne({ _id: userId }, (err, user) => {
     if (err) {
+      console.log("error1");
       return res.status(404).json({
         err,
         message: "User not found!",
       });
     }
+
     if (user.guest === true) {
       return res.status(403).json({
         message: "Forbidden for guest users",
       });
     }
-
-    user.fname = body.fname;
-    user.lname = body.lname;
-    user.email = body.email;
-    user.password = body.password;
-    user.dob = body.dob;
+    if (body.fname) {
+      user.fname = body.fname;
+    }
+    if (body.lname) {
+      user.lname = body.lname;
+    }
+    if (body.email) {
+      user.email = body.email;
+    }
+    if (body.password) {
+      user.password = body.password;
+    }
+    if (body.dob) {
+      user.dob = body.dob;
+    }
 
     if (body.kusername) {
       user.kusername = body.kusername;
@@ -115,6 +135,7 @@ updateUser = async (req, res) => {
         });
       })
       .catch((error) => {
+        console.log("error2");
         return res.status(404).json({
           error,
           message: "User not updated!",
@@ -244,10 +265,10 @@ login = async (req, res) => {
 };
 module.exports = {
   createUser,
-  updateUser,
   deleteUser,
   getUsers,
   getUserById,
   getUserByEmail,
   login,
+  update,
 };
