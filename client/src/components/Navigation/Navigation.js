@@ -5,11 +5,7 @@ import Faq from "../Faq/Faq";
 import Instructions from "../Instructions/Instructions";
 import Home from "../Home/index";
 import { useDispatch } from "react-redux";
-import {
-  setLoginToken,
-  setEmail,
-  set_userFilter,
-} from "../../redux/actions/actions";
+import { setLoginToken, setEmail } from "../../redux/actions/actions";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -46,7 +42,6 @@ export default function Navigation(props) {
   const fname = useSelector((state) => state.loginReducer.email);
   const dispatch = useDispatch();
   const classes = useStyles();
-  let userFilter = useSelector((state) => state.kaggleReducer.userFilter);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [selectedTab, setSelectedTab] = useState(0);
@@ -90,14 +85,6 @@ export default function Navigation(props) {
   };
 
   const handleChange = (event, newValue) => {
-    if (!userFilter) {
-      dispatch(
-        set_userFilter({
-          dataFilter: "public",
-          compFilter: "general",
-        })
-      );
-    }
     setSelectedTab(newValue);
   };
 

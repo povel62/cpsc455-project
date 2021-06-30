@@ -1,13 +1,10 @@
 import { React, useState } from "react";
-import { ExpandLess, ExpandMore, Search } from "@material-ui/icons";
+import { ExpandLess, ExpandMore } from "@material-ui/icons";
 import {
   List,
   ListItem,
   Collapse,
   Divider,
-  InputBase,
-  IconButton,
-  Button,
   Paper,
   Select,
   MenuItem,
@@ -27,11 +24,11 @@ import KaggleListEntry from "./KaggleListEntry";
 import axios from "axios";
 import { credentials, kaggleBaseUrl, dataType, compType } from "./kaggleApi";
 import "./KaggleDashboard.css";
+import KaggleSearchForm from "./KaggleSearchForm";
 
 const KaggleSearchPane = () => {
   const [showDatasets, setShowDatasets] = useState(false);
   const [showCompetitions, setshowCompetitions] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [fetched, setFetched] = useState(false);
 
   let dispatch = useDispatch();
@@ -67,17 +64,18 @@ const KaggleSearchPane = () => {
       config = {
         compFilter: userFilter ? userFilter.compFilter : "general",
         dataFilter: userFilter ? userFilter.dataFilter : "public",
+        searchTerm: userFilter ? userFilter.searchTerm : "",
       };
     }
     credentials(email).then((auth) => {
       let compConfig = {
         auth: auth,
-        params: { group: config.compFilter, search: searchTerm },
+        params: { group: config.compFilter, search: config.searchTerm },
       };
 
       let dataConfig = {
         auth: auth,
-        params: { group: config.dataFilter, search: searchTerm },
+        params: { group: config.dataFilter, search: config.searchTerm },
       };
 
       let comps = axios
@@ -110,22 +108,20 @@ const KaggleSearchPane = () => {
     });
   };
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value.trim());
-  };
-
   const handleKaggleCompSelect = async (e) => {
     e.stopPropagation();
     dispatch(
       set_userFilter({
         dataFilter: userFilter ? userFilter.dataFilter : "public",
         compFilter: e.target.value,
+        searchTerm: userFilter ? userFilter.searchTerm : "",
       })
     );
 
     GetKaggle({
       dataFilter: userFilter ? userFilter.dataFilter : "public",
       compFilter: e.target.value,
+      searchTerm: userFilter ? userFilter.searchTerm : "",
     });
   };
 
@@ -135,12 +131,14 @@ const KaggleSearchPane = () => {
       set_userFilter({
         compFilter: userFilter ? userFilter.compFilter : "general",
         dataFilter: e.target.value,
+        searchTerm: userFilter ? userFilter.searchTerm : "",
       })
     );
     setFetched(false);
     GetKaggle({
       compFilter: userFilter ? userFilter.compFilter : "general",
       dataFilter: e.target.value,
+      searchTerm: userFilter ? userFilter.searchTerm : "",
     });
   };
 
@@ -165,29 +163,7 @@ const KaggleSearchPane = () => {
       <div className="KagglePanel">
         <h4>Kaggle competition and dataset sources:</h4>
         <List className="KaggleList" aria-labelledby="nested-list-subheader">
-          <div className="searchArea">
-            <InputBase
-              className="serarchText"
-              placeholder="Search Kaggle"
-              inputProps={{ "aria-label": "search kaggle box" }}
-              onChange={handleSearch}
-            />
-            <IconButton
-              type="button"
-              className="searchBtn"
-              aria-label="search"
-              onClick={() => GetKaggle()}
-            >
-              <Search />
-            </IconButton>
-            <Button
-              onClick={() => GetKaggle()}
-              variant="contained"
-              color="default"
-            >
-              Refresh
-            </Button>
-          </div>
+          <KaggleSearchForm GetKaggle={GetKaggle} />
           <ListItem
             button
             onClick={handleCompetitionClick}

@@ -178,6 +178,7 @@ const KaggleActionPane = (props) => {
               setColumnElement(col);
             });
           } else {
+            dispatch(set_loading(false));
             setOffboard(true);
           }
         }
