@@ -318,7 +318,7 @@ const KaggleActionPane = (props) => {
             .then((res) => {
               if (res.status === 201) {
                 setSuccess(true);
-                props.setTab(0); // goto dashboard if sucess to see pending job
+                props.setTab(4); // goto dashboard if sucess to see pending job
               } else {
                 setFail(true);
               }
@@ -351,7 +351,7 @@ const KaggleActionPane = (props) => {
         if (res.status === 200) {
           setSuccess(true);
           // goto dashboard if sucess to see pending job
-          props.setTab(0);
+          props.setTab(4);
         } else {
           setFail(true);
         }
