@@ -7,6 +7,7 @@ const kaggleRouter = require("./routes/kaggle-router");
 const app = express();
 let cors = require("cors");
 const port = process.env.PORT || 5000;
+const fileUpload = require("express-fileupload");
 
 // const MongoClient = require('mongodb').MongoClient;
 const uri =
@@ -26,10 +27,16 @@ mongoose.connect(uri, { useNewUrlParser: true }).catch((e) => {
 
 // eslint-disable-next-line no-unused-vars
 const db = mongoose.connection;
-
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(express.methodOverride());
+// app.use(express.multipart());
 
 // API calls
 app.get("/api/hello", (req, res) => {
