@@ -1,16 +1,16 @@
 import React from "react";
 import { ListItem } from "@material-ui/core";
 import PropTypes from "prop-types";
-import { NavigateNext } from "@material-ui/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { select_datafile, cache_file } from "../../redux/actions/actions";
+import { NavigateNext } from "@material-ui/icons";
 
 const KaggleDataEntry = (props) => {
   let selected_data = useSelector((state) => state.kaggleReducer.dataFile);
-
   let dispatch = useDispatch();
   KaggleDataEntry.propTypes = {
     id: PropTypes.number.isRequired,
+    treeid: PropTypes.number.isRequired,
     text: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
   };
@@ -30,10 +30,7 @@ const KaggleDataEntry = (props) => {
     type = props.type,
     text = props.text
   ) => {
-    if (
-      !selected_data ||
-      !(selected_data.index === idx && selected_data.mode === type)
-    ) {
+    if (!selected_data || !(selected_data.index === idx)) {
       dispatch(
         select_datafile({
           index: idx,

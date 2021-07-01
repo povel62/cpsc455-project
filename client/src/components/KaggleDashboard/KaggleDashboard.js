@@ -73,6 +73,7 @@ const KaggleDashBoard = (props) => {
         set_userFilter({
           dataFilter: "public",
           compFilter: "general",
+          searchTerm: "",
         })
       );
     };
