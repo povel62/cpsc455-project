@@ -12,31 +12,31 @@ except:
 predict_command = "/opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
         --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
         --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
-        /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
-        {job_id} {job_name} {test_file_name} {timer} {target_col} {email}"
+        /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared_2/ensemble_squared/run-client-produce-bm.sh\
+        {job_id} {job_name} {test_file_name} {timer} {target_col} {email} {callback_url}"
 
 train_command = "/opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
         --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
         --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
-        /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-search.sh\
-        {job_id} {job_name} {csv_file_name} {timer} {target_col} {email}"
+        /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared_2/ensemble_squared/run-client-search-bm.sh\
+        {job_id} {job_name} {csv_file_name} {timer} {target_col} {email} {callback_url}"
 
 # TRAIN
-def train_pipeline(csv_file_name: str, job_id: str, timer: int, target_name: str, email: str, job_name: str):
+def train_pipeline(csv_file_name: str, job_id: str, timer: int, target_name: str, email: str, job_name: str, callback_url: str):
     if DEBUG:
         # Can potentially change to local_train_pipeline, if ensemble-squared can be ran locally
         print(train_command.format(job_id=job_id, csv_file_name=csv_file_name, email=email, target_col=target_name, timer=timer, job_name=job_name))
         return True, None
     else:
-        return run_borg_command(train_command.format(job_id=job_id, csv_file_name=csv_file_name, email=email, target_col=target_name, timer=timer, job_name=job_name))
+        return run_borg_command(train_command.format(job_id=job_id, csv_file_name=csv_file_name, email=email, target_col=target_name, timer=timer, job_name=job_name, callback_url=callback_url))
 
 # PREDICT
-def run_predict(csv_file_name: str, job_id: str, timer: int, target_name: str, email: str, job_name: str):
+def run_predict(csv_file_name: str, job_id: str, timer: int, target_name: str, email: str, job_name: str, callback_url: str):
     if DEBUG:
         print(predict_command.format(test_file_name=csv_file_name, job_id=job_id, email=email, target_col=target_name, timer=timer, job_name=job_name))
         return True, None
     else:
-        return run_borg_command(predict_command.format(test_file_name=csv_file_name, job_id=job_id, email=email, target_col=target_name, timer=timer, job_name=job_name))
+        return run_borg_command(predict_command.format(test_file_name=csv_file_name, job_id=job_id, email=email, target_col=target_name, timer=timer, job_name=job_name, callback_url=callback_url))
 
 ## Optional: API
 def run_raw_evaluation(dataset_name: str, ta2_id: str, train_dir: str, test_dir: str, target_col: int, timeout: int, id: int):
@@ -59,6 +59,7 @@ def run_borg_command(command: str):
         ssh1 = paramiko.SSHClient()
         ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh1.connect('remote.cs.ubc.ca', username='blkbx-ml', password='1qaz2wsx')
+        # ssh1.connect('remote.cs.ubc.ca', username='tonyjos', password='Ubcplusplus8*')
 
         vmtransport = ssh1.get_transport()
         dest_addr = ('borg', 22)
@@ -68,6 +69,7 @@ def run_borg_command(command: str):
         ssh2 = paramiko.SSHClient()
         ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh2.connect('borg', username='blkbx-ml', password='1qaz2wsx', sock=vmchannel)
+        # ssh2.connect('borg', username='tonyjos', password='Ubcplusplus8*', sock=vmchannel)
 
         stdin, stdout, stderr = ssh2.exec_command(command)
 

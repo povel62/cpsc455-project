@@ -4,7 +4,7 @@ const { addJobToUser } = require("./generic-ctrl");
 const ObjectId = require("mongodb").ObjectID;
 let { PythonShell } = require("python-shell");
 var crypto = require("crypto");
-const { CSV_FILES } = require("../GlobalConstants");
+const { CSV_FILES, HOSTNAME } = require("../GlobalConstants");
 
 uploadFileToServer = (id, fileData, fileName) => {
   let options = {
@@ -49,8 +49,8 @@ tryTest = async () => {
 // /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
 //          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
 //          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
-//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-search.sh\
-//          "60db93fc7622ea99f09845d8" "HEHE" "/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60db93fc7622ea99f09845d8/train.csv" "5" "Date" "povel62@yahoo.ca"
+//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-search-bm.sh\
+//          "60dd54803baa72ef93306ea5" "HEHE" "/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dd54803baa72ef93306ea5/train.csv" "5" "Date" "povel62@yahoo.ca" "https://cpsc455-project.herokuapp.com/apijob/60dd54803baa72ef93306ea5/status/TRAINING_COMPLETED"
 
 // /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
 //          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error_predict.err\
@@ -62,7 +62,7 @@ tryTest = async () => {
 //          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
 //          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
 //          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
-//          60dcca95c81cf5d1580c45e4 HEHE /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcca95c81cf5d1580c45e4/829036a5f48b16b37684.csv 5 Date povel62@yahoo.ca
+//          60dcca95c81cf5d1580c45e4 HEHE /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcca95c81cf5d1580c45e4/829036a5f48b16b37684.csv 5 Date povel62@yahoo.ca https://cpsc455-project.herokuapp.com/apijob/60dd54803baa72ef93306ea5/status/TRAINING_COMPLETED
 
 runPhase = (
   fullFilePath,
@@ -71,6 +71,7 @@ runPhase = (
   targetColumnName,
   email,
   jobName,
+  callbackUrl,
   isTrainPhase
 ) => {
   let options = {
@@ -81,9 +82,9 @@ runPhase = (
       targetColumnName,
       email,
       jobName,
+      callbackUrl,
     ],
   };
-
   return new Promise((resolve, reject) => {
     try {
       PythonShell.run(
@@ -109,7 +110,7 @@ const JobStatus = {
   TRAINING: "TRAINING",
   TRAINING_COMPLETED: "TRAINING_COMPLETED",
   PREDICTING: "PREDICTING",
-  PREDICTING_COMPLETED: "PREDICTING_COMPLETED", // or PREDICTING_COMPLETED
+  PREDICTING_COMPLETED: "PREDICTING_COMPLETED", // or PREDICTION_COMPLETED
 };
 
 createJob = async (req, res) => {
@@ -190,6 +191,7 @@ uploadJob = async (req, res) => {
           job.targetColumnName,
           "povel62@yahoo.ca",
           job.name,
+          HOSTNAME + `job/${job._id}/status/${JobStatus.TRAINING_COMPLETED}`,
           true
         ).then((s2) => {
           return res.status(201).json({
@@ -264,6 +266,8 @@ uploadTestFile = async (req, res) => {
             job.targetColumnName,
             "povel62@yahoo.ca",
             job.name,
+            HOSTNAME +
+              `job/${job._id}/status/${JobStatus.PREDICTING_COMPLETED}`,
             false
           ).then((s2) => {
             return res.status(201).json({

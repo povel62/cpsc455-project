@@ -10,6 +10,6 @@ if DEBUG:
     DEMO_TRAIN_FILES = './bbml/Train'
     DEMO_PREDICT_FILES = './bbml/Predict'
 else:
-    CSV_FILES = '/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets'
+    CSV_FILES = '/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared_2/ensemble_squared/datasets'
     # DEMO_TRAIN_FILES = '/ubc/cs/research/plai-scratch/BlackBoxML/demo_csv/Train'
     # DEMO_PREDICT_FILES = '/ubc/cs/research/plai-scratch/BlackBoxML/demo_csv/Predict'
