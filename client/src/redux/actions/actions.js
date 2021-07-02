@@ -18,6 +18,27 @@ export const setFName = (s) => {
   };
 };
 
+export const setLName = (s) => {
+  return {
+    type: "SET_LNAME",
+    payload: s,
+  };
+};
+
+export const setKaggleUsername = (s) => {
+  return {
+    type: "SET_KUSERNAME",
+    payload: s,
+  };
+};
+
+export const setKaggleAPI = (s) => {
+  return {
+    type: "SET_KAPI",
+    payload: s,
+  };
+};
+
 export const cache_competitions = (s) => {
   return {
     type: "CACHE_COMPETITIONS",

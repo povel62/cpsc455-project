@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import "./AccountDashboard.css";
 import { useSelector, useDispatch } from "react-redux";
 import TextField from "@material-ui/core/TextField";
-import { setEmail } from "../../redux/actions/actions";
+import {
+  setEmail,
+  setFName,
+  setLName,
+  setKaggleAPI,
+  setKaggleUsername,
+} from "../../redux/actions/actions";
+
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import FilledInput from "@material-ui/core/FilledInput";
@@ -51,10 +58,10 @@ export default function AccountDashboard() {
     post: "",
     responseToPost: "",
     email: login_token.email,
-    guest: false,
+    guest: login_token.isGuest,
     pwd: "",
-    kusername: "test K user",
-    kapi: "test k api",
+    kusername: login_token.kusername,
+    kapi: login_token.kapi,
     showPassword: false,
     fname: login_token.fname,
     lname: login_token.lname,
@@ -74,11 +81,21 @@ export default function AccountDashboard() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + login_token.accessToken,
       },
-      body: JSON.stringify({ email: values.email }),
+      body: JSON.stringify({
+        email: values.email,
+        fname: values.fname,
+        lname: values.lname,
+        kusername: values.kusername,
+        kapi: values.kapi,
+      }),
     });
 
     if (response.status === 200) {
       dispatch(setEmail(values.email));
+      dispatch(setFName(values.fname));
+      dispatch(setLName(values.lname));
+      dispatch(setKaggleUsername(values.kusername));
+      dispatch(setKaggleAPI(values.kapi));
     }
 
     alert(response.status);
