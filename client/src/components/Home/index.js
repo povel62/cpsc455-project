@@ -58,7 +58,6 @@ const Home = (props) => {
               variant="extended"
               color="red"
               aria-label="add"
-              // className={classes.margin}
               fullWidth
               onClick={() => {
                 setShow(!show);
