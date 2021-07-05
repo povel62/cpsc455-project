@@ -23,7 +23,11 @@ router.post(
 );
 router.get("/kaggle/getKaggleFile/:id", KaggleCtrl.getKaggleFile);
 router.get("/kaggle/getCompetitionsColumns/:id", KaggleCtrl.getCompColumns);
-router.post("/kaggle/:id/job", KaggleCtrl.validateKaggleJob, JobCtrl.createJob);
-router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
+router.post(
+  "/kaggle/:id/job",
+  KaggleCtrl.validateKaggleJob,
+  KaggleCtrl.uploadJob
+);
+router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction); // TODO add prediction
 
 module.exports = router;

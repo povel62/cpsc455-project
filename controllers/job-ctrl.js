@@ -25,8 +25,9 @@ uploadFileToServer = (id, fileData, fileName) => {
           resolve(results1);
         }
       );
-    } catch {
-      reject("error running python code'");
+    } catch (e) {
+      // reject("error running python code'");
+      reject(e);
     }
   });
 };
@@ -496,4 +497,8 @@ module.exports = {
   uploadJob,
   getUserJobs,
   uploadTestFile,
+  addJobToUser,
+  uploadFileToServer,
+  runPhase,
+  JobStatus,
 };
