@@ -1,4 +1,4 @@
-from const import CSV_FILES, CSV_FILES
+from const import CSV_FILES, CSV_FILES, SESSIONS
 import csv_checker as cc
 from io import StringIO
 import io
@@ -72,3 +72,69 @@ def put_file(host, username, password, dirname, filename, data):
         print(e) 
     ssh2.close()
     ssh1.close()
+
+def get_pred_files_names(id):
+    get_pred_files('remote.cs.ubc.ca', 'blkbx-ml', '1qaz2wsx', SESSIONS + "/" + id + "/predictions")
+
+def get_prediction_file(id, name):
+    get_pred_file_text('remote.cs.ubc.ca', 'blkbx-ml', '1qaz2wsx', SESSIONS + "/" + id + "/predictions/" + name)
+
+def get_pred_file_text(host, username, password, dirname):
+    ssh1 = paramiko.SSHClient()
+    ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh1.connect(host, username=username, password=password)
+    vmtransport = ssh1.get_transport()
+    dest_addr = ('borg', 22)
+    local_addr = (socket.gethostbyname(socket.gethostname()), 22)
+    vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+    ssh2 = paramiko.SSHClient()
+    ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh2.connect('borg', username=username, password=password, sock=vmchannel)
+
+
+    try:
+        stdin, stdout, stderr = ssh2.exec_command("cat " + dirname)
+
+        error = stderr.readlines()
+        out = stdout.readlines()
+
+        # print(error)
+        print(out)
+        # print(command)
+
+        stdin.close()
+
+    except Exception as e:
+        ssh2.close()
+        ssh1.close()
+
+def get_pred_files(host, username, password, dirname):
+    ssh1 = paramiko.SSHClient()
+    ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh1.connect(host, username=username, password=password)
+    vmtransport = ssh1.get_transport()
+    dest_addr = ('borg', 22)
+    local_addr = (socket.gethostbyname(socket.gethostname()), 22)
+    vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+    ssh2 = paramiko.SSHClient()
+    ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh2.connect('borg', username=username, password=password, sock=vmchannel)
+    
+    try:
+
+        stdin, stdout, stderr = ssh2.exec_command("ls -tr " + dirname)
+
+        error = stderr.readlines()
+        out = stdout.readlines()
+
+        # print(error)
+        print(out)
+        # print(command)
+
+        stdin.close()
+
+    except Exception as e:
+        ssh2.close()
+        ssh1.close()
