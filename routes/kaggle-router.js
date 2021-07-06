@@ -28,6 +28,6 @@ router.post(
   KaggleCtrl.validateKaggleJob,
   KaggleCtrl.uploadJob
 );
-router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction); // TODO add prediction
+router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
 
 module.exports = router;

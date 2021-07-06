@@ -323,6 +323,10 @@ const KaggleActionPane = (props) => {
                 setFail(true);
               }
               setSubmittingJob(false);
+            })
+            .catch(() => {
+              setFail(true);
+              setSubmittingJob(false);
             });
         });
       })
