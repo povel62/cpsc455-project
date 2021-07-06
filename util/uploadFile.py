@@ -89,19 +89,21 @@ def closeFile(f):
     except Exception as e:
         print(e) 
 
-def openFile(ssh2, dirname, filename):
+def copy_file(ssh2, localfilepath, id, filename):
     try:
+        dirname = CSV_FILES + "/" + id
         print("Opening Dir: " + dirname)
         sftp = ssh2.open_sftp()
-        mode = 'a'
+        # mode = 'a'
         try:
             sftp.chdir(dirname)
         except IOError:
             print("Making Dir: " + dirname)
             sftp.mkdir(dirname)
-        f = sftp.open(dirname + '/' + filename, mode)
+        print("Putting file remotely")
+        sftp.put(localfilepath, dirname + '/' + filename)
         print("File successfuly opened")
-        return f
+        # return f
     except Exception as e:
         print(e) 
     

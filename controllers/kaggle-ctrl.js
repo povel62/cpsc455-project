@@ -324,36 +324,28 @@ CSVToArray = (CSV_string, delimiter) => {
 function uploadFileToServer(id, fileData, fileName) {
   return new Promise((resolve, reject) => {
     try {
-      let script = new PythonShell("./util/run_upload_new.py", {
-        mode: "text",
-        args: [id, fileName],
-      });
+      let path = `./util/${id}-${fileName}`;
+      fs.writeFileSync(path, fileData);
 
-      let readable = Readable.from(CSVToArray(fileData));
-      var start = new Date().getTime();
+      let options = {
+        args: [path, id, fileName],
+      };
 
-      script.on("message", function (message) {
-        console.log(message);
-      });
-      readable.on("data", (row) => {
-        script.send(row);
-      });
-
-      readable.on("end", () => {
-        script.end(function (err, code, signal) {
-          var end = new Date().getTime();
-          var dur = end - start;
-          console.log("Call to doSomething took " + dur + " milliseconds.");
+      PythonShell.run(
+        "./util/run_upload_new.py",
+        options,
+        function (err, results1) {
           if (err) {
-            console.log("ok this is : " + err);
-            throw err;
+            if (err != null) {
+              resolve(err);
+            }
           }
-          console.log("The exit code was: " + code);
-          console.log("The exit signal was: " + signal);
-          resolve("ok");
-        });
-      });
+          fs.unlinkSync(path);
+          resolve(results1);
+        }
+      );
     } catch (e) {
+      fs.unlinkSync(path);
       reject(e);
     }
   });
