@@ -7,7 +7,7 @@ from os import path
 import csv
 import paramiko
 import subprocess
-import socket 
+import socket
 
 def is_valid_csv(file_in_str):
     try:
@@ -17,7 +17,7 @@ def is_valid_csv(file_in_str):
 
     return True
 
-def openConnection1():    
+def openConnection1():
     print("Getting connection 1")
 
     host = 'remote.cs.ubc.ca'
@@ -26,12 +26,12 @@ def openConnection1():
     ssh1 = paramiko.SSHClient()
     ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh1.connect(host, username=username, password=password)
-    
+
     return ssh1
 
 def openConnection2(ssh1):
     print("Getting connection 2")
-    
+
     host = 'remote.cs.ubc.ca'
     username = 'blkbx-ml'
     password = '1qaz2wsx'
@@ -80,14 +80,14 @@ def put_file(f, data):
         print("Writing data: " + data)
         f.write(data)
     except Exception as e:
-        print(e) 
+        print(e)
 
 def closeFile(f):
     try:
         print("Closing file")
         f.close()
     except Exception as e:
-        print(e) 
+        print(e)
 
 def copy_file(ssh2, localfilepath, id, filename):
     try:
@@ -105,5 +105,4 @@ def copy_file(ssh2, localfilepath, id, filename):
         print("File successfuly opened")
         # return f
     except Exception as e:
-        print(e) 
-    
+        print(e)
