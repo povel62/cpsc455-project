@@ -9,6 +9,7 @@ const etl = require("etl");
 const { CSV_FILES, HOSTNAME } = require("../GlobalConstants");
 const jobCtrl = require("./job-ctrl");
 const crypto = require("crypto");
+const { Readable } = require("stream");
 
 checkAccount = async (req, res) => {
   // TODO remove most likely, clientside can do the check
@@ -155,7 +156,6 @@ uploadJob = async (req, res) => {
   await kaggleFileGetter(req, res, uploadJobHelper);
 };
 
-
 function uploadJobHelper(fileData, req, res) {
   const body = req.body;
   let newJob = body;
@@ -171,27 +171,29 @@ function uploadJobHelper(fileData, req, res) {
     .save()
     .then(() => {
       jobCtrl.addJobToUser(req.params.id, job).then(() => {
-        uploadFileToServer(job._id, fileData, "train.csv").then((s1) => {
-          jobCtrl
-            .runPhase(
-              CSV_FILES + "/" + job._id + "/" + "train.csv",
-              job._id,
-              job.durationLimit,
-              job.targetColumnName,
-              "povel62@yahoo.ca",
-              job.name,
-              HOSTNAME +
-                `job/${job._id}/status/${jobCtrl.JobStatus.TRAINING_COMPLETED}`,
-              true
-            )
-            .then((s2) => {
-              return res.status(201).json({
-                success: true,
-                id: job._id,
-                message: "Job created!\n" + s1 + "\n" + s2,
+        uploadFileToServer(job._id, fileData, "train.csv")
+          .then((s1) => {
+            jobCtrl
+              .runPhase(
+                CSV_FILES + "/" + job._id + "/" + "train.csv",
+                job._id,
+                job.durationLimit,
+                job.targetColumnName,
+                "povel62@yahoo.ca",
+                job.name,
+                HOSTNAME +
+                  `job/${job._id}/status/${jobCtrl.JobStatus.TRAINING_COMPLETED}`,
+                true
+              )
+              .then((s2) => {
+                return res.status(201).json({
+                  success: true,
+                  id: job._id,
+                  message: "Job created!\n" + s1 + "\n" + s2,
+                });
               });
-            });
-        });
+          })
+          .catch((err) => console.log(err));
       });
     })
     .catch((error) => {
@@ -202,7 +204,8 @@ function uploadJobHelper(fileData, req, res) {
     });
 }
 
-function uploadTestFile(tmpFileData, req, res) { // TODO test this
+function uploadTestFile(tmpFileData, req, res) {
+  // TODO test this
   let headers = tmpFileData.split("\n")[0].split(",");
 
   Job.findOne({ _id: req.params.id }, (err, job) => {
@@ -272,6 +275,52 @@ function uploadTestFile(tmpFileData, req, res) { // TODO test this
   });
 }
 
+// https://stackoverflow.com/questions/36288375/how-to-parse-csv-data-that-contains-newlines-in-field-using-javascript
+CSVToArray = (CSV_string, delimiter) => {
+  delimiter = delimiter || ","; // user-supplied delimeter or default comma
+
+  var pattern = new RegExp( // regular expression to parse the CSV values. // Delimiters:
+    "(\\" +
+      delimiter +
+      "|\\r?\\n|\\r|^)" +
+      // Quoted fields.
+      '(?:"([^"]*(?:""[^"]*)*)"|' +
+      // Standard fields.
+      '([^"\\' +
+      delimiter +
+      "\\r\\n]*))",
+    "gi"
+  );
+
+  var rows = [[]]; // array to hold our data. First row is column headers.
+  // array to hold our individual pattern matching groups:
+  var matches = false; // false if we don't find any matches
+  // Loop until we no longer find a regular expression match
+  while ((matches = pattern.exec(CSV_string))) {
+    var matched_delimiter = matches[1]; // Get the matched delimiter
+    // Check if the delimiter has a length (and is not the start of string)
+    // and if it matches field delimiter. If not, it is a row delimiter.
+    if (matched_delimiter.length && matched_delimiter !== delimiter) {
+      // Since this is a new row of data, add an empty row to the array.
+      rows.push([]);
+    }
+    var matched_value;
+    // Once we have eliminated the delimiter, check to see
+    // what kind of value was captured (quoted or unquoted):
+    if (matches[2]) {
+      // found quoted value. unescape any double quotes.
+      matched_value = matches[2].replace(new RegExp('""', "g"), '"');
+    } else {
+      // found a non-quoted value
+      matched_value = matches[3];
+    }
+    // Now that we have our value string, let's add
+    // it to the data array.
+    rows[rows.length - 1].push(matched_value);
+  }
+  return rows; // Return the parsed data Array
+};
+
 function uploadFileToServer(id, fileData, fileName) {
   return new Promise((resolve, reject) => {
     try {
@@ -279,17 +328,30 @@ function uploadFileToServer(id, fileData, fileName) {
         mode: "text",
         args: [id, fileName],
       });
-      script.send(fileData);
-      let msg = "";
+
+      let readable = Readable.from(CSVToArray(fileData));
+      var start = new Date().getTime();
+
       script.on("message", function (message) {
-        msg = message;
+        console.log(message);
       });
-      script.end(function (err, code, signal) {
-        if (err) throw err;
-        console.log("The exit code was: " + code);
-        console.log("The exit signal was: " + signal);
-        console.log(msg);
-        resolve(msg);
+      readable.on("data", (row) => {
+        script.send(row);
+      });
+
+      readable.on("end", () => {
+        script.end(function (err, code, signal) {
+          var end = new Date().getTime();
+          var dur = end - start;
+          console.log("Call to doSomething took " + dur + " milliseconds.");
+          if (err) {
+            console.log("ok this is : " + err);
+            throw err;
+          }
+          console.log("The exit code was: " + code);
+          console.log("The exit signal was: " + signal);
+          resolve("ok");
+        });
       });
     } catch (e) {
       reject(e);

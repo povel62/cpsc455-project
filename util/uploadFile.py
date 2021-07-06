@@ -1,4 +1,4 @@
-from const import CSV_FILES, CSV_FILES
+from const import CSV_FILES
 import csv_checker as cc
 from io import StringIO
 import io
@@ -16,11 +16,41 @@ def is_valid_csv(file_in_str):
         return False
 
     return True
+
+def openConnection1():    
+    print("Getting connection 1")
+
+    host = 'remote.cs.ubc.ca'
+    username = 'blkbx-ml'
+    password = '1qaz2wsx'
+    ssh1 = paramiko.SSHClient()
+    ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh1.connect(host, username=username, password=password)
     
-def uploadFile(id, file, fileName):
+    return ssh1
 
+def openConnection2(ssh1):
+    print("Getting connection 2")
+    
+    host = 'remote.cs.ubc.ca'
+    username = 'blkbx-ml'
+    password = '1qaz2wsx'
+    vmtransport = ssh1.get_transport()
+    dest_addr = ('borg', 22)
+    local_addr = (socket.gethostbyname(socket.gethostname()), 22)
+    vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
+
+    ssh2 = paramiko.SSHClient()
+    ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh2.connect('borg', username=username, password=password, sock=vmchannel)
+    return ssh2
+
+def closeConnection(ssh):
+    print("Closing connection")
+    ssh.close()
+
+def uploadFile(ssh2, id, fileName, file):
     if len(file) > 0:
-
         train_file_bytes = 0
         train_file_str = file
 
@@ -35,7 +65,7 @@ def uploadFile(id, file, fileName):
             return JsonResponse({'err': 'Invalid CSV Uploaded'})
 
         try:
-            put_file('remote.cs.ubc.ca', 'blkbx-ml', '1qaz2wsx', CSV_FILES + "/" + id, fileName, hello.csv)
+            put_file(ssh2, 'remote.cs.ubc.ca', 'blkbx-ml', '1qaz2wsx', CSV_FILES + "/" + id, fileName, hello.csv)
 
         except Exception as e:
             print({'err': 'You file could not be saved on our servers'})
@@ -45,30 +75,33 @@ def uploadFile(id, file, fileName):
     else:
         return print({'err': 'Uploaded file is empty'})
 
-def put_file(host, username, password, dirname, filename, data):
-    ssh1 = paramiko.SSHClient()
-    ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh1.connect(host, username=username, password=password)
-    vmtransport = ssh1.get_transport()
-    dest_addr = ('borg', 22)
-    local_addr = (socket.gethostbyname(socket.gethostname()), 22)
-    vmchannel = vmtransport.open_channel("direct-tcpip", dest_addr, local_addr)
-
-    ssh2 = paramiko.SSHClient()
-    ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh2.connect('borg', username=username, password=password, sock=vmchannel)
-
-
+def put_file(f, data):
     try:
-        sftp = ssh2.open_sftp()
-        try:
-            sftp.chdir(dirname)
-        except IOError:
-            sftp.mkdir(dirname)
-        f = sftp.open(dirname + '/' + filename, 'w')
+        print("Writing data: " + data)
         f.write(data)
+    except Exception as e:
+        print(e) 
+
+def closeFile(f):
+    try:
+        print("Closing file")
         f.close()
     except Exception as e:
         print(e) 
-    ssh2.close()
-    ssh1.close()
+
+def openFile(ssh2, dirname, filename):
+    try:
+        print("Opening Dir: " + dirname)
+        sftp = ssh2.open_sftp()
+        mode = 'a'
+        try:
+            sftp.chdir(dirname)
+        except IOError:
+            print("Making Dir: " + dirname)
+            sftp.mkdir(dirname)
+        f = sftp.open(dirname + '/' + filename, mode)
+        print("File successfuly opened")
+        return f
+    except Exception as e:
+        print(e) 
+    
