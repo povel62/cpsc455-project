@@ -12,6 +12,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 
 const useRowStyles = makeStyles({
   root: {
@@ -48,7 +49,14 @@ const Row = (props) => {
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
         <TableCell>
-          <button onClick={shareEvent}>Share</button>
+          <Button
+            variant="contained"
+            color="primary"
+            component="span"
+            onClick={shareEvent}
+          >
+            Share
+          </Button>
         </TableCell>
       </TableRow>
       <TableRow>

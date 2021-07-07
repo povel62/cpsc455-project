@@ -10,9 +10,12 @@ import Paper from "@material-ui/core/Paper";
 import "./ControlDashboard.css";
 import Row from "./Row.js";
 import { makeStyles } from "@material-ui/core/styles";
+import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 // import { useSelector } from "react-redux";
 import JobModal from "../../JobModal/JobModal";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -119,7 +122,15 @@ export default function ControlDashboard() {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Paper className={classes.paper}>
-              <button> Refresh </button>
+              <Tooltip title="Refresh" aria-label="Refresh">
+                <IconButton
+                  size="large"
+                  color="primary"
+                  aria-label="Refresh jobs"
+                >
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
             </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>

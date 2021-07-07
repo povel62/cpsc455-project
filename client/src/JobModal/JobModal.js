@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import AddStepper from "./AddStepper";
 import { FaTimesCircle } from "react-icons/fa";
+import Tooltip from "@material-ui/core/Tooltip";
+import AddBoxIcon from "@material-ui/icons/AddBox";
+import IconButton from "@material-ui/core/IconButton";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -45,12 +48,14 @@ export default function JobModal() {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <FaTimesCircle
-        size="1.5em"
-        title="close"
-        onClick={handleClose}
-        style={{ cursor: "pointer" }}
-      />
+      <Tooltip title="close" aria-label="close">
+        <FaTimesCircle
+          size="1.5em"
+          title="close"
+          onClick={handleClose}
+          style={{ cursor: "pointer" }}
+        />
+      </Tooltip>
       <h2 id="modal-title">Add ML Job</h2>
       <p id="modal-description">Add job by following the steps</p>
       <AddStepper />
@@ -59,9 +64,16 @@ export default function JobModal() {
 
   return (
     <div>
-      <button type="button" onClick={handleOpen}>
-        Add Job
-      </button>
+      <Tooltip title="Add a job" aria-label="add a job">
+        <IconButton
+          color="primary"
+          aria-label="add a new job"
+          onClick={handleOpen}
+          size="large"
+        >
+          <AddBoxIcon />
+        </IconButton>
+      </Tooltip>
       <Modal
         open={open}
         aria-labelledby="modal-title"
