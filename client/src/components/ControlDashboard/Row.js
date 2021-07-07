@@ -13,6 +13,7 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
 
 const useRowStyles = makeStyles({
   root: {
@@ -54,6 +55,7 @@ const Row = (props) => {
             color="primary"
             component="span"
             onClick={shareEvent}
+            endIcon={<AddIcon />}
           >
             Share
           </Button>
