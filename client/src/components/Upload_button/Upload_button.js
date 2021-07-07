@@ -5,6 +5,7 @@ import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
 import DataTable from "react-data-table-component";
 import "./Upload_button.css";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -94,7 +95,12 @@ export default function UploadButtons() {
         onChange={handleFileUpload}
       />
       <label htmlFor="contained-button-file">
-        <Button variant="contained" color="primary" component="span">
+        <Button
+          variant="contained"
+          color="primary"
+          component="span"
+          startIcon={<CloudUploadIcon />}
+        >
           Upload File
         </Button>
       </label>
