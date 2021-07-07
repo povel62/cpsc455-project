@@ -11,7 +11,15 @@ import TableRow from "@material-ui/core/TableRow";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
-import useRowStyles from "./rowStyles.js";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useRowStyles = makeStyles({
+  root: {
+    "& > *": {
+      borderBottom: "unset",
+    },
+  },
+});
 
 const Row = (props) => {
   const shareEvent = () => alert(row.alertText);
