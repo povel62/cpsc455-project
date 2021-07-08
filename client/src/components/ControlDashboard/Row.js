@@ -11,7 +11,18 @@ import TableRow from "@material-ui/core/TableRow";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
-import useRowStyles from "./rowStyles.js";
+import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
+import Tooltip from "@material-ui/core/Tooltip";
+
+const useRowStyles = makeStyles({
+  root: {
+    "& > *": {
+      borderBottom: "unset",
+    },
+  },
+});
 
 const Row = (props) => {
   const shareEvent = () => alert(row.alertText);
@@ -40,7 +51,20 @@ const Row = (props) => {
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
         <TableCell>
-          <button onClick={shareEvent}>Share</button>
+          <Tooltip
+            title="Get share link for this job"
+            aria-label="get link to share this job"
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              onClick={shareEvent}
+              endIcon={<AddIcon />}
+            >
+              Share
+            </Button>
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow>

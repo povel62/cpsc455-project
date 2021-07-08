@@ -3,8 +3,13 @@ import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
-import DataTable from "react-data-table-component";
+//import DataTable from "react-data-table-component";
 import "./Upload_button.css";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import TextField from "@material-ui/core/TextField";
+//import { useSelector } from "react-redux";
+import MenuItem from "@material-ui/core/MenuItem";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,9 +22,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UploadButtons() {
+function UploadButtons(props) {
+  //const login_token = useSelector((state) => state.loginReducer);
+  const [selectedFile, setFile] = useState(null);
+  const [values, setValues] = useState({
+    response: "",
+    post: "",
+    responseToPost: "",
+    target_col: "",
+  });
+
   const [columns, setColumns] = useState([]);
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
 
   // process CSV data
   const processData = (dataString) => {
@@ -59,13 +73,18 @@ export default function UploadButtons() {
       selector: c,
     }));
 
-    setData(list);
+    //setData(list);
     setColumns(columns);
   };
 
   // handle file upload
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
+    setFile(file);
+
+    const data = new FormData();
+    data.append("file", selectedFile);
+
     const reader = new FileReader();
     reader.onload = (evt) => {
       /* Parse data */
@@ -79,6 +98,8 @@ export default function UploadButtons() {
       processData(data);
     };
     reader.readAsBinaryString(file);
+    props.changeTarget(values.target_col);
+    props.changeData(data);
   };
 
   const classes = useStyles();
@@ -94,12 +115,49 @@ export default function UploadButtons() {
         onChange={handleFileUpload}
       />
       <label htmlFor="contained-button-file">
-        <Button variant="contained" color="primary" component="span">
+        <Button
+          variant="contained"
+          color="primary"
+          component="span"
+          startIcon={<CloudUploadIcon />}
+        >
           Upload File
         </Button>
       </label>
+      <p>
+        {columns.length != 0 ? (
+          <TextField
+            id="target_col"
+            select
+            label="Select target column"
+            value={values.target_col}
+            onChange={(e) =>
+              setValues({
+                ...values,
+                target_col: e.target.value,
+              })
+            }
+            helperText="Please select target column"
+          >
+            {columns.map((option) => (
+              <MenuItem key={option.selector} value={option.selector}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        ) : (
+          ""
+        )}
+      </p>
 
-      <DataTable pagination highlightOnHover columns={columns} data={data} />
+      {/* <DataTable pagination highlightOnHover columns={columns} data={data} /> */}
     </div>
   );
 }
+
+UploadButtons.PropTypes = {
+  changeData: PropTypes.func,
+  changeTarget: PropTypes.func,
+};
+
+export default UploadButtons;

@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import "./AccountDashboard.css";
 import { useSelector, useDispatch } from "react-redux";
 import TextField from "@material-ui/core/TextField";
-import { setEmail } from "../../redux/actions/actions";
+import {
+  setEmail,
+  setFName,
+  setLName,
+  setKaggleAPI,
+  setKaggleUsername,
+} from "../../redux/actions/actions";
+
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import FilledInput from "@material-ui/core/FilledInput";
@@ -10,7 +17,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -51,10 +57,10 @@ export default function AccountDashboard() {
     post: "",
     responseToPost: "",
     email: login_token.email,
-    guest: false,
+    guest: login_token.isGuest,
     pwd: "",
-    kusername: "test K user",
-    kapi: "test k api",
+    kusername: login_token.kusername,
+    kapi: login_token.kapi,
     showPassword: false,
     fname: login_token.fname,
     lname: login_token.lname,
@@ -74,25 +80,56 @@ export default function AccountDashboard() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + login_token.accessToken,
       },
-      body: JSON.stringify({ email: values.email }),
+      body: JSON.stringify({
+        email: values.email,
+        fname: values.fname,
+        lname: values.lname,
+        kusername: values.kusername,
+        kapi: values.kapi,
+      }),
     });
 
     if (response.status === 200) {
       dispatch(setEmail(values.email));
+      dispatch(setFName(values.fname));
+      dispatch(setLName(values.lname));
+      dispatch(setKaggleUsername(values.kusername));
+      dispatch(setKaggleAPI(values.kapi));
+    } else {
+      resetValues();
+      alert(response.status);
     }
-
-    alert(response.status);
   };
-  const closeEditInfo = () => {
+
+  const resetValues = () => {
+    setValues({
+      ...values,
+      email: login_token.email,
+      kusername: login_token.kusername,
+      kapi: login_token.kapi,
+      fname: login_token.fname,
+      lname: login_token.lname,
+    });
+
+    document.getElementById("firstName").value = login_token.fname;
+    document.getElementById("lastName").value = login_token.lname;
+    document.getElementById("email").value = login_token.email;
+    document.getElementById("kaggleUsername").value = login_token.kusername;
+    document.getElementById("kaggleApiKey").value = login_token.kapi;
+  };
+
+  const closeEditInfo = (e) => {
+    e.preventDefault();
     setEditInfo(!editInfo);
+    resetValues();
   };
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  const handleMouseDownPassword = (e) => {
+    e.preventDefault();
   };
 
   return (
@@ -122,74 +159,59 @@ export default function AccountDashboard() {
             <form className={classes.form} noValidate>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  {editInfo ? (
-                    <div>
-                      <TextField
-                        autoComplete="fname"
-                        name="firstName"
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="firstName"
-                        defaultValue={values.fname}
-                        label="First Name"
-                        autoFocus
-                        onChange={(e) =>
-                          setValues({ ...values, fname: e.target.value })
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      <strong>First Name:</strong> {values.fname}
-                    </p>
-                  )}
+                  <TextField
+                    autoComplete="fname"
+                    name="firstName"
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="firstName"
+                    defaultValue={values.fname}
+                    label="First Name"
+                    autoFocus
+                    onChange={(e) =>
+                      setValues({ ...values, fname: e.target.value })
+                    }
+                    InputProps={{
+                      readOnly: editInfo ? false : true,
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  {editInfo ? (
-                    <div>
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="lastName"
-                        defaultValue={values.lname}
-                        label="Last Name"
-                        name="lastName"
-                        autoComplete="lname"
-                        onChange={(e) =>
-                          setValues({ ...values, lname: e.target.value })
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      <strong>Last Name:</strong> {values.lname}
-                    </p>
-                  )}
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="lastName"
+                    defaultValue={values.lname}
+                    label="Last Name"
+                    name="lastName"
+                    autoComplete="lname"
+                    onChange={(e) =>
+                      setValues({ ...values, lname: e.target.value })
+                    }
+                    InputProps={{
+                      readOnly: editInfo ? false : true,
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  {editInfo ? (
-                    <div>
-                      <TextField
-                        variant="outlined"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        defaultValue={values.email}
-                        name="email"
-                        autoComplete="email"
-                        onChange={(e) =>
-                          setValues({ ...values, email: e.target.value })
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      <strong>Email:</strong> {values.email}
-                    </p>
-                  )}
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    defaultValue={values.email}
+                    name="email"
+                    autoComplete="email"
+                    onChange={(e) =>
+                      setValues({ ...values, email: e.target.value })
+                    }
+                    InputProps={{
+                      readOnly: editInfo ? false : true,
+                    }}
+                  />
                 </Grid>
 
                 <Grid item xs={12}>
@@ -230,58 +252,58 @@ export default function AccountDashboard() {
                       />
                     </div>
                   ) : (
-                    <p>
-                      <strong>Password:</strong>*********
-                    </p>
+                    <TextField
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="pwd"
+                      label="Password"
+                      defaultValue="***********"
+                      name="Password"
+                      onChange={(e) =>
+                        setValues({ ...values, pwd: e.target.value })
+                      }
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                    />
                   )}
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  {editInfo ? (
-                    <div>
-                      <TextField
-                        variant="outlined"
-                        fullWidth
-                        id="kaggleUsername"
-                        label="Kaggle Username (optional)"
-                        name="kaggleUsername"
-                        autoComplete="kaggleUsername"
-                        defaultValue={values.kusername}
-                        onChange={(e) =>
-                          setValues({ ...values, kusername: e.target.value })
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      <strong>kaggle username: </strong>
-                      {values.kusername}
-                    </p>
-                  )}
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    id="kaggleUsername"
+                    label="Kaggle Username (optional)"
+                    name="kaggleUsername"
+                    autoComplete="kaggleUsername"
+                    defaultValue={values.kusername}
+                    onChange={(e) =>
+                      setValues({ ...values, kusername: e.target.value })
+                    }
+                    InputProps={{
+                      readOnly: editInfo ? false : true,
+                    }}
+                  />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  {editInfo ? (
-                    <div>
-                      <TextField
-                        autoComplete="kaggleApiKey"
-                        name="kaggleApiKey"
-                        variant="outlined"
-                        fullWidth
-                        id="kaggleApiKey"
-                        label="Kaggle Api Key "
-                        defaultValue={values.kapi}
-                        onChange={(e) =>
-                          setValues({ ...values, kapi: e.target.value })
-                        }
-                      />
-                    </div>
-                  ) : (
-                    <p>
-                      <strong>kaggle Api: </strong>
-                      {values.kapi}
-                    </p>
-                  )}
+                <Grid item xs={12}>
+                  <TextField
+                    autoComplete="kaggleApiKey"
+                    name="kaggleApiKey"
+                    variant="outlined"
+                    fullWidth
+                    id="kaggleApiKey"
+                    label="Kaggle Api Key "
+                    defaultValue={values.kapi}
+                    onChange={(e) =>
+                      setValues({ ...values, kapi: e.target.value })
+                    }
+                    InputProps={{
+                      readOnly: editInfo ? false : true,
+                    }}
+                  />
                 </Grid>
               </Grid>
 

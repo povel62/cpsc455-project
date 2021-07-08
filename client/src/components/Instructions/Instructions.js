@@ -8,7 +8,7 @@ const Instructions = () => {
         <br />
         <br />
         <hr />
-        <h1>BLACK BOX ML: INSTRUCTIONS</h1>
+        <h1>AUTO ML: INSTRUCTIONS</h1>
         <p>
           Step 1. All you need to get started is a CSV file formatted as
           following: each column denotes a feature of your dataset and each row

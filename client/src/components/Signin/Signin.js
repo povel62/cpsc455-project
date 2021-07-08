@@ -14,7 +14,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Slide from "@material-ui/core/Slide";
 import { useDispatch } from "react-redux";
-import { setLoginToken, setEmail } from "../../redux/actions/actions";
+import {
+  setLoginToken,
+  setEmail,
+  setFName,
+  setLName,
+} from "../../redux/actions/actions";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -131,6 +136,8 @@ export default function Signin(props) {
     if (body.accessToken) {
       dispatch(setLoginToken(body.accessToken));
       dispatch(setEmail(body.data.email));
+      dispatch(setFName(body.data.fname));
+      dispatch(setLName(body.data.lname));
       history.push({
         pathname: "/home",
         state: { isUserNewlyRegistred: userNewlyRegistred },

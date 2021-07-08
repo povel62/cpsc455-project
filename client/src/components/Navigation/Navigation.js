@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Navigation(props) {
   let history = useHistory();
-  const fname = useSelector((state) => state.loginReducer.email);
+  const fname = useSelector((state) => state.loginReducer.fname);
   const dispatch = useDispatch();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);

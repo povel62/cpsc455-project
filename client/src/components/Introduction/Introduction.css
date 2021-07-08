@@ -1,0 +1,22 @@
+.Introduction {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: white;
+  min-height: 100vh;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+p {
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.containerIntroduction {
+  margin-left: 20px;
+  margin-right: 20px;
+}
