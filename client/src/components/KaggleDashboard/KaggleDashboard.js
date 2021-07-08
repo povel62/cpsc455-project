@@ -69,6 +69,7 @@ const KaggleDashBoard = (props) => {
       dispatch(cache_files(null));
       dispatch(cache_datasets(null));
       dispatch(cache_competitions(null));
+      dispatch(select_datafile(null));
       dispatch(
         set_userFilter({
           dataFilter: "public",

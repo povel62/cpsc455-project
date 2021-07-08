@@ -34,6 +34,7 @@
     "react-scripts": "^4.0.3",
     "reactjs-popup": "^2.0.4",
     "request": "^2.88.2",
+    "stream": "^0.0.2",
     "underscore": "^1.13.1",
     "unzip-stream": "^0.3.1"
   },

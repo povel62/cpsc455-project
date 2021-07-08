@@ -345,10 +345,10 @@ getPreds = async (req, res) => {
         message: "Job not found!",
       });
     }
-
     getPredFileNames(job._id).then((s1) => {
       let fileNames = [];
       try {
+        console.log(s1)
         if (s1.length > 0) {
           fileNames = JSON.parse(s1[0].replace(/'/g, '"')).map((x) => {
             return x.split("\n")[0];
@@ -360,7 +360,7 @@ getPreds = async (req, res) => {
           message: "Cannot retreive files!",
         });
       }
-      return res.status(201).json({
+      return res.status(200).json({
         success: true,
         id: job._id,
         fileNames,
@@ -669,6 +669,10 @@ module.exports = {
   uploadJob,
   getUserJobs,
   uploadTestFile,
+  addJobToUser,
+  uploadFileToServer,
+  runPhase,
+  JobStatus,
   getPreds,
   getPredFile,
 };

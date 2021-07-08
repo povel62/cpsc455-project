@@ -7,7 +7,7 @@ from os import path
 import csv
 import paramiko
 import subprocess
-import socket 
+import socket
 
 def is_valid_csv(file_in_str):
     try:
@@ -16,7 +16,7 @@ def is_valid_csv(file_in_str):
         return False
 
     return True
-    
+
 def uploadFile(id, file, fileName):
 
     if len(file) > 0:
@@ -69,7 +69,7 @@ def put_file(host, username, password, dirname, filename, data):
         f.write(data)
         f.close()
     except Exception as e:
-        print(e) 
+        print(e)
     ssh2.close()
     ssh1.close()
 
@@ -121,7 +121,7 @@ def get_pred_files(host, username, password, dirname):
     ssh2 = paramiko.SSHClient()
     ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh2.connect('borg', username=username, password=password, sock=vmchannel)
-    
+
     try:
 
         stdin, stdout, stderr = ssh2.exec_command("ls -tr " + dirname)

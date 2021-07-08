@@ -20,12 +20,13 @@ import {
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { competitionAuth } from "./kaggleApi";
+import { competitionAuth, compType, dataType, userJobItems } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
-import { set_loading } from "../../redux/actions/actions";
+import { setJobs, set_loading, set_checked } from "../../redux/actions/actions";
+import KagglePredictDialog from "./KagglePredictDialog";
 
 const useStyles = makeStyles(() => ({
   buttonProgress: {
@@ -59,6 +60,7 @@ const KaggleActionPane = (props) => {
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let email = useSelector((state) => state.loginReducer.email);
   let token = useSelector((state) => state.loginReducer.accessToken);
+  let jobs = useSelector((state) => state.kaggleReducer.jobs);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
@@ -69,8 +71,10 @@ const KaggleActionPane = (props) => {
   const [predictOpen, setPredictOpen] = useState(false);
   const [selectJob, setSelectJob] = useState({});
   const [offboard, setOffboard] = useState(false);
-  const [jobs, setJobs] = useState([]);
+  // const [jobs, setJobs] = useState([]);
   const [columnElement, setColumnElement] = useState(null);
+  const [retrainOpen, setRetrainOpen] = useState(false);
+  const [submitterOpen, setSubmitterOpen] = useState(false);
   let dispatch = useDispatch();
 
   KaggleActionPane.propTypes = {
@@ -187,6 +191,34 @@ const KaggleActionPane = (props) => {
       TargetColumn().then((col) => {
         setColumnElement(col);
         setJobOpen(true);
+      });
+    }
+  };
+
+  const retrainJob = () => {
+    setFail(false);
+    setSuccess(false);
+    setTime(5);
+    dispatch(set_loading(true));
+    setTarget("");
+    if (datafile.mode === "COMPETITION") {
+      competitionAuth(competitions[+source.index].ref, email).then(
+        (entered) => {
+          if (entered === true) {
+            TargetColumn().then((col) => {
+              setRetrainOpen(true);
+              setColumnElement(col);
+            });
+          } else {
+            dispatch(set_loading(false));
+            setRetrainOpen(true);
+          }
+        }
+      );
+    } else {
+      TargetColumn().then((col) => {
+        setColumnElement(col);
+        setRetrainOpen(true);
       });
     }
   };
@@ -322,13 +354,16 @@ const KaggleActionPane = (props) => {
               } else {
                 setFail(true);
               }
+              setSubmittingJob(false);
+            })
+            .catch(() => {
+              setFail(true);
+              setSubmittingJob(false);
             });
         });
       })
       .catch(() => {
         setFail(true);
-      })
-      .finally(() => {
         setSubmittingJob(false);
       });
   };
@@ -339,29 +374,49 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSubmittingJob(true);
     let sourceType = datafile ? datafile.mode : "invalid";
+
     axios
-      .post("/api/kaggle/predict", {
-        job: selectJob,
-        fileref: fileRef(),
-        sourceType: sourceType,
-        sourceref: sourceRef(),
-        email: email,
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setSuccess(true);
-          // goto dashboard if sucess to see pending job
-          props.setTab(4);
-        } else {
-          setFail(true);
-        }
+      .get("/api/user", { params: { email: email } })
+      .then((user) => {
+        let id = user.data.data.id;
+        handleDownload()
+          .then((src) => {
+            axios
+              .post(`/api/kaggle/${id}/predict`, {
+                job: selectJob,
+                kaggleSrc: src,
+                kaggleType: sourceType,
+                kaggleId: sourceRef(),
+              })
+              .then((res) => {
+                if (res.status === 201) {
+                  setSuccess(true);
+                  setSubmittingJob(false);
+                  // goto dashboard if sucess to see pending job
+                  props.setTab(4);
+                } else {
+                  setFail(true);
+                  setSubmittingJob(false);
+                }
+              })
+              .catch(() => {
+                setFail(true);
+                setSubmittingJob(false);
+              });
+          })
+          .catch(() => {
+            setFail(true);
+            setSubmittingJob(false);
+          });
       })
       .catch(() => {
         setFail(true);
-      })
-      .finally(() => {
         setSubmittingJob(false);
       });
+  };
+
+  const handleRetrain = (e) => {
+    console.log(e);
   };
 
   const offboardToKaggle = () => {
@@ -379,36 +434,6 @@ const KaggleActionPane = (props) => {
 
   const handleSelectJob = (txt) => {
     setSelectJob(txt);
-  };
-
-  const userJobItems = () => {
-    // jobs, setJobs;
-    axios.get("/api/user", { params: { email: email } }).then((user) => {
-      let id = user.data.data.id;
-      axios
-        .get(`/api/user/${id}/jobs`)
-        .then((data) => {
-          if (data.status === 200) {
-            let jobData = data.data.data;
-            if (jobData) {
-              let elements = jobData.map((job, i) => {
-                if (job.status !== "COMPLETED")
-                  return (
-                    <MenuItem value={job.id} key={i}>
-                      {job.name}{" "}
-                    </MenuItem>
-                  );
-              });
-              setJobs(elements);
-            } else {
-              setJobs([]);
-            }
-          }
-        })
-        .catch(() => {
-          setJobs([]);
-        });
-    });
   };
 
   return (
@@ -470,10 +495,68 @@ const KaggleActionPane = (props) => {
           </form>
         </DialogContent>
       </Dialog>
+      <Dialog open={retrainOpen} onClose={() => setRetrainOpen(false)}>
+        <DialogTitle>Retrian Existing Job</DialogTitle>
+        <DialogContent>
+          <form onSubmit={(e) => handleRetrain(e)}>
+            <Grid container spacing={0}>
+              <Grid item xs={6}>
+                {columnElement}
+              </Grid>
+              <br />
+              <Grid item xs={6}>
+                <InputLabel>Available Trained Jobs</InputLabel>
+                <Select
+                  onChange={(e) => handleSelectJob(e.target.value)}
+                  value={selectJob}
+                  required
+                >
+                  {jobs}
+                </Select>
+              </Grid>
+              <Grid item xs={6}>
+                <br />
+                <FormControl>
+                  <InputLabel>Search Time Limit</InputLabel>
+                  <Select
+                    onChange={(e) => handleSearchTime(e.target.value)}
+                    value={time}
+                  >
+                    <MenuItem value={5}>5 minutes</MenuItem>
+                    <MenuItem value={20}>20 minutes</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <br />
+                <Tooltip
+                  open={true}
+                  title={fail ? "Failed to submit job." : ""}
+                  placement="right"
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={submittingJob}
+                    className={buttonClassname}
+                  >
+                    Retrain
+                  </Button>
+                </Tooltip>
+                {submittingJob && (
+                  <CircularProgress
+                    size={24}
+                    className={classes.buttonProgress}
+                  />
+                )}
+              </Grid>
+            </Grid>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Dialog open={predictOpen} onClose={() => setPredictOpen(false)}>
-        <DialogTitle>
-          Submit Prediction File for Automatic Classification
-        </DialogTitle>
+        <DialogTitle>Submit Test File for Automatic Classification</DialogTitle>
         <DialogContent>
           <form onSubmit={(e) => handlePredict(e)}>
             <Grid container spacing={3}>
@@ -511,62 +594,112 @@ const KaggleActionPane = (props) => {
       </Dialog>
       <Paper>
         <h4>Options</h4>
+        {files && (
+          <div>
+            <h5>Source Options:</h5>
+            <ButtonGroup>
+              {files.type === compType && (
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUpload />}
+                  onClick={() => {
+                    competitionAuth(
+                      competitions[+source.index].ref,
+                      email
+                    ).then((entered) => {
+                      if (entered === true) {
+                        dispatch(set_checked([]));
+                        userJobItems(email).then((entries) => {
+                          dispatch(setJobs(entries));
+                          setSubmitterOpen(true);
+                        });
+                      } else {
+                        setOffboard(true);
+                      }
+                    });
+                  }}
+                >
+                  Submit Prediction
+                </Button>
+              )}
+              {files.type === dataType && (
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUpload />}
+                  onClick={() => {
+                    dispatch(set_checked([]));
+                    userJobItems(email).then((entries) => {
+                      dispatch(setJobs(entries));
+                      setSubmitterOpen(true);
+                    });
+                  }}
+                >
+                  Upload Prediction as new dataset version
+                </Button>
+              )}
+            </ButtonGroup>
+          </div>
+        )}
         {datafile && (
           <div>
-            <h4>{fileRef().description}</h4>
-            <h5>Size: {fileRef().totalBytes} bytes</h5>
-            <ButtonGroup
-              size="medium"
-              color="primary"
-              aria-label="medium contained button group"
+            <h5>File Options:</h5>
+            <p>{fileRef().description}</p>
+            <h6>Size: {fileRef().totalBytes} bytes</h6>
+            <Tooltip
+              title={"Limited to CSV files"}
+              placement="bottom"
+              disableFocusListener={datafile.accepted}
+              disableHoverListener={datafile.accepted}
+              disableTouchListener={datafile.accepted}
             >
-              <Button
+              <ButtonGroup
+                size="medium"
+                color="primary"
+                aria-label="medium contained button group"
+                fullWidth={true}
                 variant="contained"
-                startIcon={<CloudDownload />}
-                onClick={() => handleDownload(true)}
               >
-                Download File
-              </Button>
-              <Tooltip
-                title={"Limited to CSV files"}
-                placement="bottom"
-                disableFocusListener={datafile.accepted}
-                disableHoverListener={datafile.accepted}
-                disableTouchListener={datafile.accepted}
-              >
-                <span>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddCircle />}
-                    onClick={() => createJob()}
-                    disabled={!datafile.accepted}
-                  >
-                    Create Training Job
-                  </Button>
-                </span>
-              </Tooltip>
-              <Tooltip
-                title={"Limited to CSV files"}
-                placement="bottom"
-                disableFocusListener={datafile.accepted}
-                disableHoverListener={datafile.accepted}
-                disableTouchListener={datafile.accepted}
-              >
-                <span>
-                  <Button
-                    variant="contained"
-                    startIcon={<CloudUpload />}
-                    onClick={() => {
-                      userJobItems();
+                <Button
+                  startIcon={<CloudDownload />}
+                  onClick={() => handleDownload(true)}
+                  disabled={!datafile.accepted}
+                >
+                  Download File
+                </Button>
+                <Button
+                  startIcon={<AddCircle />}
+                  onClick={() => createJob()}
+                  disabled={!datafile.accepted}
+                >
+                  Create Training Job
+                </Button>
+                <Button
+                  startIcon={<AddCircle />}
+                  onClick={() => {
+                    userJobItems(email).then((entries) =>
+                      dispatch(setJobs(entries))
+                    );
+                    retrainJob();
+                  }}
+                  disabled={true}
+                >
+                  Retrain Existing Job
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUpload />}
+                  onClick={() => {
+                    userJobItems(email).then((entries) => {
+                      dispatch(setJobs(entries));
                       createPredict();
-                    }}
-                    disabled={!datafile.accepted}
-                  >
-                    Auto Classify
-                  </Button>
-                </span>
-              </Tooltip>
-            </ButtonGroup>
+                    });
+                  }}
+                  disabled={!datafile.accepted}
+                >
+                  Auto Classify
+                </Button>
+              </ButtonGroup>
+            </Tooltip>
           </div>
         )}
       </Paper>
@@ -594,6 +727,15 @@ const KaggleActionPane = (props) => {
             Open competition page
           </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        open={submitterOpen}
+        onClose={() => setSubmitterOpen(false)}
+        fullWidth
+        maxWidth="lg"
+        style={{ minHeight: "40vh" }}
+      >
+        <KagglePredictDialog open={submitterOpen} />
       </Dialog>
     </div>
   );

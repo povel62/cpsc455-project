@@ -13,13 +13,13 @@ predict_command = "/opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chica
         --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
         --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
         /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared_2/ensemble_squared/run-client-produce-bm.sh\
-        {job_id} {job_name} {test_file_name} {timer} {target_col} {email} {callback_url}"
+        {job_id} '{job_name}' {test_file_name} {timer} '{target_col}' {email} {callback_url}"
 
 train_command = "/opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
         --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
         --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
         /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared_2/ensemble_squared/run-client-search-bm.sh\
-        {job_id} {job_name} {csv_file_name} {timer} {target_col} {email} {callback_url}"
+        {job_id} '{job_name}' {csv_file_name} {timer} '{target_col}' {email} {callback_url}"
 
 # TRAIN
 def train_pipeline(csv_file_name: str, job_id: str, timer: int, target_name: str, email: str, job_name: str, callback_url: str):

@@ -27,6 +27,19 @@ const kaggleReducer = (state = {}, action) => {
       break;
     case "SET_USERFILTER":
       newState.userFilter = action.payload;
+      break;
+    case "SET_CHECKED":
+      newState.checked = action.payload;
+      break;
+    case "ADD_CHECKED":
+      newState.checked.push(action.payload);
+      break;
+    case "REMOVE_CHECKED":
+      newState.checked.filter((e) => e !== action.payload);
+      break;
+    case "SET_JOBS":
+      newState.jobs = action.payload;
+      break;
   }
   return newState;
 };

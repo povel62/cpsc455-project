@@ -2,7 +2,7 @@ const express = require("express");
 
 const KaggleCtrl = require("../controllers/kaggle-ctrl");
 const GenericCtrl = require("../controllers/generic-ctrl");
-const JobCtrl = require("../controllers/job-ctrl");
+// const JobCtrl = require("../controllers/job-ctrl");
 
 const router = express.Router();
 
@@ -23,7 +23,11 @@ router.post(
 );
 router.get("/kaggle/getKaggleFile/:id", KaggleCtrl.getKaggleFile);
 router.get("/kaggle/getCompetitionsColumns/:id", KaggleCtrl.getCompColumns);
-router.post("/kaggle/:id/job", KaggleCtrl.validateKaggleJob, JobCtrl.createJob);
-router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
+router.post(
+  "/kaggle/:id/job",
+  KaggleCtrl.validateKaggleJob,
+  KaggleCtrl.uploadJob
+);
+router.post("/kaggle/:id/predict", KaggleCtrl.createKagglePrediction);
 
 module.exports = router;
