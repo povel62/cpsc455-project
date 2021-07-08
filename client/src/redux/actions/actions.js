@@ -80,3 +80,10 @@ export const setEmail = (s) => {
     payload: s,
   };
 };
+
+export const setJobs = (s) => {
+  return {
+    type: "SET_JOBS",
+    payload: s,
+  };
+};

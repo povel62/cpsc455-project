@@ -27,6 +27,9 @@ const kaggleReducer = (state = {}, action) => {
       break;
     case "SET_USERFILTER":
       newState.userFilter = action.payload;
+      break;
+    case "SET_JOBS":
+      newState.jobs = action.payload;
   }
   return newState;
 };

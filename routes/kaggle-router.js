@@ -2,7 +2,7 @@ const express = require("express");
 
 const KaggleCtrl = require("../controllers/kaggle-ctrl");
 const GenericCtrl = require("../controllers/generic-ctrl");
-const JobCtrl = require("../controllers/job-ctrl");
+// const JobCtrl = require("../controllers/job-ctrl");
 
 const router = express.Router();
 
@@ -28,6 +28,6 @@ router.post(
   KaggleCtrl.validateKaggleJob,
   KaggleCtrl.uploadJob
 );
-router.post("/kaggle/predict", KaggleCtrl.createKagglePrediction);
+router.post("/kaggle/:id/predict", KaggleCtrl.createKagglePrediction);
 
 module.exports = router;

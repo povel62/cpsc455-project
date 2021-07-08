@@ -42,6 +42,12 @@ validateKaggleJob = async (req, res, next) => {
 };
 
 createKagglePrediction = async (req, res) => {
+  // TODO check job status
+  // jobCtrl.JobStatus.PREDICTING
+  // jobCtrl.JobStatus.PREDICTING_COMPLETED
+  // jobCtrl.JobStatus.TRAINING_COMPLETED
+  console.log(req.body)
+
   await kaggleFileGetter(req, res, uploadTestFile);
 };
 
@@ -208,13 +214,14 @@ function uploadTestFile(tmpFileData, req, res) {
   // TODO test this
   let headers = tmpFileData.split("\n")[0].split(",");
 
-  Job.findOne({ _id: req.params.id }, (err, job) => {
+  Job.findOne({ _id: req.body.job }, (err, job) => {
     if (err) {
       return res.status(404).json({
         err,
         message: "Job not found!",
       });
     }
+    console.log(job)
     let fileData = "";
     if (headers.includes(job.targetColumnName)) {
       fileData = tmpFileData;
