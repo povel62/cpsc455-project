@@ -8,7 +8,7 @@ const Introduction = () => {
         <br />
         <br />
         <hr />
-        <h1>BLACK BOX ML: Introduction</h1>
+        <h1>AUTO ML: Introduction</h1>
         <p>
           BlackBox Machine Learning is an online platform that uses an ensemble
           of state-of-the-art AutoML systems to find the best model to describe

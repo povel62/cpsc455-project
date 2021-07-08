@@ -8,19 +8,12 @@ import AddBoxIcon from "@material-ui/icons/AddBox";
 import IconButton from "@material-ui/core/IconButton";
 //import { DropzoneArea } from "material-ui-dropzone";
 
-// function rand() {
-//   return Math.round(Math.random() * 20) - 10;
-// }
-
 function getModalStyle() {
   const top = 25;
-  //const left = 50 + rand();
 
   return {
     top: `${top}%`,
     margin: "auto",
-    //left: `${left}%`,
-    //transform: `translate(-${top}%, -${left}%)`,
   };
 }
 

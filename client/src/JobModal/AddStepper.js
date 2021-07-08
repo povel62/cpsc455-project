@@ -128,14 +128,29 @@ function AddStepper() {
         return (
           <div>
             <TextField
-              disabled
-              id="filled-disabled"
-              label="Disabled"
+              id="jb name"
+              label="Job Name"
               defaultValue={values.jobName}
+              variant="outlined"
+              InputProps={{
+                readOnly: true,
+              }}
             />
-            <p>{values.jobName}</p>
-            <p>diplay time label</p>
-            <p>display job csv</p>
+            <br />
+            <br />
+            <TextField
+              id="jb time"
+              label="Compute Time"
+              defaultValue={
+                computeTimes.filter(
+                  (option) => option.value == values.jobTime
+                )[0].label
+              }
+              variant="outlined"
+              InputProps={{
+                readOnly: true,
+              }}
+            />
           </div>
         );
       default:
@@ -218,9 +233,19 @@ function AddStepper() {
               >
                 Back
               </Button>
-              <Button variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
-              </Button>
+              {values.jobName === "" ? (
+                <Button disabled variant="contained" color="primary">
+                  Next
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                >
+                  {activeStep === steps.length - 1 ? "Submit" : "Next"}
+                </Button>
+              )}
             </div>
           </div>
         )}

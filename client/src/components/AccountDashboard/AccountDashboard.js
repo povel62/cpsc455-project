@@ -17,7 +17,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -25,7 +24,6 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
-//import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,17 +70,6 @@ export default function AccountDashboard() {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
-  // useEffect(() => {
-  //   setValues((values) => ({
-  //     ...values,
-  //     email: login_token.email,
-  //     kusername: login_token.kusername,
-  //     kapi: login_token.kapi,
-  //     fname: login_token.fname,
-  //     lname: login_token.lname,
-  //   }));
-  // }, [editInfo]);
-
   const submitEditInfo = async (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
@@ -108,15 +95,13 @@ export default function AccountDashboard() {
       dispatch(setLName(values.lname));
       dispatch(setKaggleUsername(values.kusername));
       dispatch(setKaggleAPI(values.kapi));
+    } else {
+      resetValues();
+      alert(response.status);
     }
-
-    alert(response.status);
   };
 
-  const closeEditInfo = (e) => {
-    e.preventDefault();
-    setEditInfo(!editInfo);
-    // e.target.reset();
+  const resetValues = () => {
     setValues({
       ...values,
       email: login_token.email,
@@ -131,6 +116,12 @@ export default function AccountDashboard() {
     document.getElementById("email").value = login_token.email;
     document.getElementById("kaggleUsername").value = login_token.kusername;
     document.getElementById("kaggleApiKey").value = login_token.kapi;
+  };
+
+  const closeEditInfo = (e) => {
+    e.preventDefault();
+    setEditInfo(!editInfo);
+    resetValues();
   };
 
   const handleClickShowPassword = () => {

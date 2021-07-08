@@ -14,6 +14,7 @@ import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useRowStyles = makeStyles({
   root: {
@@ -50,15 +51,20 @@ const Row = (props) => {
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
         <TableCell>
-          <Button
-            variant="contained"
-            color="primary"
-            component="span"
-            onClick={shareEvent}
-            endIcon={<AddIcon />}
+          <Tooltip
+            title="Get share link for this job"
+            aria-label="get link to share this job"
           >
-            Share
-          </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              onClick={shareEvent}
+              endIcon={<AddIcon />}
+            >
+              Share
+            </Button>
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow>

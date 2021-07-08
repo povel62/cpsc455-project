@@ -22,7 +22,7 @@ const Faq = () => {
   return (
     <div className="Faq">
       <div className="containerFaq">
-        <h1>BLACK BOX ML: FAQ</h1>
+        <h1>AUTO ML: FAQ</h1>
         <br />
         <br />
 
@@ -37,7 +37,7 @@ const Faq = () => {
                 Q: How can I see the system in action?
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails className="ans">
               <Typography>
                 The demo link above allows you to upload didactic examples of
                 the kinds of models our system can provide. It will also allow
@@ -59,7 +59,7 @@ const Faq = () => {
                 classification? Time-series analysis? Regression?
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails className="ans">
               <Typography>
                 For now, we only support tabular data formatted in the way
                 described above. Additionally, your target column must be a
@@ -82,7 +82,7 @@ const Faq = () => {
                 can be trained in the maximum time limit. What can I do?
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails className="ans">
               <Typography>
                 We hear you and are happy to provide a manual solution that
                 resolves all of these issues. Please email us at
