@@ -13,19 +13,20 @@ function rand() {
 
 function getModalStyle() {
   const top = 50 + rand();
-  const left = 50 + rand();
+  //const left = 50 + rand();
 
   return {
     top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
+    margin: "auto",
+    //left: `${left}%`,
+    //transform: `translate(-${top}%, -${left}%)`,
   };
 }
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: 400,
+    width: 900,
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -78,6 +79,11 @@ export default function JobModal() {
         open={open}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
         {body}
       </Modal>
