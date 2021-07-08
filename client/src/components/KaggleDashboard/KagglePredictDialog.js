@@ -128,7 +128,7 @@ const KagglePredictDialog = () => {
       <DialogTitle style={{ textAlign: "center" }}>
         Choose Prediction File
       </DialogTitle>
-      <DialogContent style={{ overflow: "hidden" }}>
+      <DialogContent style={{ overflow: "hidden", minHeight: "45vh" }}>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <h4>Select Job</h4>
