@@ -25,6 +25,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
+//import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,6 +72,17 @@ export default function AccountDashboard() {
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
 
+  // useEffect(() => {
+  //   setValues((values) => ({
+  //     ...values,
+  //     email: login_token.email,
+  //     kusername: login_token.kusername,
+  //     kapi: login_token.kapi,
+  //     fname: login_token.fname,
+  //     lname: login_token.lname,
+  //   }));
+  // }, [editInfo]);
+
   const submitEditInfo = async (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
@@ -104,6 +116,21 @@ export default function AccountDashboard() {
   const closeEditInfo = (e) => {
     e.preventDefault();
     setEditInfo(!editInfo);
+    // e.target.reset();
+    setValues({
+      ...values,
+      email: login_token.email,
+      kusername: login_token.kusername,
+      kapi: login_token.kapi,
+      fname: login_token.fname,
+      lname: login_token.lname,
+    });
+
+    document.getElementById("firstName").value = login_token.fname;
+    document.getElementById("lastName").value = login_token.lname;
+    document.getElementById("email").value = login_token.email;
+    document.getElementById("kaggleUsername").value = login_token.kusername;
+    document.getElementById("kaggleApiKey").value = login_token.kapi;
   };
 
   const handleClickShowPassword = () => {

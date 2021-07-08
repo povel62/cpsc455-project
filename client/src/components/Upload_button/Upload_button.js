@@ -7,8 +7,9 @@ import * as XLSX from "xlsx";
 import "./Upload_button.css";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import TextField from "@material-ui/core/TextField";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,15 +22,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UploadButtons() {
-  const login_token = useSelector((state) => state.loginReducer);
+function UploadButtons(props) {
+  //const login_token = useSelector((state) => state.loginReducer);
   const [selectedFile, setFile] = useState(null);
   const [values, setValues] = useState({
     response: "",
     post: "",
     responseToPost: "",
     target_col: "",
-    guest: login_token.isGuest,
   });
 
   const [columns, setColumns] = useState([]);
@@ -98,6 +98,8 @@ export default function UploadButtons() {
       processData(data);
     };
     reader.readAsBinaryString(file);
+    props.changeTarget(values.target_col);
+    props.changeData(data);
   };
 
   const classes = useStyles();
@@ -152,3 +154,10 @@ export default function UploadButtons() {
     </div>
   );
 }
+
+UploadButtons.PropTypes = {
+  changeData: PropTypes.func,
+  changeTarget: PropTypes.func,
+};
+
+export default UploadButtons;

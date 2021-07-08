@@ -9,6 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
 import UploadButtons from "../components/Upload_button/Upload_button";
+import PropTypes from "prop-types";
 
 const computeTimes = [
   {
@@ -50,9 +51,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddStepper() {
+function AddStepper() {
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
+
+  const [target_col, setTarget] = useState("");
+  const [data, setData] = useState(null);
 
   const [values, setValues] = useState({
     response: "",
@@ -114,7 +118,10 @@ export default function AddStepper() {
         return (
           <div>
             <p> Upload your Dataset</p>
-            <UploadButtons></UploadButtons>
+            <UploadButtons
+              changeTarget={(target_col) => setTarget(target_col)}
+              changeData={(data) => setData(data)}
+            ></UploadButtons>
           </div>
         );
       case 2:
@@ -141,10 +148,40 @@ export default function AddStepper() {
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep === steps.length - 1) {
+      handleFinish();
+    }
+  };
+
+  const handleFinish = async () => {
+    // const response = await fetch("/api/user/update", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: "Bearer " + login_token.accessToken,
+    //   },
+    //   body: JSON.stringify({
+    //     email: values.email,
+    //     fname: values.fname,
+    //     lname: values.lname,
+    //     kusername: values.kusername,
+    //     kapi: values.kapi,
+    //   }),
+    // });
+    // if (response.status === 200) {
+    //   dispatch(setEmail(values.email));
+    //   dispatch(setFName(values.fname));
+    //   dispatch(setLName(values.lname));
+    //   dispatch(setKaggleUsername(values.kusername));
+    //   dispatch(setKaggleAPI(values.kapi));
+    // }
+    // alert(response.status);
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    console.log(target_col);
+    console.log(data);
   };
 
   const handleReset = () => {
@@ -191,3 +228,10 @@ export default function AddStepper() {
     </div>
   );
 }
+
+AddStepper.PropTypes = {
+  changeTarget: PropTypes.func,
+  changeData: PropTypes.func,
+};
+
+export default AddStepper;
