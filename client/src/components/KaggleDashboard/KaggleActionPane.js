@@ -25,7 +25,7 @@ import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
-import { setJobs, set_loading } from "../../redux/actions/actions";
+import { setJobs, set_loading, set_checked } from "../../redux/actions/actions";
 import KagglePredictDialog from "./KagglePredictDialog";
 
 const useStyles = makeStyles(() => ({
@@ -436,35 +436,6 @@ const KaggleActionPane = (props) => {
     setSelectJob(txt);
   };
 
-  // const userJobItems = () => {
-  //   axios.get("/api/user", { params: { email: email } }).then((user) => {
-  //     let id = user.data.data.id;
-  //     axios
-  //       .get(`/api/user/${id}/jobs`)
-  //       .then((data) => {
-  //         if (data.status === 200) {
-  //           let jobData = data.data.data;
-  //           if (jobData) {
-  //             let elements = jobData.map((job, i) => {
-  //               if (acceptableJobStatus(job.status))
-  //                 return (
-  //                   <MenuItem value={job.id} key={i}>
-  //                     {job.name}{" "}
-  //                   </MenuItem>
-  //                 );
-  //             });
-  //             setJobs(elements);
-  //           } else {
-  //             setJobs([]);
-  //           }
-  //         }
-  //       })
-  //       .catch(() => {
-  //         setJobs([]);
-  //       });
-  //   });
-  // };
-
   return (
     <div className="KagglePanel">
       <Dialog open={jobOpen} onClose={() => setJobOpen(false)}>
@@ -637,6 +608,7 @@ const KaggleActionPane = (props) => {
                       email
                     ).then((entered) => {
                       if (entered === true) {
+                        dispatch(set_checked([]));
                         userJobItems(email).then((entries) => {
                           dispatch(setJobs(entries));
                           setSubmitterOpen(true);
@@ -655,6 +627,7 @@ const KaggleActionPane = (props) => {
                   variant="contained"
                   startIcon={<CloudUpload />}
                   onClick={() => {
+                    dispatch(set_checked([]));
                     userJobItems(email).then((entries) => {
                       dispatch(setJobs(entries));
                       setSubmitterOpen(true);
@@ -755,7 +728,13 @@ const KaggleActionPane = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={submitterOpen} onClose={() => setSubmitterOpen(false)}>
+      <Dialog
+        open={submitterOpen}
+        onClose={() => setSubmitterOpen(false)}
+        fullWidth
+        maxWidth="lg"
+        style={{ minHeight: "40vh" }}
+      >
         <KagglePredictDialog open={submitterOpen} />
       </Dialog>
     </div>

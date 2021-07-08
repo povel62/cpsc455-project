@@ -96,7 +96,7 @@ export const userJobItems = (email) => {
               }
               let elements = accepted.map((job, i) => {
                 return (
-                  <MenuItem value={job.id} key={i}>
+                  <MenuItem value={job.id} key={i} data-my-value={job.name}>
                     {job.name}
                   </MenuItem>
                 );
@@ -123,6 +123,38 @@ export const getJobPreds = (job) => {
           resolve(res.data.fileNames);
         } else {
           resolve([]);
+        }
+      })
+      .catch(() => reject([]));
+  });
+};
+
+export const getPred = (job, file) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`/api/job/${job}/pred/${file}`, {
+        responseType: "arraybuffer",
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          resolve(res);
+        } else {
+          reject();
+        }
+      })
+      .catch(() => reject());
+  });
+};
+
+export const getPredCol = (job) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`/api/job/${job}`)
+      .then((res) => {
+        if (res.status === 200) {
+          resolve(res.data.data.headers);
+        } else {
+          reject([]);
         }
       })
       .catch(() => reject([]));

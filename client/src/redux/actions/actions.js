@@ -81,6 +81,27 @@ export const setEmail = (s) => {
   };
 };
 
+export const set_checked = (s) => {
+  return {
+    type: "SET_CHECKED",
+    payload: s,
+  };
+};
+
+export const add_checked = (s) => {
+  return {
+    type: "ADD_CHECKED",
+    payload: s,
+  };
+};
+
+export const remove_checked = (s) => {
+  return {
+    type: "REMOVE_CHECKED",
+    payload: s,
+  };
+};
+
 export const setJobs = (s) => {
   return {
     type: "SET_JOBS",
