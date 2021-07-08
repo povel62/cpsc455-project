@@ -3,9 +3,12 @@ import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
-import DataTable from "react-data-table-component";
+//import DataTable from "react-data-table-component";
 import "./Upload_button.css";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
+import TextField from "@material-ui/core/TextField";
+import { useSelector } from "react-redux";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,8 +22,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UploadButtons() {
+  const login_token = useSelector((state) => state.loginReducer);
+  const [selectedFile, setFile] = useState(null);
+  const [values, setValues] = useState({
+    response: "",
+    post: "",
+    responseToPost: "",
+    target_col: "",
+    guest: login_token.isGuest,
+  });
+
   const [columns, setColumns] = useState([]);
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
 
   // process CSV data
   const processData = (dataString) => {
@@ -60,13 +73,18 @@ export default function UploadButtons() {
       selector: c,
     }));
 
-    setData(list);
+    //setData(list);
     setColumns(columns);
   };
 
   // handle file upload
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
+    setFile(file);
+
+    const data = new FormData();
+    data.append("file", selectedFile);
+
     const reader = new FileReader();
     reader.onload = (evt) => {
       /* Parse data */
@@ -104,8 +122,33 @@ export default function UploadButtons() {
           Upload File
         </Button>
       </label>
+      <p>
+        {columns.length != 0 ? (
+          <TextField
+            id="target_col"
+            select
+            label="Select target column"
+            value={values.target_col}
+            onChange={(e) =>
+              setValues({
+                ...values,
+                target_col: e.target.value,
+              })
+            }
+            helperText="Please select target column"
+          >
+            {columns.map((option) => (
+              <MenuItem key={option.selector} value={option.selector}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        ) : (
+          ""
+        )}
+      </p>
 
-      <DataTable pagination highlightOnHover columns={columns} data={data} />
+      {/* <DataTable pagination highlightOnHover columns={columns} data={data} /> */}
     </div>
   );
 }

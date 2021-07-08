@@ -6,6 +6,7 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import IconButton from "@material-ui/core/IconButton";
+//import { DropzoneArea } from "material-ui-dropzone";
 
 // function rand() {
 //   return Math.round(Math.random() * 20) - 10;
