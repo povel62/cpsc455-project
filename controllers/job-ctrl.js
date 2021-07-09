@@ -179,14 +179,17 @@ uploadTestFile = async (req, res) => {
       let csvLinesArr = tmpFileData.split("\n");
       csvLinesArr.forEach((x, index) => {
         if (index === 0) {
-          fileData += x + `,${job.targetColumnName}\n`;
+          fileData += x.replace("\r", "") + `,${job.targetColumnName}\n`;
         } else if (index === csvLinesArr.length - 1) {
           // do nothing
         } else {
-          fileData += x + ",\n";
+          fileData += x.replace("\r", "") + ",\n";
         }
       });
-      headers = fileData.split("\n")[0].split(",");
+      headers = fileData
+        .split("\n")[0]
+        .split(",")
+        .map((x) => x.replace("\r", ""));
     }
     if (headers.length !== job.headers.length) {
       return res.status(400).json({
