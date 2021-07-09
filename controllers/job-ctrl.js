@@ -5,81 +5,13 @@ const ObjectId = require("mongodb").ObjectID;
 let { PythonShell } = require("python-shell");
 var crypto = require("crypto");
 const { CSV_FILES, SESSIONS, HOSTNAME } = require("../GlobalConstants");
-
-uploadFileToServer = (id, fileData, fileName) => {
-  let options = {
-    args: [id, fileData, fileName],
-  };
-
-  return new Promise((resolve, reject) => {
-    try {
-      PythonShell.run(
-        "./util/run_upload.py",
-        options,
-        function (err, results1) {
-          if (err) {
-            if (err != null) {
-              resolve(err);
-            }
-          }
-          resolve(results1);
-        }
-      );
-    } catch {
-      reject("error running python code'");
-    }
-  });
-};
-
-getPredFileNames = (id) => {
-  let options = {
-    args: [id],
-  };
-
-  return new Promise((resolve, reject) => {
-    try {
-      PythonShell.run(
-        "./util/run_getPredictions.py",
-        options,
-        function (err, results1) {
-          if (err) {
-            if (err != null) {
-              resolve(err);
-            }
-          }
-          resolve(results1);
-        }
-      );
-    } catch {
-      reject("error running python code'");
-    }
-  });
-};
-
-getPredFileText = (id, name) => {
-  let options = {
-    args: [id, name],
-  };
-
-  return new Promise((resolve, reject) => {
-    try {
-      PythonShell.run(
-        "./util/run_getPredictionFile.py",
-        options,
-        function (err, results1) {
-          if (err) {
-            if (err != null) {
-              resolve(err);
-            }
-          }
-          resolve(results1);
-        }
-      );
-    } catch {
-      reject("error running python code'");
-    }
-  });
-};
+const {
+  uploadFileToServer,
+  runPhase,
+  getPredFileNames,
+  getPredFileText,
+} = require("./generic-ctrl");
+const { sendTemplateEmail } = require("./send-email");
 
 tryTest = async () => {
   let options = {
@@ -113,47 +45,6 @@ tryTest = async () => {
 //          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
 //          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
 //          60dcca95c81cf5d1580c45e4 HEHE /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcca95c81cf5d1580c45e4/829036a5f48b16b37684.csv 5 Date povel62@yahoo.ca https://cpsc455-project.herokuapp.com/apijob/60dd54803baa72ef93306ea5/status/TRAINING_COMPLETED
-
-runPhase = (
-  fullFilePath,
-  jobId,
-  durationLimit,
-  targetColumnName,
-  email,
-  jobName,
-  callbackUrl,
-  isTrainPhase
-) => {
-  let options = {
-    args: [
-      fullFilePath,
-      jobId,
-      durationLimit,
-      targetColumnName,
-      email,
-      jobName,
-      callbackUrl,
-    ],
-  };
-  return new Promise((resolve, reject) => {
-    try {
-      PythonShell.run(
-        `./util/run_${isTrainPhase ? "train.py" : "predict.py"}`,
-        options,
-        function (err, results1) {
-          if (err) {
-            if (err != null) {
-              resolve(err);
-            }
-          }
-          resolve(results1);
-        }
-      );
-    } catch (err) {
-      reject("error running python code'");
-    }
-  });
-};
 
 const JobStatus = {
   CREATED: "CREATED",
@@ -348,7 +239,7 @@ getPreds = async (req, res) => {
     getPredFileNames(job._id).then((s1) => {
       let fileNames = [];
       try {
-        console.log(s1)
+        console.log(s1);
         if (s1.length > 0) {
           fileNames = JSON.parse(s1[0].replace(/'/g, '"')).map((x) => {
             return x.split("\n")[0];
@@ -526,12 +417,63 @@ updateJobStatus = async (req, res) => {
         job.status = req.params.statusName;
         if (req.params.statusName === JobStatus.TRAINING)
           job.trainingStartedAt = new Date().getTime();
-        if (req.params.statusName === JobStatus.TRAINING_COMPLETED)
+        if (req.params.statusName === JobStatus.TRAINING_COMPLETED) {
           job.trainingFinishedAt = new Date().getTime();
+          job.users.forEach(async (element) => {
+            await User.findOne({ _id: element }, async (err, user) => {
+              if (err) {
+                return res.status(400).json({ success: false, error: err });
+              }
+              if (!user) {
+                return res
+                  .status(404)
+                  .json({ success: false, error: `User not found` });
+              }
+              try {
+                await sendTemplateEmail({
+                  to: user.email,
+                  user: user.fname + " " + user.lname,
+                  templateName: "training_completed",
+                  job_name: job.name,
+                });
+              } catch (error) {
+                return res.status(400).json({ success: false, error: error });
+              }
+            }).catch((err) => {
+              return res.status(400).json({ success: false, error: err });
+            });
+          });
+        }
         if (req.params.statusName === JobStatus.PREDICTING)
           job.predictionStartedAt = new Date().getTime();
-        if (req.params.statusName === JobStatus.PREDICTING_COMPLETED)
+        if (req.params.statusName === JobStatus.PREDICTING_COMPLETED) {
           job.predictionFinishedAt = new Date().getTime();
+          job.users.forEach(async (element) => {
+            await User.findOne({ _id: element }, async (err, user) => {
+              if (err) {
+                return res.status(400).json({ success: false, error: err });
+              }
+              if (!user) {
+                return res
+                  .status(404)
+                  .json({ success: false, error: `User not found` });
+              }
+              try {
+                await sendTemplateEmail({
+                  to: user.email,
+                  user: user.fname + " " + user.lname,
+                  templateName: "prediction_completed",
+                  job_name: job.name,
+                  size: "0.51 KB",
+                });
+              } catch (error) {
+                return res.status(400).json({ success: false, error: error });
+              }
+            }).catch((err) => {
+              return res.status(400).json({ success: false, error: err });
+            });
+          });
+        }
       }
     }
 

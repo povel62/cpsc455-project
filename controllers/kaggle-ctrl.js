@@ -3,13 +3,12 @@ let { PythonShell } = require("python-shell");
 const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
 const User = require("../models/user-model");
 const Job = require("../models/job-model");
-const fs = require("fs");
 const unzip = require("unzip-stream");
 const etl = require("etl");
 const { CSV_FILES, HOSTNAME } = require("../GlobalConstants");
 const jobCtrl = require("./job-ctrl");
 const crypto = require("crypto");
-const { Readable } = require("stream");
+const { uploadFileToServer, runPhase } = require("./generic-ctrl");
 
 checkAccount = async (req, res) => {
   // TODO remove most likely, clientside can do the check
@@ -46,7 +45,7 @@ createKagglePrediction = async (req, res) => {
   // jobCtrl.JobStatus.PREDICTING
   // jobCtrl.JobStatus.PREDICTING_COMPLETED
   // jobCtrl.JobStatus.TRAINING_COMPLETED
-  console.log(req.body)
+  console.log(req.body);
 
   await kaggleFileGetter(req, res, uploadTestFile);
 };
@@ -179,25 +178,23 @@ function uploadJobHelper(fileData, req, res) {
       jobCtrl.addJobToUser(req.params.id, job).then(() => {
         uploadFileToServer(job._id, fileData, "train.csv")
           .then((s1) => {
-            jobCtrl
-              .runPhase(
-                CSV_FILES + "/" + job._id + "/" + "train.csv",
-                job._id,
-                job.durationLimit,
-                job.targetColumnName,
-                "povel62@yahoo.ca",
-                job.name,
-                HOSTNAME +
-                  `job/${job._id}/status/${jobCtrl.JobStatus.TRAINING_COMPLETED}`,
-                true
-              )
-              .then((s2) => {
-                return res.status(201).json({
-                  success: true,
-                  id: job._id,
-                  message: "Job created!\n" + s1 + "\n" + s2,
-                });
+            runPhase(
+              CSV_FILES + "/" + job._id + "/" + "train.csv",
+              job._id,
+              job.durationLimit,
+              job.targetColumnName,
+              "povel62@yahoo.ca",
+              job.name,
+              HOSTNAME +
+                `job/${job._id}/status/${jobCtrl.JobStatus.TRAINING_COMPLETED}`,
+              true
+            ).then((s2) => {
+              return res.status(201).json({
+                success: true,
+                id: job._id,
+                message: "Job created!\n" + s1 + "\n" + s2,
               });
+            });
           })
           .catch((err) => console.log(err));
       });
@@ -221,7 +218,7 @@ function uploadTestFile(tmpFileData, req, res) {
         message: "Job not found!",
       });
     }
-    console.log(job)
+    console.log(job);
     let fileData = "";
     if (headers.includes(job.targetColumnName)) {
       fileData = tmpFileData;
@@ -252,25 +249,23 @@ function uploadTestFile(tmpFileData, req, res) {
       .then(() => {
         let id = crypto.randomBytes(10).toString("hex");
         uploadFileToServer(job._id, fileData, id + ".csv").then((s1) => {
-          jobCtrl
-            .runPhase(
-              CSV_FILES + "/" + job._id + "/" + id + ".csv",
-              job._id,
-              job.durationLimit,
-              job.targetColumnName,
-              "povel62@yahoo.ca",
-              job.name,
-              HOSTNAME +
-                `job/${job._id}/status/${jobCtrl.JobStatus.PREDICTING_COMPLETED}`,
-              false
-            )
-            .then((s2) => {
-              return res.status(201).json({
-                success: true,
-                id: job._id,
-                message: "Job updated!\n" + s1 + "\n" + s2,
-              });
+          runPhase(
+            CSV_FILES + "/" + job._id + "/" + id + ".csv",
+            job._id,
+            job.durationLimit,
+            job.targetColumnName,
+            "povel62@yahoo.ca",
+            job.name,
+            HOSTNAME +
+              `job/${job._id}/status/${jobCtrl.JobStatus.PREDICTING_COMPLETED}`,
+            false
+          ).then((s2) => {
+            return res.status(201).json({
+              success: true,
+              id: job._id,
+              message: "Job updated!\n" + s1 + "\n" + s2,
             });
+          });
         });
       })
       .catch((error) => {
@@ -327,36 +322,6 @@ CSVToArray = (CSV_string, delimiter) => {
   }
   return rows; // Return the parsed data Array
 };
-
-function uploadFileToServer(id, fileData, fileName) {
-  return new Promise((resolve, reject) => {
-    try {
-      let path = `./util/${id}-${fileName}`;
-      fs.writeFileSync(path, fileData);
-
-      let options = {
-        args: [path, id, fileName],
-      };
-
-      PythonShell.run(
-        "./util/run_upload_new.py",
-        options,
-        function (err, results1) {
-          if (err) {
-            if (err != null) {
-              resolve(err);
-            }
-          }
-          fs.unlinkSync(path);
-          resolve(results1);
-        }
-      );
-    } catch (e) {
-      fs.unlinkSync(path);
-      reject(e);
-    }
-  });
-}
 
 async function kaggleFileGetter(req, res, callback) {
   const body = req.body;

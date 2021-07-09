@@ -5,6 +5,7 @@ const { validateGuest } = require("../util/validation");
 const jwt = require("jsonwebtoken");
 const { secret } = require("../util/security");
 const validator = require("email-validator");
+const { sendTemplateEmail } = require("./send-email");
 
 createUser = async (req, res) => {
   const body = req.body;
@@ -53,7 +54,17 @@ createUser = async (req, res) => {
 
     user
       .save()
-      .then(() => {
+      .then(async () => {
+        await sendTemplateEmail({
+          to: user.email,
+          templateName: "welcome",
+          name: user.fname + " " + user.lname,
+          Sender_Name: "AutoML",
+          Sender_Address: "UBC",
+          Sender_City: "Vancouver",
+          Sender_State: "BC",
+          Sender_Zip: "V6T 1Z4",
+        });
         return res.status(201).json({
           success: true,
           id: user._id,
