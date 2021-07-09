@@ -230,7 +230,7 @@ function uploadTestFile(tmpFileData, req, res) {
         } else if (index === csvLinesArr.length - 1) {
           // do nothing
         } else {
-          fileData += x.replace("\r", "") + "\n";
+          fileData += x.replace("\r", "") + ",\n";
         }
       });
       headers = fileData
