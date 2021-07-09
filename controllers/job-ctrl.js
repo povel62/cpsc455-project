@@ -12,6 +12,8 @@ const {
   getPredFileText,
 } = require("./generic-ctrl");
 const { sendTemplateEmail } = require("./send-email");
+const fs = require("fs");
+const csv = require("csv-parser");
 
 tryTest = async () => {
   let options = {
@@ -319,35 +321,38 @@ getPredFile = async (req, res) => {
         message: "Job not found!",
       });
     }
+    let path = `./util/${req.params.name}`;
 
-    getPredFileText(job._id, req.params.name).then((s1) => {
-      let csv = "";
-      try {
-        if (s1.length > 0) {
-          JSON.parse(s1[0].replace(/'/g, '"')).map((x) => {
-            csv += x;
-          });
+    getPredFileText(job._id, req.params.name, path)
+      .then((s1) => {
+        let exportFile = req.query.export;
+        let csvData = [];
+        try {
+          if (exportFile === "false") {
+            fs.createReadStream(path)
+              .pipe(csv())
+              .on("data", (row) => {
+                csvData.push(row);
+              })
+              .on("end", () => {
+                fs.unlinkSync(path);
+                return res.send(csvData);
+              });
+          } else {
+            res.download(path, (error) => {
+              fs.unlinkSync(path);
+            });
+          }
+        } catch (err) {
+          console.log(err);
         }
-      } catch (err) {
-        return res.status(400).json({
-          error: err,
-          message: "Cannot get file data!",
+      })
+      .catch((error) => {
+        return res.status(404).json({
+          error,
+          message: "Cannot find file!",
         });
-      }
-      let exportFile = req.query.export;
-      if (exportFile === "false") {
-        return res.send(CSVToArray(csv, ","));
-      } else {
-        res.header("Content-Type", "text/csv");
-        res.attachment(req.params.name);
-        return res.send(csv);
-      }
-    });
-  }).catch((error) => {
-    return res.status(404).json({
-      error,
-      message: "Cannot find file!",
-    });
+      });
   });
 };
 

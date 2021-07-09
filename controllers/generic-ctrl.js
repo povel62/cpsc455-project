@@ -131,9 +131,9 @@ getPredFileNames = (id) => {
   });
 };
 
-getPredFileText = (id, name) => {
+getPredFileText = (id, name, path) => {
   let options = {
-    args: [id, name],
+    args: [path, id, name],
   };
 
   return new Promise((resolve, reject) => {
@@ -144,13 +144,16 @@ getPredFileText = (id, name) => {
         function (err, results1) {
           if (err) {
             if (err != null) {
+              console.log(err);
               resolve(err);
             }
           }
+          console.log(results1);
           resolve(results1);
         }
       );
-    } catch {
+    } catch (err) {
+      console.log(err);
       reject("error running python code'");
     }
   });
