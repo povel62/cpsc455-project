@@ -188,16 +188,13 @@ export default function Navigation(props) {
                       ))}
                     </Menu>
                   </div>
-
-                  <Tabs
-                    className="largeScreen"
-                    value={selectedTab}
-                    onChange={handleChange}
-                  >
-                    {options.map((option, index) => (
-                      <Tab label={option} key={index} />
-                    ))}
-                  </Tabs>
+                  <div className="largeScreen">
+                    <Tabs value={selectedTab} onChange={handleChange}>
+                      {options.map((option, index) => (
+                        <Tab label={option} key={index} />
+                      ))}
+                    </Tabs>
+                  </div>
                 </div>
               </Grid>
             </Grid>
