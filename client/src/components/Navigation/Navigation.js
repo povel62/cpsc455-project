@@ -6,9 +6,8 @@ import ControlDashboard from "../ControlDashboard/ControlDashboard";
 import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoginToken, setEmail } from "../../redux/actions/actions";
-import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -22,6 +21,17 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import PropTypes from "prop-types";
 import KaggleDashBoard from "../KaggleDashboard/KaggleDashboard";
+import Tooltip from "@material-ui/core/Tooltip";
+
+import MenuIcon from "@material-ui/icons/Menu";
+
+const options = [
+  "Home",
+  "Tutorial",
+  "FAQ",
+  "Control Dashboard",
+  "Kaggle Dashboard",
+];
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -74,11 +84,19 @@ export default function Navigation(props) {
 
   const handleClose = () => {
     setAnchorEl(null);
+    setAnchorMenu(null);
   };
 
   const handleMyAccount = () => {
     setSelectedTab(99);
     setAnchorEl(null);
+  };
+
+  const [anchorMenu, setAnchorMenu] = React.useState(null);
+  const openMenu = Boolean(anchorMenu);
+
+  const handleClickMenu = (event) => {
+    setAnchorMenu(event.currentTarget);
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -135,32 +153,65 @@ export default function Navigation(props) {
             </Grid>
             <Grid xs={8} item>
               <Grid container justify={"center"}>
-                <div style={{ alignItems: "center" }}>
-                  <Tabs
-                    className="containerTab"
-                    value={selectedTab}
-                    onChange={handleChange}
+                <div className="smallScreen">
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    onClick={handleClickMenu}
                   >
-                    <Tab label="Home" />
-                    <Tab label="Tutorial" />
-                    <Tab label="FAQ" />
-                    <Tab label="Kaggle Dashboard" />
-                    <Tab label="Control Dashboard" />
+                    <Tooltip title="Menu" aria-label="Open Menu">
+                      <MenuIcon fontSize="large" style={{ color: "white" }} />
+                    </Tooltip>
+                  </IconButton>
+                  <Menu
+                    id="long-menu"
+                    anchorEl={anchorMenu}
+                    keepMounted
+                    open={openMenu}
+                    onClose={handleClose}
+                    PaperProps={{
+                      style: {
+                        width: "100%",
+                      },
+                    }}
+                  >
+                    {options.map((option, index) => (
+                      <MenuItem
+                        key={option}
+                        onClick={() => {
+                          setSelectedTab(index);
+                          handleClose();
+                        }}
+                      >
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+                <div className="largeScreen">
+                  <Tabs value={selectedTab} onChange={handleChange}>
+                    {options.map((option, index) => (
+                      <Tab label={option} key={index} />
+                    ))}
                   </Tabs>
                 </div>
               </Grid>
             </Grid>
             <Grid item xs style={{ textAlign: "end" }}>
               <div>
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
-                  <AccountCircle /> {fname}
-                </IconButton>
+                <Tooltip title="Account Menu" aria-label="Open Account Menu">
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                  >
+                    <AccountCircle /> {fname}
+                  </IconButton>
+                </Tooltip>
+
                 <Menu
                   id="menu-appbar"
                   anchorEl={anchorEl}
@@ -195,11 +246,11 @@ export default function Navigation(props) {
         {selectedTab === 0 && <Home isLanding={false} />}
         {selectedTab === 1 && <Tutorial />}
         {selectedTab === 2 && <Faq />}
-        {selectedTab === 3 && (
+
+        {selectedTab === 3 && <ControlDashboard />}
+        {selectedTab === 4 && (
           <KaggleDashBoard tab={selectedTab} setTab={setSelectedTab} />
         )}
-
-        {selectedTab === 4 && <ControlDashboard />}
 
         {selectedTab === 99 && <AccountDashboard />}
       </>

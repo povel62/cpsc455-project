@@ -8,7 +8,7 @@
 }
 
 .KaggleList {
-    height: fit-content;
+  height: fit-content;
   max-height: 80vh;
   overflow: auto;
 }

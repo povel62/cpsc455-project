@@ -1,12 +1,17 @@
-nav {
-  float: left;
-  display: block;
-  text-align: center;
-  padding: 14px 16px;
-  color: #ffffff;
-  text-decoration: none;
+.smallScreen {
+  display: none;
+}
+.largeScreen {
+  justify-content: "center";
 }
 
-nav:hover:not(.active) {
-  background-color: #000000;
+@media screen and (max-width: 1100px) {
+  .smallScreen {
+    display: flex;
+    justify-content: "center";
+  }
+  .largeScreen {
+    display: none;
+    justify-content: "center";
+  }
 }
