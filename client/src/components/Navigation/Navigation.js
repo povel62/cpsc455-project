@@ -6,9 +6,8 @@ import ControlDashboard from "../ControlDashboard/ControlDashboard";
 import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoginToken, setEmail } from "../../redux/actions/actions";
-import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -22,6 +21,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import PropTypes from "prop-types";
 import KaggleDashBoard from "../KaggleDashboard/KaggleDashboard";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import MenuIcon from "@material-ui/icons/Menu";
 
@@ -153,62 +153,65 @@ export default function Navigation(props) {
             </Grid>
             <Grid xs={8} item>
               <Grid container justify={"center"}>
-                <div style={{ alignItems: "center" }}>
-                  <div className="smallScreen">
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      onClick={handleClickMenu}
-                    >
+                <div className="smallScreen">
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    onClick={handleClickMenu}
+                  >
+                    <Tooltip title="Menu" aria-label="Open Menu">
                       <MenuIcon fontSize="large" style={{ color: "white" }} />
-                    </IconButton>
-                    <Menu
-                      id="long-menu"
-                      anchorEl={anchorMenu}
-                      keepMounted
-                      open={openMenu}
-                      onClose={handleClose}
-                      PaperProps={{
-                        style: {
-                          width: "100%",
-                        },
-                      }}
-                    >
-                      {options.map((option, index) => (
-                        <MenuItem
-                          key={option}
-                          onClick={() => {
-                            setSelectedTab(index);
-                            handleClose();
-                          }}
-                        >
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Menu>
-                  </div>
-                  <div className="largeScreen">
-                    <Tabs value={selectedTab} onChange={handleChange}>
-                      {options.map((option, index) => (
-                        <Tab label={option} key={index} />
-                      ))}
-                    </Tabs>
-                  </div>
+                    </Tooltip>
+                  </IconButton>
+                  <Menu
+                    id="long-menu"
+                    anchorEl={anchorMenu}
+                    keepMounted
+                    open={openMenu}
+                    onClose={handleClose}
+                    PaperProps={{
+                      style: {
+                        width: "100%",
+                      },
+                    }}
+                  >
+                    {options.map((option, index) => (
+                      <MenuItem
+                        key={option}
+                        onClick={() => {
+                          setSelectedTab(index);
+                          handleClose();
+                        }}
+                      >
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+                <div className="largeScreen">
+                  <Tabs value={selectedTab} onChange={handleChange}>
+                    {options.map((option, index) => (
+                      <Tab label={option} key={index} />
+                    ))}
+                  </Tabs>
                 </div>
               </Grid>
             </Grid>
             <Grid item xs style={{ textAlign: "end" }}>
               <div>
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
-                  <AccountCircle /> {fname}
-                </IconButton>
+                <Tooltip title="Account Menu" aria-label="Open Account Menu">
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                  >
+                    <AccountCircle /> {fname}
+                  </IconButton>
+                </Tooltip>
+
                 <Menu
                   id="menu-appbar"
                   anchorEl={anchorEl}

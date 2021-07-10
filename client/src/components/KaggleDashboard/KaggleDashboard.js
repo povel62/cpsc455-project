@@ -36,6 +36,10 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     maxWidth: 345,
+    minWidth: 275,
+    minHeight: 300,
+    paddingLeft: 20,
+    paddingRight: 20,
   },
 }));
 
@@ -137,8 +141,14 @@ const KaggleDashBoard = (props) => {
                   </CardContent>
                 </CardActionArea>
                 <CardActions>
-                  <Button size="small" color="primary">
-                    Learn More
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => {
+                      props.setTab(99);
+                    }}
+                  >
+                    Add Kaggle Credentials
                   </Button>
                 </CardActions>
               </Card>

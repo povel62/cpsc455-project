@@ -1,17 +1,8 @@
-nav {
-  float: left;
-  display: block;
-  text-align: center;
-  padding: 14px 16px;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-nav:hover:not(.active) {
-  background-color: #000000;
-}
 .smallScreen {
   display: none;
+}
+.largeScreen {
+  justify-content: "center";
 }
 
 @media screen and (max-width: 1100px) {
@@ -21,5 +12,6 @@ nav:hover:not(.active) {
   }
   .largeScreen {
     display: none;
+    justify-content: "center";
   }
 }
