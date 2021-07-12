@@ -15,6 +15,7 @@ import {
 import { Autocomplete } from "@material-ui/lab";
 import { getJobPreds, getPredCol } from "./kaggleApi";
 import CheckboxList from "./SelectList";
+import axios from "axios";
 
 const KagglePredictDialog = () => {
   let source = useSelector((state) => state.kaggleReducer.source);
@@ -26,6 +27,7 @@ const KagglePredictDialog = () => {
   const [init, setInit] = useState(true);
   const [columns, setColumns] = useState([]);
   const [checked, setChecked] = useState([]);
+  const [job, setJob] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -34,6 +36,7 @@ const KagglePredictDialog = () => {
       setInit(true);
       setColumns([]);
       setChecked([]);
+      setJob(null);
     };
   }, []);
 
@@ -94,6 +97,7 @@ const KagglePredictDialog = () => {
       setChecked([]);
       handlePred(newVal.value);
       handleColumns(newVal.value);
+      setJob(newVal.value);
     } else {
       setInit(true);
     }
@@ -101,8 +105,33 @@ const KagglePredictDialog = () => {
 
   const handleDl = () => {
     // TODO
+    let cols = checked.map((ele) => {
+      return columns[ele];
+    });
+    console.log(job);
+    console.log(cols);
     console.log(pred);
-    console.log(checked);
+    axios
+      .get(`/api/job/${job}/pred/${pred}`, { params: { cols: cols } })
+      .then((res) => {
+        if (res.status === 200) {
+          let name = pred;
+          const addr = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement("a");
+          link.href = addr;
+          link.setAttribute("download", name);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(addr);
+        } else {
+          // TODO turn btn red for err
+        }
+      })
+      .catch((err) => {
+        // TODO turn btn red for err
+        console.log(err);
+      });
   };
 
   const handleSubmitToComp = () => {
