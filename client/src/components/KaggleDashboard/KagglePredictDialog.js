@@ -86,17 +86,6 @@ const KagglePredictDialog = (props) => {
       });
   };
 
-  // old handler for select box (in case autocomplete is buggy)
-  //   const handleJobChange = (e) => {
-  //     setLoad(true);
-  //     setPred("");
-  //     setInit(false);
-  //     setUnacceptable(true);
-  //     setChecked([]);
-  //     handlePred(e.target.value);
-  //     handleColumns(e.target.value);
-  //   };
-
   // eslint-disable-next-line no-unused-vars
   const handleJobChange = (e, newVal) => {
     // TODO switch on e type to allow for clear button to work
@@ -142,8 +131,6 @@ const KagglePredictDialog = (props) => {
   };
 
   const handleSubmitToComp = () => {
-    // TODO
-    // "/kaggle/:id/:jid/competitions/:ref/submit/:name"
     console.log(job);
     console.log(pred);
     console.log(checked);
@@ -181,15 +168,58 @@ const KagglePredictDialog = (props) => {
   };
 
   const handleNewDataset = () => {
-    // TODO
+    // TODO let user choose name
+    console.log(job);
     console.log(pred);
-    console.log(checked);
-  };
 
-  const handleAddToDataset = () => {
-    // TODO
-    console.log(pred);
-    console.log(checked);
+    console.log(sourceRef(source, datasets, competitions));
+    let checkedCols = checked.map((ele) => {
+      return columns[ele];
+    });
+    console.log(checkedCols);
+    try {
+      let ref = sourceRef(source, datasets, competitions);
+      let title = (ref.split("/")[1] + " prediction").replaceAll("_", ""); // todo more input cleaning?
+      if (title.length > 50) {
+        // trim excess while keeping prediction label
+        let i = title.length - 50;
+        title = title.substring(i);
+      }
+      console.log(title);
+      // "/kaggle/:id/:jid/datasets/version/new/:name"
+      axios
+        .get("/api/user", { params: { email: email } })
+        .then((user) => {
+          let id = user.data.data.id;
+          axios
+            .post(`/api/kaggle/${id}/${job}/datasets/version/new/${pred}`, {
+              params: { cols: checkedCols, title: title },
+            })
+            .then((res) => {
+              if (res.status === 201) {
+                console.log("Success");
+                if (open) {
+                  setOpen(false);
+                }
+              } else {
+                console.log("Fail");
+
+                // TODO turn btn red for err
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              // TODO turn btn red for err
+            });
+        })
+        .catch((e) => {
+          console.log(e);
+          // TODO turn btn red for err
+        });
+    } catch (e) {
+      console.log(e);
+      // TODO fail
+    }
   };
 
   return (
@@ -228,9 +258,6 @@ const KagglePredictDialog = (props) => {
                 />
               )}
             ></Autocomplete>
-            {/* <Select required onChange={(e) => handleJobChange(e)}>
-              {jobs}
-            </Select> */}
           </Grid>
           <Grid item xs={4}>
             <h4>Select Prediction File</h4>
@@ -287,10 +314,10 @@ const KagglePredictDialog = (props) => {
             variant="contained"
             disabled={unacceptable}
           >
-            <Button onClick={handleNewDataset}>Create new dataset</Button>
-            <Button onClick={handleAddToDataset}>
-              Add to existing dataset
+            <Button onClick={handleNewDataset}>
+              Create new private dataset
             </Button>
+            <Button disabled>Add to existing dataset (not ready)</Button>
             <Button onClick={handleDl}> Download </Button>
           </ButtonGroup>
         )) ||

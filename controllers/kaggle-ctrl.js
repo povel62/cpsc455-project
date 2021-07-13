@@ -15,17 +15,6 @@ const {
   getPredFileText,
 } = require("./generic-ctrl");
 
-checkAccount = async (req, res) => {
-  // TODO remove most likely, clientside can do the check
-  // TODO do a vanilla comp list and check for unauthorized or not
-  let test = new PythonShell("../util/kaggleWrapper.py", {
-    env: { KAGGLE_USERNAME: "test", KAGGLE_KEY: "abcd" },
-  });
-  test.on("message", function (message) {
-    console.log(message);
-    return res.status(501).json({ success: false, error: message });
-  });
-};
 // "/kaggle/:id/:jid/competitions/:ref/submit/:name"
 competitionUploadSubmit = async (req, res) => {
   if (!req.params.ref) {
@@ -54,7 +43,6 @@ competitionUploadSubmit = async (req, res) => {
     // return res.status(501).json({ success: false, error: `Not Implemented` });
     // TODO change to _id after token verify
     User.findOne({ _id: req.params.id }, (err, user) => {
-      // TODO get kapi key
       if (err) {
         return res.status(404).json({
           err,
@@ -123,8 +111,119 @@ competitionUploadSubmit = async (req, res) => {
 };
 
 datasetCreateVersion = async (req, res) => {
-  // TODO
-  return res.status(501).json({ success: false, error: `Not Implemented` });
+  if (!req.body || !req.body.params.title || !req.body.params.cols) {
+    return res.status(400).json({ success: false });
+  }
+  let title = req.body.params.title;
+  // TODO check title is bewteen 6-50 characters long, '-' allowed but not '_'
+  // TODO allow license change?
+  Job.findOne({ _id: req.params.jid }, (err, job) => {
+    if (err) {
+      return res.status(404).json({
+        err,
+        message: "Job not found!",
+      });
+    }
+    let folder = fs.mkdtempSync("./util/");
+    let path = `${folder}/${req.params.name}`;
+    // let folder = `./util/${prefix}`;
+    // if (!fs.existsSync(folder)) {
+    //   fs.mkdirSync(folder);
+    // }
+    let cols = [];
+    if (req.body.params.cols) {
+      try {
+        cols = JSON.parse(req.body.params.cols);
+      } catch (e) {
+        cols = req.body.params.cols;
+      }
+    }
+    // TODO change to _id after token verify
+    User.findOne({ _id: req.params.id }, (err, user) => {
+      if (err) {
+        return res.status(404).json({
+          err,
+          message: "User not found!",
+        });
+      }
+      getPredFileText(job._id, req.params.name, path, cols)
+        .then((s1) => {
+          // TODO write config json
+          let config = {
+            title: title,
+            id: `${user.kusername}/${title}`,
+            licenses: [{ name: "unknown" }],
+          };
+          config = JSON.stringify(config);
+          fs.writeFileSync(folder + `/dataset-metadata.json`, config);
+          // TODO remove
+          // return res
+          //   .status(501)
+          //   .json({ success: false, error: `Not Implemented` });
+
+          let options = {
+            args: [folder],
+            env: {
+              KAGGLE_USERNAME: user.kusername,
+              KAGGLE_KEY: user.kapi,
+            },
+          };
+          new Promise((resolve, reject) => {
+            try {
+              PythonShell.run(
+                "./util/submit_dataset.py",
+                options,
+                function (err, results) {
+                  if (err) {
+                    if (err != null) {
+                      console.log(err);
+                      reject(err);
+                    }
+                  }
+                  console.log(results);
+                  resolve(results);
+                }
+              );
+            } catch (err) {
+              console.log(err);
+              reject("error running python code'");
+            }
+          })
+            .then(
+              () => {
+                res.status(201).json({ success: true });
+              },
+              () => {
+                // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
+                res.status(401).json({ success: false });
+              }
+            )
+            .catch((err) => {
+              res.status(500).json({ success: false });
+            })
+            .finally(() => {
+              try {
+                console.log("here")
+                // fs.rmSync()
+                fs.rmSync(folder,{ recursive: true });
+                // fs.unlinkSync(path);
+              } catch (e) {
+                console.log(e);
+              }
+            });
+        })
+        .catch((error) => {
+          return res.status(404).json({
+            error,
+            message: "Cannot find file!",
+          });
+        });
+    });
+  });
+
+  // config api: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata
+  // TODO write config json to folder as dataset-metadata.json
+  // return res.status(501).json({ success: false, error: `Not Implemented` });
 };
 
 validateKaggleJob = async (req, res, next) => {
@@ -453,7 +552,6 @@ async function kaggleFileGetter(req, res, callback) {
 }
 
 module.exports = {
-  checkAccount,
   competitionUploadSubmit,
   datasetCreateVersion,
   getKaggleFile,
