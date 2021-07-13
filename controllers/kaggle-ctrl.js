@@ -15,7 +15,6 @@ const {
   getPredFileText,
 } = require("./generic-ctrl");
 
-// "/kaggle/:id/:jid/competitions/:ref/submit/:name"
 competitionUploadSubmit = async (req, res) => {
   if (!req.params.ref) {
     return res
@@ -32,7 +31,6 @@ competitionUploadSubmit = async (req, res) => {
     let path = `./util/${req.params.name}`;
     let cols = [];
     let message = "Generated with Ensemble Squared: A Meta AutoML System"; // TODO
-    // console.log(req.body);
     if (req.body.params.cols) {
       try {
         cols = JSON.parse(req.body.params.cols);
@@ -40,7 +38,6 @@ competitionUploadSubmit = async (req, res) => {
         cols = req.body.params.cols;
       }
     }
-    // return res.status(501).json({ success: false, error: `Not Implemented` });
     // TODO change to _id after token verify
     User.findOne({ _id: req.params.id }, (err, user) => {
       if (err) {
@@ -51,7 +48,6 @@ competitionUploadSubmit = async (req, res) => {
       }
       getPredFileText(job._id, req.params.name, path, cols)
         .then((s1) => {
-          // path, msg, ref
           let options = {
             args: [path, message, req.params.ref],
             env: {
@@ -110,13 +106,15 @@ competitionUploadSubmit = async (req, res) => {
   });
 };
 
+// TODO refactor common functions out of dataset and comp pred uploaders
 datasetCreateVersion = async (req, res) => {
+  // config api: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata
   if (!req.body || !req.body.params.title || !req.body.params.cols) {
     return res.status(400).json({ success: false });
   }
+  // alphanumeric only, 6-50 chars long
   let title = req.body.params.title.replace(/[^a-z0-9]/gi, "") + "-prediction";
-  // TODO check title is bewteen 6-50 characters long, '-' allowed but not '_'
-  // TODO allow license change?
+  // TODO check title is bewteen 6-50 characters long,
   Job.findOne({ _id: req.params.jid }, (err, job) => {
     if (err) {
       return res.status(404).json({
@@ -126,10 +124,6 @@ datasetCreateVersion = async (req, res) => {
     }
     let folder = fs.mkdtempSync("./util/");
     let path = `${folder}/${req.params.name}`;
-    // let folder = `./util/${prefix}`;
-    // if (!fs.existsSync(folder)) {
-    //   fs.mkdirSync(folder);
-    // }
     let cols = [];
     if (req.body.params.cols) {
       try {
@@ -156,11 +150,6 @@ datasetCreateVersion = async (req, res) => {
           };
           config = JSON.stringify(config);
           fs.writeFileSync(folder + `/dataset-metadata.json`, config);
-          // TODO remove
-          // return res
-          //   .status(501)
-          //   .json({ success: false, error: `Not Implemented` });
-
           let options = {
             args: [folder],
             env: {
@@ -220,10 +209,6 @@ datasetCreateVersion = async (req, res) => {
         });
     });
   });
-
-  // config api: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata
-  // TODO write config json to folder as dataset-metadata.json
-  // return res.status(501).json({ success: false, error: `Not Implemented` });
 };
 
 validateKaggleJob = async (req, res, next) => {
@@ -235,12 +220,10 @@ validateKaggleJob = async (req, res, next) => {
 };
 
 createKagglePrediction = async (req, res) => {
-  // TODO check job status
+  // TODO check job status, lookup job and check these:
   // jobCtrl.JobStatus.PREDICTING
   // jobCtrl.JobStatus.PREDICTING_COMPLETED
   // jobCtrl.JobStatus.TRAINING_COMPLETED
-  console.log(req.body);
-
   await kaggleFileGetter(req, res, uploadTestFile);
 };
 
@@ -260,7 +243,6 @@ getKaggleFile = async (req, res) => {
     try {
       const auth = { username: user.kusername, password: user.kapi };
       const url = kaggleBaseUrl + req.query.url;
-      // const filename = crypto.createHash("sha256").update(url).digest("hex");
       request(
         {
           url: url,
@@ -350,7 +332,6 @@ function fetchColumns(d, csv, res) {
   return res.status(200).json({ success: true, data: Array.from(columns) });
 }
 
-// very similar to job ctrl but downloads the file from kaggle first and may optimize the pipeline for big files later
 uploadJob = async (req, res) => {
   await kaggleFileGetter(req, res, uploadJobHelper);
 };
@@ -517,7 +498,6 @@ async function kaggleFileGetter(req, res, callback) {
           response.headers["content-type"] === "application/zip"
         ) {
           response.pipe(unzip.Parse()).on("entry", function (entry) {
-            // modifiable to stream data if infrastructure supports it
             if (entry.path === fileName) {
               entry
                 .on("data", function (d) {
@@ -533,7 +513,7 @@ async function kaggleFileGetter(req, res, callback) {
           response.statusCode === 200 &&
           response.headers["content-type"] !== "application/zip" // TODO change to more strict type
         ) {
-          response // modifiable to stream data if infrastructure supports it
+          response
             .on("data", function (d) {
               payload += d;
             })

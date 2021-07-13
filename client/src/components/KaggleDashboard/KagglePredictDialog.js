@@ -180,9 +180,9 @@ const KagglePredictDialog = (props) => {
     try {
       let ref = sourceRef(source, datasets, competitions);
       let title = ref.split("/")[1].replace(/[^a-z0-9]/gi, ""); // todo more input cleaning?
-      if (title.length > 39) {
+      if (title.length > 38) {
         // trim excess while keeping prediction label
-        let i = title.length - 39;
+        let i = title.length - 38;
         title = title.substring(i);
       }
       console.log(title);
@@ -242,6 +242,11 @@ const KagglePredictDialog = (props) => {
               getOptionLabel={(option) => option.title}
               autoHighlight
               fullWidth
+              // getOptionSelected={(option, value) => {
+              //   console.log(option);
+              //   console.log(value);
+              //   return option.title === value.title;
+              // }}
               loading={load}
               disabled={load}
               onChange={(e, val) => handleJobChange(e, val)}
@@ -266,6 +271,13 @@ const KagglePredictDialog = (props) => {
             {!load && preds && preds.length > 0 && (
               <Select
                 required
+                defaultValue={() => {
+                  if (preds && preds.length >= 1) {
+                    setUnacceptable(false);
+                    setPred(preds[0].props.value);
+                    return preds[0].props.value;
+                  }
+                }}
                 onChange={(e) => {
                   if (e.target.value) {
                     if (e.target.value !== "") {
