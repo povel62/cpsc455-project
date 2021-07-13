@@ -297,7 +297,7 @@ const KagglePredictDialog = (props) => {
           <Grid item xs={4}>
             <h4>Select Desired Columns</h4>
             {init && <p>Select A Job First</p>}
-            {!unacceptable && (
+            {!unacceptable && preds && preds.length !== 0 && (
               <CheckboxList
                 cols={columns}
                 checked={checked}

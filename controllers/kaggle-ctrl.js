@@ -47,6 +47,7 @@ competitionUploadSubmit = async (req, res) => {
         });
       }
       getPredFileText(job._id, req.params.name, path, cols)
+        // eslint-disable-next-line no-unused-vars
         .then((s1) => {
           let options = {
             args: [path, message, req.params.ref],
@@ -86,7 +87,7 @@ competitionUploadSubmit = async (req, res) => {
               }
             )
             .catch((err) => {
-              res.status(500).json({ success: false });
+              res.status(500).json({ success: false, error: err });
             })
             .finally(() => {
               try {
@@ -106,7 +107,7 @@ competitionUploadSubmit = async (req, res) => {
   });
 };
 
-// TODO refactor common functions out of dataset and comp pred uploaders
+// TODO refactor common functions out of dataset and comp pred uploader
 datasetCreateVersion = async (req, res) => {
   // config api: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata
   if (!req.body || !req.body.params.title || !req.body.params.cols) {
@@ -114,7 +115,7 @@ datasetCreateVersion = async (req, res) => {
   }
   // alphanumeric only, 6-50 chars long
   let title = req.body.params.title.replace(/[^a-z0-9]/gi, "") + "-prediction";
-  // TODO check title is bewteen 6-50 characters long,
+  // TODO check title is between 6-50 characters long,
   Job.findOne({ _id: req.params.jid }, (err, job) => {
     if (err) {
       return res.status(404).json({
@@ -141,6 +142,7 @@ datasetCreateVersion = async (req, res) => {
         });
       }
       getPredFileText(job._id, req.params.name, path, cols)
+        // eslint-disable-next-line no-unused-vars
         .then((s1) => {
           // TODO write config json
           let config = {
@@ -188,14 +190,11 @@ datasetCreateVersion = async (req, res) => {
               }
             )
             .catch((err) => {
-              res.status(500).json({ success: false });
+              res.status(500).json({ success: false, error: err });
             })
             .finally(() => {
               try {
-                console.log("here")
-                // fs.rmSync()
-                fs.rmSync(folder,{ recursive: true });
-                // fs.unlinkSync(path);
+                fs.rmSync(folder, { recursive: true });
               } catch (e) {
                 console.log(e);
               }
