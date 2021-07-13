@@ -114,7 +114,7 @@ datasetCreateVersion = async (req, res) => {
   if (!req.body || !req.body.params.title || !req.body.params.cols) {
     return res.status(400).json({ success: false });
   }
-  let title = req.body.params.title;
+  let title = req.body.params.title.replace(/[^a-z0-9]/gi, "") + "-prediction";
   // TODO check title is bewteen 6-50 characters long, '-' allowed but not '_'
   // TODO allow license change?
   Job.findOne({ _id: req.params.jid }, (err, job) => {

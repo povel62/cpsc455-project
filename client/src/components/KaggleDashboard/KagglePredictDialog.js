@@ -179,10 +179,10 @@ const KagglePredictDialog = (props) => {
     console.log(checkedCols);
     try {
       let ref = sourceRef(source, datasets, competitions);
-      let title = (ref.split("/")[1] + " prediction").replaceAll("_", ""); // todo more input cleaning?
-      if (title.length > 50) {
+      let title = ref.split("/")[1].replace(/[^a-z0-9]/gi, ""); // todo more input cleaning?
+      if (title.length > 39) {
         // trim excess while keeping prediction label
-        let i = title.length - 50;
+        let i = title.length - 39;
         title = title.substring(i);
       }
       console.log(title);
