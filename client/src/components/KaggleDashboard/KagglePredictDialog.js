@@ -13,13 +13,17 @@ import {
   TextField,
 } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
-import { getJobPreds, getPredCol } from "./kaggleApi";
+import { getJobPreds, getPredCol, sourceRef } from "./kaggleApi";
 import CheckboxList from "./SelectList";
 import axios from "axios";
+import PropTypes from "prop-types";
 
-const KagglePredictDialog = () => {
+const KagglePredictDialog = (props) => {
   let source = useSelector((state) => state.kaggleReducer.source);
   let jobs = useSelector((state) => state.kaggleReducer.jobs);
+  let datasets = useSelector((state) => state.kaggleReducer.datasets);
+  let competitions = useSelector((state) => state.kaggleReducer.competitions);
+  let email = useSelector((state) => state.loginReducer.email);
   const [load, setLoad] = useState(false);
   const [preds, setPreds] = useState([]);
   const [pred, setPred] = useState("");
@@ -39,6 +43,13 @@ const KagglePredictDialog = () => {
       setJob(null);
     };
   }, []);
+
+  KagglePredictDialog.propTypes = {
+    open: PropTypes.number.isRequired,
+    setOpen: PropTypes.func.isRequired,
+  };
+
+  let { open, setOpen } = props;
 
   const handlePred = (choice) => {
     getJobPreds(choice)
@@ -104,13 +115,9 @@ const KagglePredictDialog = () => {
   };
 
   const handleDl = () => {
-    // TODO
     let cols = checked.map((ele) => {
       return columns[ele];
     });
-    console.log(job);
-    console.log(cols);
-    console.log(pred);
     axios
       .get(`/api/job/${job}/pred/${pred}`, { params: { cols: cols } })
       .then((res) => {
@@ -136,8 +143,41 @@ const KagglePredictDialog = () => {
 
   const handleSubmitToComp = () => {
     // TODO
+    // "/kaggle/:id/:jid/competitions/:ref/submit/:name"
+    console.log(job);
     console.log(pred);
     console.log(checked);
+    console.log(sourceRef(source, datasets, competitions));
+    let ref = sourceRef(source, datasets, competitions);
+    let checkedCols = checked.map((ele) => {
+      return columns[ele];
+    });
+    console.log(checkedCols);
+    axios
+      .get("/api/user", { params: { email: email } })
+      .then((user) => {
+        let id = user.data.data.id;
+        axios
+          .post(`/api/kaggle/${id}/${job}/competitions/${ref}/submit/${pred}`, {
+            params: { cols: checkedCols },
+          })
+          .then((res) => {
+            if (res.status === 201) {
+              console.log("Success");
+              if (open) {
+                setOpen(false);
+              }
+            } else {
+              console.log("Fail");
+
+              // TODO turn btn red for err
+            }
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        // TODO turn btn red for err
+      });
   };
 
   const handleNewDataset = () => {

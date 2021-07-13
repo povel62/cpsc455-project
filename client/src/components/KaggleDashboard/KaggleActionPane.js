@@ -20,7 +20,13 @@ import {
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { competitionAuth, compType, dataType, userJobItems } from "./kaggleApi";
+import {
+  competitionAuth,
+  compType,
+  dataType,
+  userJobItems,
+  sourceRef,
+} from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -94,16 +100,6 @@ const KaggleActionPane = (props) => {
       return files.data[datafile.index];
     } else {
       return files.data.datasetFiles[datafile.index];
-    }
-  };
-
-  const sourceRef = () => {
-    if (!source) {
-      return null;
-    } else if (source.mode === "COMPETITION") {
-      return competitions[source.index].ref;
-    } else {
-      return datasets[source.index].ref;
     }
   };
 
@@ -345,7 +341,7 @@ const KaggleActionPane = (props) => {
               durationLimit: time,
               kaggleSrc: src,
               kaggleType: sourceType,
-              kaggleId: sourceRef(),
+              kaggleId: sourceRef(source, datasets, competitions),
             })
             .then((res) => {
               if (res.status === 201) {
@@ -386,7 +382,7 @@ const KaggleActionPane = (props) => {
                 job: selectJob,
                 kaggleSrc: src,
                 kaggleType: sourceType,
-                kaggleId: sourceRef(),
+                kaggleId: sourceRef(source, datasets, competitions),
               })
               .then((res) => {
                 if (res.status === 201) {
@@ -735,7 +731,7 @@ const KaggleActionPane = (props) => {
         maxWidth="lg"
         style={{ minHeight: "40vh" }}
       >
-        <KagglePredictDialog open={submitterOpen} />
+        <KagglePredictDialog open={submitterOpen} setOpen={setSubmitterOpen} />
       </Dialog>
     </div>
   );

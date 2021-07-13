@@ -8,7 +8,12 @@ const etl = require("etl");
 const { CSV_FILES, HOSTNAME } = require("../GlobalConstants");
 const jobCtrl = require("./job-ctrl");
 const crypto = require("crypto");
-const { uploadFileToServer, runPhase } = require("./generic-ctrl");
+const fs = require("fs");
+const {
+  uploadFileToServer,
+  runPhase,
+  getPredFileText,
+} = require("./generic-ctrl");
 
 checkAccount = async (req, res) => {
   // TODO remove most likely, clientside can do the check
@@ -21,10 +26,100 @@ checkAccount = async (req, res) => {
     return res.status(501).json({ success: false, error: message });
   });
 };
-
+// "/kaggle/:id/:jid/competitions/:ref/submit/:name"
 competitionUploadSubmit = async (req, res) => {
-  // TODO
-  return res.status(501).json({ success: false, error: `Not Implemented` });
+  if (!req.params.ref) {
+    return res
+      .status(400)
+      .json({ success: false, message: "you need a kaggle ref to submit!" });
+  }
+  Job.findOne({ _id: req.params.jid }, (err, job) => {
+    if (err) {
+      return res.status(404).json({
+        err,
+        message: "Job not found!",
+      });
+    }
+    let path = `./util/${req.params.name}`;
+    let cols = [];
+    let message = "Generated with Ensemble Squared: A Meta AutoML System"; // TODO
+    // console.log(req.body);
+    if (req.body.params.cols) {
+      try {
+        cols = JSON.parse(req.body.params.cols);
+      } catch (e) {
+        cols = req.body.params.cols;
+      }
+    }
+    // return res.status(501).json({ success: false, error: `Not Implemented` });
+    // TODO change to _id after token verify
+    User.findOne({ _id: req.params.id }, (err, user) => {
+      // TODO get kapi key
+      if (err) {
+        return res.status(404).json({
+          err,
+          message: "User not found!",
+        });
+      }
+      getPredFileText(job._id, req.params.name, path, cols)
+        .then((s1) => {
+          // path, msg, ref
+          let options = {
+            args: [path, message, req.params.ref],
+            env: {
+              KAGGLE_USERNAME: user.kusername,
+              KAGGLE_KEY: user.kapi,
+            },
+          };
+          new Promise((resolve, reject) => {
+            try {
+              PythonShell.run(
+                "./util/submit_comp.py",
+                options,
+                function (err, results) {
+                  if (err) {
+                    if (err != null) {
+                      console.log(err);
+                      reject(err);
+                    }
+                  }
+                  console.log(results);
+                  resolve(results);
+                }
+              );
+            } catch (err) {
+              console.log(err);
+              reject("error running python code'");
+            }
+          })
+            .then(
+              () => {
+                res.status(201).json({ success: true });
+              },
+              () => {
+                // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
+                res.status(401).json({ success: false });
+              }
+            )
+            .catch((err) => {
+              res.status(500).json({ success: false });
+            })
+            .finally(() => {
+              try {
+                fs.unlinkSync(path);
+              } catch (e) {
+                console.log(e);
+              }
+            });
+        })
+        .catch((error) => {
+          return res.status(404).json({
+            error,
+            message: "Cannot find file!",
+          });
+        });
+    });
+  });
 };
 
 datasetCreateVersion = async (req, res) => {

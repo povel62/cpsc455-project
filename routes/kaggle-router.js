@@ -12,8 +12,8 @@ router.post(
   KaggleCtrl.checkAccount
 );
 router.post(
-  "/kaggle/competitions/submit",
-  GenericCtrl.verifyToken,
+  "/kaggle/:id/:jid/competitions/:ref/submit/:name",
+  // GenericCtrl.verifyToken,
   KaggleCtrl.competitionUploadSubmit
 );
 router.post(
