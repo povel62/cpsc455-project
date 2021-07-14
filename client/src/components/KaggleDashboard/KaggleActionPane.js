@@ -361,7 +361,7 @@ const KaggleActionPane = (props) => {
                 setSuccess(true);
                 // TODO put success screen here
                 setTimeout(() => {
-                  props.setTab(3);
+                  props.setTab(0);
                 }, 1000);
               } else {
                 setFail(true);
@@ -407,7 +407,7 @@ const KaggleActionPane = (props) => {
                   // TODO add success here
                   // goto dashboard if sucess to see pending job
                   setTimeout(() => {
-                    props.setTab(3);
+                    props.setTab(0);
                   }, 1000);
                 } else {
                   setFail(true);

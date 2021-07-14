@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./Navigation.css";
 import { Tabs, Tab } from "@material-ui/core";
 import Faq from "../Faq/Faq";
-import ControlDashboard from "../ControlDashboard/ControlDashboard";
 import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
@@ -25,13 +24,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 
 import MenuIcon from "@material-ui/icons/Menu";
 
-const options = [
-  "Home",
-  "Tutorial",
-  "FAQ",
-  "Control Dashboard",
-  "Kaggle Dashboard",
-];
+const options = ["Dashboard", "Tutorial", "FAQ", "Kaggle Dashboard"];
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -246,9 +239,7 @@ export default function Navigation(props) {
         {selectedTab === 0 && <Home isLanding={false} />}
         {selectedTab === 1 && <Tutorial />}
         {selectedTab === 2 && <Faq />}
-
-        {selectedTab === 3 && <ControlDashboard />}
-        {selectedTab === 4 && (
+        {selectedTab === 3 && (
           <KaggleDashBoard tab={selectedTab} setTab={setSelectedTab} />
         )}
 
