@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 function UploadButtons(props) {
   //const login_token = useSelector((state) => state.loginReducer);
-  const [selectedFile, setFile] = useState(null);
+  //const [selectedFile, setFile] = useState(null);
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -79,11 +79,19 @@ function UploadButtons(props) {
 
   // handle file upload
   const handleFileUpload = (e) => {
+    e.preventDefault();
     const file = e.target.files[0];
-    setFile(file);
+    //console.log(file);
+    // setFile(file);
+    //console.log(selectedFile);
 
-    const data = new FormData();
-    data.append("file", selectedFile);
+    props.changeData(file);
+
+    // Details of the uploaded file
+    //console.log(selectedFile);
+    // data.append("file", selectedFile);
+
+    // console.log(selectedFile);
 
     const reader = new FileReader();
     reader.onload = (evt) => {
@@ -98,8 +106,6 @@ function UploadButtons(props) {
       processData(data);
     };
     reader.readAsBinaryString(file);
-    props.changeTarget(values.target_col);
-    props.changeData(data);
   };
 
   const classes = useStyles();
@@ -112,7 +118,7 @@ function UploadButtons(props) {
         id="contained-button-file"
         multiple
         type="file"
-        onChange={handleFileUpload}
+        onChange={(e) => handleFileUpload(e)}
       />
       <label htmlFor="contained-button-file">
         <Button
@@ -131,12 +137,14 @@ function UploadButtons(props) {
             select
             label="Select target column"
             value={values.target_col}
-            onChange={(e) =>
+            onChange={(e) => {
+              console.log("value changed to " + e.target.value);
               setValues({
                 ...values,
                 target_col: e.target.value,
-              })
-            }
+              });
+              props.changeTarget(e.target.value);
+            }}
             helperText="Please select target column"
           >
             {columns.map((option) => (

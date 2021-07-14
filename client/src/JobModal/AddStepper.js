@@ -169,28 +169,32 @@ function AddStepper() {
   };
 
   const handleFinish = async () => {
-    // const response = await fetch("/api/user/update", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + login_token.accessToken,
-    //   },
-    //   body: JSON.stringify({
-    //     email: values.email,
-    //     fname: values.fname,
-    //     lname: values.lname,
-    //     kusername: values.kusername,
-    //     kapi: values.kapi,
-    //   }),
-    // });
-    // if (response.status === 200) {
-    //   dispatch(setEmail(values.email));
-    //   dispatch(setFName(values.fname));
-    //   dispatch(setLName(values.lname));
-    //   dispatch(setKaggleUsername(values.kusername));
-    //   dispatch(setKaggleAPI(values.kapi));
-    // }
-    // alert(response.status);
+    //e.preventDefault();
+
+    console.log(data);
+
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("file", data);
+    formData.append("name", values.jobName);
+    formData.append("durationLimit", values.jobTime);
+    formData.append("targetColumnName", target_col);
+
+    const response = await fetch("/api/user/job/upload", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+      body: formData,
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      alert(response.status);
+    } else {
+      //resetValues();
+      alert(response.status);
+    }
   };
 
   const handleBack = () => {
