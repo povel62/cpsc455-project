@@ -131,9 +131,9 @@ getPredFileNames = (id) => {
   });
 };
 
-getPredFileText = (id, name, path) => {
+getPredFileText = (id, name, path, cols) => {
   let options = {
-    args: [path, id, name],
+    args: [path, id, name, JSON.stringify({ columns: cols })],
   };
 
   return new Promise((resolve, reject) => {

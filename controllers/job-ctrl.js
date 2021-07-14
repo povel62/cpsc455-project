@@ -285,8 +285,16 @@ getPredFile = async (req, res) => {
       });
     }
     let path = `./util/${req.params.name}`;
+    let cols = [];
+    if (req.query.cols) {
+      try { // postman won't send this as json but axios does?
+        cols = JSON.parse(req.query.cols);
+      } catch (e) {
+        cols = req.query.cols;
+      }
+    }
 
-    getPredFileText(job._id, req.params.name, path)
+    getPredFileText(job._id, req.params.name, path, cols)
       .then((s1) => {
         let exportFile = req.query.export;
         let csvData = [];

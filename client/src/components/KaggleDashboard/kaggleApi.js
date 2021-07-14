@@ -114,6 +114,16 @@ export const userJobItems = (email) => {
   });
 };
 
+export const sourceRef = (source, datasets, competitions) => {
+  if (!source) {
+    return null;
+  } else if (source.mode === "COMPETITION") {
+    return competitions[source.index].ref;
+  } else {
+    return datasets[source.index].ref;
+  }
+};
+
 export const getJobPreds = (job) => {
   return new Promise((resolve, reject) => {
     axios

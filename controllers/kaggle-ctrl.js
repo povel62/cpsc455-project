@@ -8,28 +8,206 @@ const etl = require("etl");
 const { CSV_FILES, HOSTNAME } = require("../GlobalConstants");
 const jobCtrl = require("./job-ctrl");
 const crypto = require("crypto");
-const { uploadFileToServer, runPhase } = require("./generic-ctrl");
-
-checkAccount = async (req, res) => {
-  // TODO remove most likely, clientside can do the check
-  // TODO do a vanilla comp list and check for unauthorized or not
-  let test = new PythonShell("../util/kaggleWrapper.py", {
-    env: { KAGGLE_USERNAME: "test", KAGGLE_KEY: "abcd" },
-  });
-  test.on("message", function (message) {
-    console.log(message);
-    return res.status(501).json({ success: false, error: message });
-  });
-};
+const fs = require("fs");
+const {
+  uploadFileToServer,
+  runPhase,
+  getPredFileText,
+} = require("./generic-ctrl");
 
 competitionUploadSubmit = async (req, res) => {
-  // TODO
-  return res.status(501).json({ success: false, error: `Not Implemented` });
+  if (!req.params.ref) {
+    return res
+      .status(400)
+      .json({ success: false, message: "you need a kaggle ref to submit!" });
+  }
+  Job.findOne({ _id: req.params.jid }, (err, job) => {
+    if (err) {
+      return res.status(404).json({
+        err,
+        message: "Job not found!",
+      });
+    }
+    let path = `./util/${req.params.name}`;
+    let cols = [];
+    let message = "Generated with Ensemble Squared: A Meta AutoML System"; // TODO
+    if (req.body.params.cols) {
+      try {
+        cols = JSON.parse(req.body.params.cols);
+      } catch (e) {
+        cols = req.body.params.cols;
+      }
+    }
+    // TODO change to _id after token verify
+    User.findOne({ _id: req.params.id }, (err, user) => {
+      if (err) {
+        return res.status(404).json({
+          err,
+          message: "User not found!",
+        });
+      }
+      getPredFileText(job._id, req.params.name, path, cols)
+        // eslint-disable-next-line no-unused-vars
+        .then((s1) => {
+          let options = {
+            args: [path, message, req.params.ref],
+            env: {
+              KAGGLE_USERNAME: user.kusername,
+              KAGGLE_KEY: user.kapi,
+            },
+          };
+          new Promise((resolve, reject) => {
+            try {
+              PythonShell.run(
+                "./util/submit_comp.py",
+                options,
+                function (err, results) {
+                  if (err) {
+                    if (err != null) {
+                      console.log(err);
+                      reject(err);
+                    }
+                  }
+                  console.log(results);
+                  resolve(results);
+                }
+              );
+            } catch (err) {
+              console.log(err);
+              reject("error running python code'");
+            }
+          })
+            .then(
+              () => {
+                res.status(201).json({ success: true });
+              },
+              () => {
+                // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
+                res.status(401).json({ success: false });
+              }
+            )
+            .catch((err) => {
+              res.status(500).json({ success: false, error: err });
+            })
+            .finally(() => {
+              try {
+                fs.unlinkSync(path);
+              } catch (e) {
+                console.log(e);
+              }
+            });
+        })
+        .catch((error) => {
+          return res.status(404).json({
+            error,
+            message: "Cannot find file!",
+          });
+        });
+    });
+  });
 };
 
+// TODO refactor common functions out of dataset and comp pred uploader
 datasetCreateVersion = async (req, res) => {
-  // TODO
-  return res.status(501).json({ success: false, error: `Not Implemented` });
+  // config api: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata
+  if (!req.body || !req.body.params.title || !req.body.params.cols) {
+    return res.status(400).json({ success: false });
+  }
+  // alphanumeric only, 6-50 chars long
+  let title = req.body.params.title.replace(/[^a-z0-9]/gi, "") + "-prediction";
+  // TODO check title is between 6-50 characters long,
+  Job.findOne({ _id: req.params.jid }, (err, job) => {
+    if (err) {
+      return res.status(404).json({
+        err,
+        message: "Job not found!",
+      });
+    }
+    let folder = fs.mkdtempSync("./util/");
+    let path = `${folder}/${req.params.name}`;
+    let cols = [];
+    if (req.body.params.cols) {
+      try {
+        cols = JSON.parse(req.body.params.cols);
+      } catch (e) {
+        cols = req.body.params.cols;
+      }
+    }
+    // TODO change to _id after token verify
+    User.findOne({ _id: req.params.id }, (err, user) => {
+      if (err) {
+        return res.status(404).json({
+          err,
+          message: "User not found!",
+        });
+      }
+      getPredFileText(job._id, req.params.name, path, cols)
+        // eslint-disable-next-line no-unused-vars
+        .then((s1) => {
+          // TODO write config json
+          let config = {
+            title: title,
+            id: `${user.kusername}/${title}`,
+            licenses: [{ name: "unknown" }],
+          };
+          config = JSON.stringify(config);
+          fs.writeFileSync(folder + `/dataset-metadata.json`, config);
+          let options = {
+            args: [folder],
+            env: {
+              KAGGLE_USERNAME: user.kusername,
+              KAGGLE_KEY: user.kapi,
+            },
+          };
+          new Promise((resolve, reject) => {
+            try {
+              PythonShell.run(
+                "./util/submit_dataset.py",
+                options,
+                function (err, results) {
+                  if (err) {
+                    if (err != null) {
+                      console.log(err);
+                      reject(err);
+                    }
+                  }
+                  console.log(results);
+                  resolve(results);
+                }
+              );
+            } catch (err) {
+              console.log(err);
+              reject("error running python code'");
+            }
+          })
+            .then(
+              () => {
+                res.status(201).json({ success: true });
+              },
+              () => {
+                // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
+                res.status(401).json({ success: false });
+              }
+            )
+            .catch((err) => {
+              res.status(500).json({ success: false, error: err });
+            })
+            .finally(() => {
+              try {
+                fs.rmSync(folder, { recursive: true });
+              } catch (e) {
+                console.log(e);
+              }
+            });
+        })
+        .catch((error) => {
+          return res.status(404).json({
+            error,
+            message: "Cannot find file!",
+          });
+        });
+    });
+  });
 };
 
 validateKaggleJob = async (req, res, next) => {
@@ -41,12 +219,10 @@ validateKaggleJob = async (req, res, next) => {
 };
 
 createKagglePrediction = async (req, res) => {
-  // TODO check job status
+  // TODO check job status, lookup job and check these:
   // jobCtrl.JobStatus.PREDICTING
   // jobCtrl.JobStatus.PREDICTING_COMPLETED
   // jobCtrl.JobStatus.TRAINING_COMPLETED
-  console.log(req.body);
-
   await kaggleFileGetter(req, res, uploadTestFile);
 };
 
@@ -66,7 +242,6 @@ getKaggleFile = async (req, res) => {
     try {
       const auth = { username: user.kusername, password: user.kapi };
       const url = kaggleBaseUrl + req.query.url;
-      // const filename = crypto.createHash("sha256").update(url).digest("hex");
       request(
         {
           url: url,
@@ -156,7 +331,6 @@ function fetchColumns(d, csv, res) {
   return res.status(200).json({ success: true, data: Array.from(columns) });
 }
 
-// very similar to job ctrl but downloads the file from kaggle first and may optimize the pipeline for big files later
 uploadJob = async (req, res) => {
   await kaggleFileGetter(req, res, uploadJobHelper);
 };
@@ -323,7 +497,6 @@ async function kaggleFileGetter(req, res, callback) {
           response.headers["content-type"] === "application/zip"
         ) {
           response.pipe(unzip.Parse()).on("entry", function (entry) {
-            // modifiable to stream data if infrastructure supports it
             if (entry.path === fileName) {
               entry
                 .on("data", function (d) {
@@ -339,7 +512,7 @@ async function kaggleFileGetter(req, res, callback) {
           response.statusCode === 200 &&
           response.headers["content-type"] !== "application/zip" // TODO change to more strict type
         ) {
-          response // modifiable to stream data if infrastructure supports it
+          response
             .on("data", function (d) {
               payload += d;
             })
@@ -358,7 +531,6 @@ async function kaggleFileGetter(req, res, callback) {
 }
 
 module.exports = {
-  checkAccount,
   competitionUploadSubmit,
   datasetCreateVersion,
   getKaggleFile,

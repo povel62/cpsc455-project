@@ -20,7 +20,13 @@ import {
 } from "@material-ui/core";
 import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { competitionAuth, compType, dataType, userJobItems } from "./kaggleApi";
+import {
+  competitionAuth,
+  compType,
+  dataType,
+  userJobItems,
+  sourceRef,
+} from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -34,8 +40,16 @@ const useStyles = makeStyles(() => ({
     position: "absolute",
     top: "75%",
     bottom: "25%",
-    left: "75%",
-    right: "25%",
+    left: "58%",
+    right: "32%",
+  },
+  buttonProgressPredict: {
+    color: green[500],
+    position: "absolute",
+    top: "35%",
+    bottom: "65%",
+    left: "35%",
+    right: "65%",
   },
   buttonSuccess: {
     backgroundColor: green[500],
@@ -94,16 +108,6 @@ const KaggleActionPane = (props) => {
       return files.data[datafile.index];
     } else {
       return files.data.datasetFiles[datafile.index];
-    }
-  };
-
-  const sourceRef = () => {
-    if (!source) {
-      return null;
-    } else if (source.mode === "COMPETITION") {
-      return competitions[source.index].ref;
-    } else {
-      return datasets[source.index].ref;
     }
   };
 
@@ -303,7 +307,12 @@ const KaggleActionPane = (props) => {
           <FormControl>
             <InputLabel>Target Column</InputLabel>
             <Select // controlled select is broken when it shouldn't be
-              // value={target}
+              // value={() => target || ""}
+              defaultValue={() => {
+                if (options && options.length >= 1) {
+                  return options[0].props.value;
+                }
+              }}
               onChange={(e) => handleColumn(e.target.value)}
               required
             >
@@ -345,12 +354,15 @@ const KaggleActionPane = (props) => {
               durationLimit: time,
               kaggleSrc: src,
               kaggleType: sourceType,
-              kaggleId: sourceRef(),
+              kaggleId: sourceRef(source, datasets, competitions),
             })
             .then((res) => {
               if (res.status === 201) {
                 setSuccess(true);
-                props.setTab(4); // goto dashboard if sucess to see pending job
+                // TODO put success screen here
+                setTimeout(() => {
+                  props.setTab(3);
+                }, 1000);
               } else {
                 setFail(true);
               }
@@ -386,14 +398,17 @@ const KaggleActionPane = (props) => {
                 job: selectJob,
                 kaggleSrc: src,
                 kaggleType: sourceType,
-                kaggleId: sourceRef(),
+                kaggleId: sourceRef(source, datasets, competitions),
               })
               .then((res) => {
                 if (res.status === 201) {
                   setSuccess(true);
                   setSubmittingJob(false);
+                  // TODO add success here
                   // goto dashboard if sucess to see pending job
-                  props.setTab(4);
+                  setTimeout(() => {
+                    props.setTab(3);
+                  }, 1000);
                 } else {
                   setFail(true);
                   setSubmittingJob(false);
@@ -584,6 +599,12 @@ const KaggleActionPane = (props) => {
                     className={buttonClassname}
                   >
                     Predict
+                    {submittingJob && (
+                      <CircularProgress
+                        size={24}
+                        className={classes.buttonProgressPredict}
+                      />
+                    )}
                   </Button>
                 </Tooltip>
               </Grid>
@@ -735,7 +756,7 @@ const KaggleActionPane = (props) => {
         maxWidth="lg"
         style={{ minHeight: "40vh" }}
       >
-        <KagglePredictDialog open={submitterOpen} />
+        <KagglePredictDialog open={submitterOpen} setOpen={setSubmitterOpen} />
       </Dialog>
     </div>
   );
