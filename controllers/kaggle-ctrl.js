@@ -54,6 +54,7 @@ competitionUploadSubmit = async (req, res) => {
             env: {
               KAGGLE_USERNAME: user.kusername,
               KAGGLE_KEY: user.kapi,
+              ...process.env,
             },
           };
           new Promise((resolve, reject) => {
@@ -157,6 +158,7 @@ datasetCreateVersion = async (req, res) => {
             env: {
               KAGGLE_USERNAME: user.kusername,
               KAGGLE_KEY: user.kapi,
+              ...process.env,
             },
           };
           new Promise((resolve, reject) => {
