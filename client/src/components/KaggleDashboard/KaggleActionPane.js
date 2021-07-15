@@ -31,7 +31,12 @@ import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
-import { setJobs, set_loading, set_checked } from "../../redux/actions/actions";
+import {
+  setJobs,
+  set_loading,
+  set_checked,
+  setKaggleSuccess,
+} from "../../redux/actions/actions";
 import KagglePredictDialog from "./KagglePredictDialog";
 
 const useStyles = makeStyles(() => ({
@@ -85,10 +90,10 @@ const KaggleActionPane = (props) => {
   const [predictOpen, setPredictOpen] = useState(false);
   const [selectJob, setSelectJob] = useState({});
   const [offboard, setOffboard] = useState(false);
-  // const [jobs, setJobs] = useState([]);
   const [columnElement, setColumnElement] = useState(null);
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
+  const [predictCanClose, setPredictCanClose] = useState(false);
   let dispatch = useDispatch();
 
   KaggleActionPane.propTypes = {
@@ -359,10 +364,12 @@ const KaggleActionPane = (props) => {
             .then((res) => {
               if (res.status === 201) {
                 setSuccess(true);
-                // TODO put success screen here
+                setJobOpen(false);
+                dispatch(setKaggleSuccess(true));
                 setTimeout(() => {
                   props.setTab(3);
-                }, 1000);
+                  dispatch(setKaggleSuccess(false));
+                }, 2000);
               } else {
                 setFail(true);
               }
@@ -403,12 +410,13 @@ const KaggleActionPane = (props) => {
               .then((res) => {
                 if (res.status === 201) {
                   setSuccess(true);
-                  setSubmittingJob(false);
-                  // TODO add success here
-                  // goto dashboard if sucess to see pending job
+                  setPredictOpen(false);
+                  dispatch(setKaggleSuccess(true));
                   setTimeout(() => {
+                    dispatch(setKaggleSuccess(false));
                     props.setTab(3);
-                  }, 1000);
+                    setSubmittingJob(false);
+                  }, 2000);
                 } else {
                   setFail(true);
                   setSubmittingJob(false);
@@ -453,7 +461,14 @@ const KaggleActionPane = (props) => {
 
   return (
     <div className="KagglePanel">
-      <Dialog open={jobOpen} onClose={() => setJobOpen(false)}>
+      <Dialog
+        open={jobOpen}
+        onClose={() => {
+          if (!submittingJob) {
+            setJobOpen(false);
+          }
+        }}
+      >
         <DialogTitle>Create Job</DialogTitle>
         <DialogContent>
           <form onSubmit={(e) => handleEnqueue(e)}>
@@ -570,20 +585,29 @@ const KaggleActionPane = (props) => {
           </form>
         </DialogContent>
       </Dialog>
-      <Dialog open={predictOpen} onClose={() => setPredictOpen(false)}>
+      <Dialog
+        open={predictOpen}
+        onClose={() => {
+          if (!submittingJob) {
+            setPredictOpen(false);
+          }
+        }}
+      >
         <DialogTitle>Submit Test File for Automatic Classification</DialogTitle>
         <DialogContent>
           <form onSubmit={(e) => handlePredict(e)}>
             <Grid container spacing={3}>
               <Grid item xs={6}>
                 <InputLabel>Available Trained Jobs</InputLabel>
-                <Select
-                  onChange={(e) => handleSelectJob(e.target.value)}
-                  value={selectJob}
-                  required
-                >
-                  {jobs}
-                </Select>
+                {!submittingJob && (
+                  <Select
+                    onChange={(e) => handleSelectJob(e.target.value)}
+                    value={selectJob}
+                    required
+                  >
+                    {jobs}
+                  </Select>
+                )}
               </Grid>
               <Grid item xs={6}>
                 <Tooltip
@@ -751,12 +775,21 @@ const KaggleActionPane = (props) => {
       </Dialog>
       <Dialog
         open={submitterOpen}
-        onClose={() => setSubmitterOpen(false)}
+        onClose={() => {
+          if (predictCanClose) {
+            setSubmitterOpen(false);
+          }
+        }}
         fullWidth
         maxWidth="lg"
         style={{ minHeight: "40vh" }}
       >
-        <KagglePredictDialog open={submitterOpen} setOpen={setSubmitterOpen} />
+        <KagglePredictDialog
+          open={submitterOpen}
+          setOpen={setSubmitterOpen}
+          setPredictCanClose={setPredictCanClose}
+          setTab={props.setTab}
+        />
       </Dialog>
     </div>
   );

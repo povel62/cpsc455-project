@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Grid,
   Select,
@@ -20,6 +20,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/styles";
 import { green, red } from "@material-ui/core/colors";
+import { setKaggleSuccess } from "../../redux/actions/actions";
 
 const useStyles = makeStyles(() => ({
   buttonProgress: {
@@ -41,6 +42,11 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       backgroundColor: red[700],
     },
+    submitSpinner: {
+      // TODO make this centered!
+      left: "80%",
+      right: "20%",
+    },
   },
 }));
 
@@ -61,6 +67,7 @@ const KagglePredictDialog = (props) => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  let dispatch = useDispatch();
 
   useEffect(() => {
     return () => {
@@ -73,15 +80,18 @@ const KagglePredictDialog = (props) => {
       setSuccess(false);
       setError(false);
       setSubmitting(false);
+      setPredictCanClose(true);
     };
   }, []);
 
   KagglePredictDialog.propTypes = {
     open: PropTypes.number.isRequired,
     setOpen: PropTypes.func.isRequired,
+    setPredictCanClose: PropTypes.func.isRequired,
+    setTab: PropTypes.func.isRequired,
   };
 
-  let { open, setOpen } = props;
+  let { open, setOpen, setPredictCanClose, setTab } = props;
   let classes = useStyles();
 
   const submitBtn = clsx({
@@ -97,12 +107,20 @@ const KagglePredictDialog = (props) => {
     setSuccess(false);
     setError(true);
     setSubmitting(false);
+    setPredictCanClose(true);
   };
 
   const submitSuccess = () => {
     setSuccess(true);
     setError(false);
     setSubmitting(false);
+    setPredictCanClose(true);
+    setOpen(false);
+    dispatch(setKaggleSuccess(true));
+    setTimeout(() => {
+      setTab(3);
+      dispatch(setKaggleSuccess(false));
+    }, 2000);
   };
 
   const resetErrors = () => {
@@ -155,8 +173,7 @@ const KagglePredictDialog = (props) => {
       handlePred(newVal.value);
       handleColumns(newVal.value);
       setJob(newVal.value);
-      setSuccess(false);
-      setError(false);
+      resetErrors();
       setSubmitting(false);
     } else {
       setInit(true);
@@ -169,6 +186,7 @@ const KagglePredictDialog = (props) => {
       return columns[ele];
     });
     setSubmitting(true);
+    setPredictCanClose(false);
     axios
       .get(`/api/job/${job}/pred/${pred}`, { params: { cols: cols } })
       .then((res) => {
@@ -182,9 +200,9 @@ const KagglePredictDialog = (props) => {
           link.click();
           link.remove();
           window.URL.revokeObjectURL(addr);
-          setError(false);
+          resetErrors();
           setSubmitting(false);
-          setSuccess(false);
+          setPredictCanClose(true);
         } else {
           submitError();
         }
@@ -201,6 +219,7 @@ const KagglePredictDialog = (props) => {
     });
     resetErrors();
     setSubmitting(true);
+    setPredictCanClose(false);
     axios
       .get("/api/user", { params: { email: email } })
       .then((user) => {
@@ -243,6 +262,7 @@ const KagglePredictDialog = (props) => {
         title = title.substring(i);
       }
       setSubmitting(true);
+      setPredictCanClose(false);
       axios
         .get("/api/user", { params: { email: email } })
         .then((user) => {
@@ -354,6 +374,7 @@ const KagglePredictDialog = (props) => {
                 cols={columns}
                 checked={checked}
                 setChecked={setChecked}
+                submitting={submitting}
               />
             )}
             {load && <CircularProgress />}
@@ -376,10 +397,13 @@ const KagglePredictDialog = (props) => {
             aria-label="small contained button group"
             fullWidth={true}
             variant="contained"
-            disabled={unacceptable}
+            disabled={unacceptable || submitting}
           >
             <Button onClick={handleNewDataset} className={submitBtn}>
               Create new private dataset
+              {submitting && (
+                <CircularProgress size={18} className={classes.submitSpinner} />
+              )}
             </Button>
             {/* <Button disabled>Add to existing dataset (not ready)</Button> */}
             <Button onClick={handleDl} className={downloadBtn}>
@@ -395,10 +419,16 @@ const KagglePredictDialog = (props) => {
               aria-label="small contained button group"
               fullWidth={true}
               variant="contained"
-              disabled={unacceptable}
+              disabled={unacceptable || submitting}
             >
               <Button onClick={handleSubmitToComp} className={submitBtn}>
                 Submit to Competition
+                {submitting && (
+                  <CircularProgress
+                    size={18}
+                    className={classes.submitSpinner}
+                  />
+                )}
               </Button>
               <Button onClick={handleDl} className={downloadBtn}>
                 {" "}

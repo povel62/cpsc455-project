@@ -24,8 +24,9 @@ export default function CheckboxList(props) {
     cols: PropTypes.array.isRequired,
     checked: PropTypes.array.isRequired,
     setChecked: PropTypes.func.isRequired,
+    submitting: PropTypes.func.isRequired,
   };
-  const { cols, checked, setChecked } = props;
+  const { cols, checked, setChecked, submitting } = props;
 
   // based off source: https://material-ui.com/components/lists/
   const handleToggle = (value) => () => {
@@ -44,7 +45,13 @@ export default function CheckboxList(props) {
       {cols.map((value, i) => {
         const labelId = `checkbox-list-label-${value}`;
         return (
-          <ListItem key={i} dense button onClick={handleToggle(i)}>
+          <ListItem
+            key={i}
+            dense
+            button
+            disabled={submitting}
+            onClick={handleToggle(i)}
+          >
             <ListItemIcon>
               <Checkbox
                 edge="start"

@@ -40,6 +40,9 @@ const kaggleReducer = (state = {}, action) => {
     case "SET_JOBS":
       newState.jobs = action.payload;
       break;
+    case "SET_KSUCCESS":
+      newState.KSuccess = action.payload;
+      break;
   }
   return newState;
 };
