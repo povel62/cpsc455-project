@@ -93,7 +93,7 @@ const KaggleActionPane = (props) => {
   const [columnElement, setColumnElement] = useState(null);
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
-  const [predictCanClose, setPredictCanClose] = useState(false);
+  const [predictCanClose, setPredictCanClose] = useState(true);
   let dispatch = useDispatch();
 
   const login_token = useSelector((state) => state.loginReducer);
@@ -677,6 +677,7 @@ const KaggleActionPane = (props) => {
                     dispatch(set_checked([]));
                     userJobItems(email, login_token).then((entries) => {
                       dispatch(setJobs(entries));
+                      setPredictCanClose(true);
                       setSubmitterOpen(true);
                     });
                   }}
