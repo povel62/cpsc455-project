@@ -54,20 +54,22 @@ export default function ControlDashboard() {
 
   const axios = require("axios");
   const classes = useStyles();
+  let rows = [];
 
   const login_token = useSelector((state) => state.loginReducer);
-
-  let rows = login_token.jobs.map((entry) =>
-    createData(
-      entry.name,
-      entry.status,
-      "Tabular",
-      entry.createdAt.substr(0, 10),
-      entry.targetColumnName,
-      entry.durationLimit,
-      "hello"
-    )
-  );
+  if (login_token.jobs) {
+    rows = login_token.jobs.map((entry) =>
+      createData(
+        entry.name,
+        entry.status,
+        "Tabular",
+        entry.createdAt.substr(0, 10),
+        entry.targetColumnName,
+        entry.durationLimit,
+        "hello"
+      )
+    );
+  }
 
   async function loadJobs() {
     axios
