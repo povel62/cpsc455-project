@@ -86,7 +86,7 @@ export default function ControlDashboard() {
         if (response.status === 201 || response.status === 200) {
           let jobData = response.data.data;
           if (jobData) {
-            console.log("success");
+            console.log("success get jobs");
             //console.log(jobData);
             setData(jobData);
           }
@@ -120,6 +120,7 @@ export default function ControlDashboard() {
                   size="large"
                   color="primary"
                   aria-label="Refresh jobs"
+                  onClick={() => loadJobs()}
                 >
                   <RefreshIcon />
                 </IconButton>
