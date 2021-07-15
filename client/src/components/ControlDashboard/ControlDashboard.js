@@ -116,7 +116,8 @@ export default function ControlDashboard() {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Paper className={classes.paper}>
-              <JobModal />
+              <JobModal refreshJobs={() => loadJobs()} />
+              {/* JobModal contains add job button */}
             </Paper>
           </Grid>
           <Grid item xs={12}>

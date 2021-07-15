@@ -119,8 +119,8 @@ function AddStepper() {
           <div>
             <p> Upload your Dataset</p>
             <UploadButtons
-              changeTarget={(target_col) => setTarget(target_col)}
-              changeData={(data) => setData(data)}
+              changeTarget={(t_col) => setTarget(t_col)}
+              changeData={(fData) => setData(fData)}
             ></UploadButtons>
           </div>
         );
@@ -190,7 +190,7 @@ function AddStepper() {
     if (response.status === 201 || response.status === 200) {
       alert(response.status);
     } else {
-      alert(response.status);
+      alert("Something went wrong");
     }
   };
 
@@ -198,10 +198,6 @@ function AddStepper() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     console.log(target_col);
     console.log(data);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   return (
@@ -217,9 +213,8 @@ function AddStepper() {
         {activeStep === steps.length ? (
           <div>
             <Typography className={classes.instructions}>
-              All steps completed
+              Job Submitted!
             </Typography>
-            <Button onClick={handleReset}>Reset</Button>
           </div>
         ) : (
           <div>

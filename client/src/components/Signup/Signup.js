@@ -16,7 +16,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { signupUser } from "../../api/UserService";
 import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
-
 import SkyBackground from "../SkyBackground";
 
 function Alert(props) {

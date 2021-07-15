@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function JobModal() {
+export default function JobModal({ refreshJobs }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -39,6 +39,7 @@ export default function JobModal() {
 
   const handleClose = () => {
     setOpen(false);
+    refreshJobs();
   };
 
   const body = (

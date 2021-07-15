@@ -6,7 +6,7 @@ import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoginToken, setEmail } from "../../redux/actions/actions";
+import { setLoginToken, setEmail, setJobs } from "../../redux/actions/actions";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -225,6 +225,7 @@ export default function Navigation(props) {
                     onClick={() => {
                       dispatch(setLoginToken(""));
                       dispatch(setEmail(""));
+                      dispatch(setJobs([]));
                     }}
                   >
                     Logout
