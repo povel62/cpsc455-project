@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Grid,
   Select,
@@ -17,6 +17,38 @@ import { getJobPreds, getPredCol, sourceRef } from "./kaggleApi";
 import CheckboxList from "./SelectList";
 import axios from "axios";
 import PropTypes from "prop-types";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/styles";
+import { green, red } from "@material-ui/core/colors";
+import { setKaggleSuccess } from "../../redux/actions/actions";
+
+const useStyles = makeStyles(() => ({
+  buttonProgress: {
+    color: green[500],
+    position: "absolute",
+    top: "75%",
+    bottom: "25%",
+    left: "58%",
+    right: "32%",
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+  buttonFail: {
+    backgroundColor: red[500],
+    "&:hover": {
+      backgroundColor: red[700],
+    },
+    submitSpinner: {
+      // TODO make this centered!
+      left: "80%",
+      right: "20%",
+    },
+  },
+}));
 
 const KagglePredictDialog = (props) => {
   let source = useSelector((state) => state.kaggleReducer.source);
@@ -32,6 +64,10 @@ const KagglePredictDialog = (props) => {
   const [columns, setColumns] = useState([]);
   const [checked, setChecked] = useState([]);
   const [job, setJob] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  let dispatch = useDispatch();
 
   useEffect(() => {
     return () => {
@@ -41,15 +77,56 @@ const KagglePredictDialog = (props) => {
       setColumns([]);
       setChecked([]);
       setJob(null);
+      setSuccess(false);
+      setError(false);
+      setSubmitting(false);
+      setPredictCanClose(true);
     };
   }, []);
 
   KagglePredictDialog.propTypes = {
     open: PropTypes.number.isRequired,
     setOpen: PropTypes.func.isRequired,
+    setPredictCanClose: PropTypes.func.isRequired,
+    setTab: PropTypes.func.isRequired,
   };
 
-  let { open, setOpen } = props;
+  let { open, setOpen, setPredictCanClose, setTab } = props;
+  let classes = useStyles();
+
+  const submitBtn = clsx({
+    [classes.buttonSuccess]: success,
+    [classes.buttonFail]: error,
+  });
+
+  const downloadBtn = clsx({
+    [classes.buttonFail]: error,
+  });
+
+  const submitError = () => {
+    setSuccess(false);
+    setError(true);
+    setSubmitting(false);
+    setPredictCanClose(true);
+  };
+
+  const submitSuccess = () => {
+    setSuccess(true);
+    setError(false);
+    setSubmitting(false);
+    setPredictCanClose(true);
+    setOpen(false);
+    dispatch(setKaggleSuccess(true));
+    setTimeout(() => {
+      setTab(3);
+      dispatch(setKaggleSuccess(false));
+    }, 2000);
+  };
+
+  const resetErrors = () => {
+    setSuccess(false);
+    setError(false);
+  };
 
   const handlePred = (choice) => {
     getJobPreds(choice)
@@ -76,7 +153,6 @@ const KagglePredictDialog = (props) => {
   };
 
   const handleColumns = (job) => {
-    console.log(job);
     getPredCol(job)
       .then((cols) => {
         setColumns(cols);
@@ -88,7 +164,6 @@ const KagglePredictDialog = (props) => {
 
   // eslint-disable-next-line no-unused-vars
   const handleJobChange = (e, newVal) => {
-    // TODO switch on e type to allow for clear button to work
     if (newVal) {
       setLoad(true);
       setPred("");
@@ -98,15 +173,20 @@ const KagglePredictDialog = (props) => {
       handlePred(newVal.value);
       handleColumns(newVal.value);
       setJob(newVal.value);
+      resetErrors();
+      setSubmitting(false);
     } else {
       setInit(true);
     }
   };
 
   const handleDl = () => {
+    resetErrors();
     let cols = checked.map((ele) => {
       return columns[ele];
     });
+    setSubmitting(true);
+    setPredictCanClose(false);
     axios
       .get(`/api/job/${job}/pred/${pred}`, { params: { cols: cols } })
       .then((res) => {
@@ -120,26 +200,26 @@ const KagglePredictDialog = (props) => {
           link.click();
           link.remove();
           window.URL.revokeObjectURL(addr);
+          resetErrors();
+          setSubmitting(false);
+          setPredictCanClose(true);
         } else {
-          // TODO turn btn red for err
+          submitError();
         }
       })
-      .catch((err) => {
-        // TODO turn btn red for err
-        console.log(err);
+      .catch(() => {
+        submitError();
       });
   };
 
   const handleSubmitToComp = () => {
-    console.log(job);
-    console.log(pred);
-    console.log(checked);
-    console.log(sourceRef(source, datasets, competitions));
     let ref = sourceRef(source, datasets, competitions);
     let checkedCols = checked.map((ele) => {
       return columns[ele];
     });
-    console.log(checkedCols);
+    resetErrors();
+    setSubmitting(true);
+    setPredictCanClose(false);
     axios
       .get("/api/user", { params: { email: email } })
       .then((user) => {
@@ -150,33 +230,29 @@ const KagglePredictDialog = (props) => {
           })
           .then((res) => {
             if (res.status === 201) {
-              console.log("Success");
+              submitSuccess();
               if (open) {
-                setOpen(false);
+                setTimeout(() => setOpen(false), 500);
               }
             } else {
-              console.log("Fail");
-
-              // TODO turn btn red for err
+              submitError();
             }
+          })
+          .catch(() => {
+            submitError();
           });
       })
-      .catch((err) => {
-        console.log(err);
-        // TODO turn btn red for err
+      .catch(() => {
+        submitError();
       });
   };
 
   const handleNewDataset = () => {
     // TODO let user choose name
-    console.log(job);
-    console.log(pred);
-
-    console.log(sourceRef(source, datasets, competitions));
+    resetErrors();
     let checkedCols = checked.map((ele) => {
       return columns[ele];
     });
-    console.log(checkedCols);
     try {
       let ref = sourceRef(source, datasets, competitions);
       let title = ref.split("/")[1].replace(/[^a-z0-9]/gi, ""); // todo more input cleaning?
@@ -185,8 +261,8 @@ const KagglePredictDialog = (props) => {
         let i = title.length - 38;
         title = title.substring(i);
       }
-      console.log(title);
-      // "/kaggle/:id/:jid/datasets/version/new/:name"
+      setSubmitting(true);
+      setPredictCanClose(false);
       axios
         .get("/api/user", { params: { email: email } })
         .then((user) => {
@@ -197,28 +273,23 @@ const KagglePredictDialog = (props) => {
             })
             .then((res) => {
               if (res.status === 201) {
-                console.log("Success");
+                submitSuccess();
                 if (open) {
-                  setOpen(false);
+                  setTimeout(() => setOpen(false), 500);
                 }
               } else {
-                console.log("Fail");
-
-                // TODO turn btn red for err
+                submitError();
               }
             })
-            .catch((err) => {
-              console.log(err);
-              // TODO turn btn red for err
+            .catch(() => {
+              submitError();
             });
         })
-        .catch((e) => {
-          console.log(e);
-          // TODO turn btn red for err
+        .catch(() => {
+          submitError();
         });
     } catch (e) {
-      console.log(e);
-      // TODO fail
+      submitError();
     }
   };
 
@@ -248,7 +319,7 @@ const KagglePredictDialog = (props) => {
               //   return option.title === value.title;
               // }}
               loading={load}
-              disabled={load}
+              disabled={load || submitting}
               onChange={(e, val) => handleJobChange(e, val)}
               disableClearable
               renderInput={(params) => (
@@ -271,6 +342,7 @@ const KagglePredictDialog = (props) => {
             {!load && preds && preds.length > 0 && (
               <Select
                 required
+                disabled={load || submitting}
                 defaultValue={() => {
                   if (preds && preds.length >= 1) {
                     setUnacceptable(false);
@@ -302,6 +374,7 @@ const KagglePredictDialog = (props) => {
                 cols={columns}
                 checked={checked}
                 setChecked={setChecked}
+                submitting={submitting}
               />
             )}
             {load && <CircularProgress />}
@@ -324,13 +397,19 @@ const KagglePredictDialog = (props) => {
             aria-label="small contained button group"
             fullWidth={true}
             variant="contained"
-            disabled={unacceptable}
+            disabled={unacceptable || submitting}
           >
-            <Button onClick={handleNewDataset}>
+            <Button onClick={handleNewDataset} className={submitBtn}>
               Create new private dataset
+              {submitting && (
+                <CircularProgress size={18} className={classes.submitSpinner} />
+              )}
             </Button>
-            <Button disabled>Add to existing dataset (not ready)</Button>
-            <Button onClick={handleDl}> Download </Button>
+            {/* <Button disabled>Add to existing dataset (not ready)</Button> */}
+            <Button onClick={handleDl} className={downloadBtn}>
+              {" "}
+              Download{" "}
+            </Button>
           </ButtonGroup>
         )) ||
           (source && source.mode === "COMPETITION" && (
@@ -340,12 +419,21 @@ const KagglePredictDialog = (props) => {
               aria-label="small contained button group"
               fullWidth={true}
               variant="contained"
-              disabled={unacceptable}
+              disabled={unacceptable || submitting}
             >
-              <Button onClick={handleSubmitToComp}>
+              <Button onClick={handleSubmitToComp} className={submitBtn}>
                 Submit to Competition
+                {submitting && (
+                  <CircularProgress
+                    size={18}
+                    className={classes.submitSpinner}
+                  />
+                )}
               </Button>
-              <Button onClick={handleDl}> Download </Button>
+              <Button onClick={handleDl} className={downloadBtn}>
+                {" "}
+                Download{" "}
+              </Button>
             </ButtonGroup>
           ))}
       </DialogActions>

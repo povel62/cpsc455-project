@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { CardMedia, Grid } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import KaggleActionPane from "./KaggleActionPane";
 import "./KaggleDashboard.css";
@@ -25,9 +25,11 @@ import {
   cache_files,
   select_datafile,
   select_source,
+  setKaggleSuccess,
   set_loading,
   set_userFilter,
 } from "../../redux/actions/actions";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -41,12 +43,20 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 20,
     paddingRight: 20,
   },
+  success: {
+    alignContent: "center",
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingTop: 20,
+  },
 }));
 
 const KaggleDashBoard = (props) => {
   const classes = useStyles();
   let loading = useSelector((state) => state.kaggleReducer.loading);
   let email = useSelector((state) => state.loginReducer.email);
+  let KSuccess = useSelector((state) => state.kaggleReducer.KSuccess);
   let dispatch = useDispatch();
   const [enabled, setEnabled] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -57,11 +67,12 @@ const KaggleDashBoard = (props) => {
   };
 
   if (!checked) {
-    set_loading(true);
+    dispatch(set_loading(true));
     KaggleAuthCheck(email).then((auth) => {
       setEnabled(auth);
       setChecked(true);
-      set_loading(false);
+      dispatch(set_loading(false));
+      dispatch(setKaggleSuccess(false));
     });
   }
 
@@ -74,6 +85,9 @@ const KaggleDashBoard = (props) => {
       dispatch(cache_datasets(null));
       dispatch(cache_competitions(null));
       dispatch(select_datafile(null));
+      dispatch(set_loading(false));
+      dispatch(setKaggleSuccess(false));
+      setChecked(false);
       dispatch(
         set_userFilter({
           dataFilter: "public",
@@ -89,11 +103,46 @@ const KaggleDashBoard = (props) => {
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      {checked === false && (
-        <Backdrop className={classes.backdrop} open={true}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
+      <Backdrop className={classes.backdrop} open={KSuccess}>
+        <Grid
+          container
+          spacing={0}
+          alignContent="center"
+          alignItems="center"
+          justify="center"
+        >
+          <Grid item xs={3}>
+            <Card className={classes.success}>
+              <CardContent>
+                <Typography
+                  style={{ textAlign: "center" }}
+                  variant="h5"
+                  component="h5"
+                >
+                  Action Successful
+                </Typography>
+              </CardContent>
+              <CardMedia>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <CheckCircleOutlineIcon
+                    style={{
+                      color: "green",
+                      fontSize: 96,
+                    }}
+                  />
+                </div>
+              </CardMedia>
+              <Typography
+                variant="h6"
+                component="h6"
+                style={{ textAlign: "center" }}
+              >
+                You will now be redirected to the dashboard
+              </Typography>
+            </Card>
+          </Grid>
+        </Grid>
+      </Backdrop>
       {enabled === true && checked === true && (
         <div>
           <br />

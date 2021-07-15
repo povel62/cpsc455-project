@@ -71,6 +71,7 @@ const KaggleListEntry = (props) => {
     <ListItem
       button
       onClick={() => handleSelect()}
+      disabled={loading}
       selected={
         !loading &&
         selected_source &&

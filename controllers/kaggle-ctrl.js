@@ -54,6 +54,7 @@ competitionUploadSubmit = async (req, res) => {
             env: {
               KAGGLE_USERNAME: user.kusername,
               KAGGLE_KEY: user.kapi,
+              ...process.env,
             },
           };
           new Promise((resolve, reject) => {
@@ -81,9 +82,9 @@ competitionUploadSubmit = async (req, res) => {
               () => {
                 res.status(201).json({ success: true });
               },
-              () => {
+              (err) => {
                 // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
-                res.status(401).json({ success: false });
+                res.status(401).json({ success: false, error: err });
               }
             )
             .catch((err) => {
@@ -157,6 +158,7 @@ datasetCreateVersion = async (req, res) => {
             env: {
               KAGGLE_USERNAME: user.kusername,
               KAGGLE_KEY: user.kapi,
+              ...process.env,
             },
           };
           new Promise((resolve, reject) => {
@@ -184,9 +186,9 @@ datasetCreateVersion = async (req, res) => {
               () => {
                 res.status(201).json({ success: true });
               },
-              () => {
+              (err) => {
                 // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
-                res.status(401).json({ success: false });
+                res.status(401).json({ success: false, error: err });
               }
             )
             .catch((err) => {
