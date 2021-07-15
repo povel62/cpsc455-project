@@ -36,7 +36,7 @@ const createData = (
   status,
   jobType,
   jobDate,
-  jobHash,
+  t_col,
   computeTime,
   alertText
 ) => {
@@ -45,7 +45,7 @@ const createData = (
     status,
     jobType,
     alertText,
-    extra: [{ date: jobDate, jobHash: jobHash, computeTime: computeTime }],
+    extra: [{ date: jobDate, t_col: t_col, computeTime: computeTime }],
   };
 };
 
@@ -62,7 +62,7 @@ export default function ControlDashboard() {
       entry.name,
       entry.status,
       "Tabular",
-      entry.createdAt,
+      entry.createdAt.substr(0, 10),
       entry.targetColumnName,
       entry.durationLimit,
       "hello"
@@ -99,8 +99,8 @@ export default function ControlDashboard() {
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <TableContainer className="table" component={Paper}>
-            <Table aria-label="collapsible table">
-              <TableHead>
+            <Table stickyHeader aria-label="jobs table">
+              <TableHead className={classes.table_head}>
                 <TableRow>
                   <TableCell />
                   <TableCell>
