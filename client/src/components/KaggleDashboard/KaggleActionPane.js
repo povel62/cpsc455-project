@@ -93,12 +93,10 @@ const KaggleActionPane = (props) => {
   const [columnElement, setColumnElement] = useState(null);
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
+  const [predictCanClose, setPredictCanClose] = useState(false);
+  let dispatch = useDispatch();
 
   const login_token = useSelector((state) => state.loginReducer);
-
-  const [predictCanClose, setPredictCanClose] = useState(false);
-  
-  let dispatch = useDispatch();
 
   KaggleActionPane.propTypes = {
     tab: PropTypes.number.isRequired,
@@ -780,9 +778,7 @@ const KaggleActionPane = (props) => {
       <Dialog
         open={submitterOpen}
         onClose={() => {
-          if (
-          
-          ) {
+          if (predictCanClose) {
             setSubmitterOpen(false);
           }
         }}
