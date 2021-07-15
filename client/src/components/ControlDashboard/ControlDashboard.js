@@ -1,5 +1,4 @@
-//import React from "react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -10,13 +9,12 @@ import Paper from "@material-ui/core/Paper";
 import "./ControlDashboard.css";
 import Row from "./Row.js";
 import { makeStyles } from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 import { useSelector } from "react-redux";
-import JobModal from "../../JobModal/JobModal";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import IconButton from "@material-ui/core/IconButton";
-import { useEffect } from "react";
+import JobModal from "../JobModal/JobModal";
+// import Tooltip from "@material-ui/core/Tooltip";
+// import RefreshIcon from "@material-ui/icons/Refresh";
+// import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,33 +45,24 @@ const createData = (
   };
 };
 
-const rows = [
-  createData(
-    "Job 1",
-    "In-progress",
-    "Tabular",
-    "2022-51-95",
-    "ABCD-1189",
-    "25 minutes",
-    "hello"
-  ),
-  createData(
-    "TestMLJob",
-    "Completed",
-    "Tabular",
-    "999-99-99",
-    "CDF-892G",
-    "6 minutes",
-    "bye bye"
-  ),
-];
-
 export default function ControlDashboard() {
   const axios = require("axios");
   const [data, setData] = useState([]);
   const classes = useStyles();
 
   const login_token = useSelector((state) => state.loginReducer);
+
+  let rows = data.map((entry) =>
+    createData(
+      entry.name,
+      entry.status,
+      "Tabular",
+      entry.createdAt,
+      entry.targetColumnName,
+      entry.durationLimit,
+      "hello"
+    )
+  );
 
   async function loadJobs() {
     axios
@@ -87,7 +76,6 @@ export default function ControlDashboard() {
           let jobData = response.data.data;
           if (jobData) {
             console.log("success get jobs");
-            //console.log(jobData);
             setData(jobData);
           }
         } else {
@@ -113,7 +101,7 @@ export default function ControlDashboard() {
               <h1>CONTROL DASHBOARD</h1>
             </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          {/* <Grid item xs={6} sm={3}>
             <Paper className={classes.paper}>
               <Tooltip title="Refresh" aria-label="Refresh">
                 <IconButton
@@ -126,7 +114,7 @@ export default function ControlDashboard() {
                 </IconButton>
               </Tooltip>
             </Paper>
-          </Grid>
+          </Grid> */}
           <Grid item xs={6} sm={3}>
             <Paper className={classes.paper}>
               <JobModal />
@@ -152,8 +140,8 @@ export default function ControlDashboard() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows.map((row) => (
-                      <Row key={row.name} row={row} />
+                    {rows.map((row, index) => (
+                      <Row key={index} row={row} />
                     ))}
                   </TableBody>
                 </Table>

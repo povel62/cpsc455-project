@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
-import UploadButtons from "../components/Upload_button/Upload_button";
+import UploadButtons from "../Upload_button/Upload_button";
 import PropTypes from "prop-types";
 
 const computeTimes = [
@@ -169,8 +169,6 @@ function AddStepper() {
   };
 
   const handleFinish = async () => {
-    //e.preventDefault();
-
     console.log(data);
 
     const formData = new FormData();
@@ -192,7 +190,6 @@ function AddStepper() {
     if (response.status === 201 || response.status === 200) {
       alert(response.status);
     } else {
-      //resetValues();
       alert(response.status);
     }
   };

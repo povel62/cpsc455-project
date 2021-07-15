@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 //import { DropzoneArea } from "material-ui-dropzone";
 
 function getModalStyle() {
-  const top = 25;
+  const top = 5;
 
   return {
     top: `${top}%`,
@@ -20,7 +20,7 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: 900,
+    width: "80%",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],

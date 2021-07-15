@@ -6,6 +6,7 @@ const loginReducer = (
     lname: "",
     kusername: "",
     kapi: "",
+    jobs: [],
   },
   action
 ) => {
@@ -22,6 +23,8 @@ const loginReducer = (
       return Object.assign({}, state, { kusername: action.payload });
     case "SET_KAPI":
       return Object.assign({}, state, { kapi: action.payload });
+    case "SET_JOBS":
+      return Object.assign({}, state, { jobs: action.payload });
     default:
       return state;
   }

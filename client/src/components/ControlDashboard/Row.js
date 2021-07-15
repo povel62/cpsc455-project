@@ -75,7 +75,7 @@ const Row = (props) => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
-                    <TableCell>Job Hash</TableCell>
+                    <TableCell>Target Column</TableCell>
                     <TableCell align="center">Compute Time</TableCell>
                   </TableRow>
                 </TableHead>

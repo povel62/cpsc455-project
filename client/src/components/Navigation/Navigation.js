@@ -144,7 +144,7 @@ export default function Navigation(props) {
                 <img width="50" height="50" src="../logo.png" />
               </IconButton>
             </Grid>
-            <Grid xs={8} item>
+            <Grid xs={6} item>
               <Grid container justify={"center"}>
                 <div className="smallScreen">
                   <IconButton
