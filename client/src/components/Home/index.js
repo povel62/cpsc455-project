@@ -1,10 +1,10 @@
 import React from "react";
-import UploadButtons from "../Upload_button/Upload_button";
 import "./index.css";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import Fab from "@material-ui/core/Fab";
 import Grow from "@material-ui/core/Grow";
+import ControlDashboard from "../ControlDashboard/ControlDashboard";
 import { useState } from "react";
 
 const Home = (props) => {
@@ -19,13 +19,10 @@ const Home = (props) => {
           justify="space-between"
           alignItems="center"
         >
-          <br />
-          <br />
-          <br />
-          <img width="250" height="250" src="../logo.png" />
+          <img width="150" height="150" src="../logo.png" />
         </Grid>
 
-        {!props.isLanding && <UploadButtons></UploadButtons>}
+        {!props.isLanding && <ControlDashboard></ControlDashboard>}
 
         <br />
         <hr />

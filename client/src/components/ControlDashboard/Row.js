@@ -74,8 +74,8 @@ const Row = (props) => {
               <Table size="small" aria-label="jobs">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Job Hash</TableCell>
+                    <TableCell>Creation Date</TableCell>
+                    <TableCell>Target Column</TableCell>
                     <TableCell align="center">Compute Time</TableCell>
                   </TableRow>
                 </TableHead>
@@ -85,7 +85,7 @@ const Row = (props) => {
                       <TableCell component="th" scope="row">
                         {extraRow.date}
                       </TableCell>
-                      <TableCell>{extraRow.jobHash}</TableCell>
+                      <TableCell>{extraRow.t_col}</TableCell>
                       <TableCell align="center">
                         {extraRow.computeTime}
                       </TableCell>
@@ -111,7 +111,7 @@ Row.propTypes = {
     extra: PropTypes.arrayOf(
       PropTypes.shape({
         date: PropTypes.string.isRequired,
-        jobHash: PropTypes.string.isRequired,
+        t_col: PropTypes.string.isRequired,
         computeTime: PropTypes.string.isRequired,
       })
     ).isRequired,

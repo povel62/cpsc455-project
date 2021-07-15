@@ -5,17 +5,17 @@ import Signin from "./components/Signin/Signin";
 import Signup from "./components/Signup/Signup";
 import AuthRoute from "./router/AuthRoute";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
-import Sky from "react-sky";
-import ml1 from "./background-images/ml1.png";
-import ml2 from "./background-images/ml2.png";
-import ml3 from "./background-images/ml3.png";
-import ml4 from "./background-images/ml4.png";
-import ml5 from "./background-images/ml5.png";
-import ml6 from "./background-images/ml6.png";
-import ml7 from "./background-images/ml7.png";
-import ml8 from "./background-images/ml8.png";
-import ml9 from "./background-images/ml9.png";
-import ml10 from "./background-images/ml10.png";
+// import Sky from "react-sky";
+// import ml1 from "./background-images/ml1.png";
+// import ml2 from "./background-images/ml2.png";
+// import ml3 from "./background-images/ml3.png";
+// import ml4 from "./background-images/ml4.png";
+// import ml5 from "./background-images/ml5.png";
+// import ml6 from "./background-images/ml6.png";
+// import ml7 from "./background-images/ml7.png";
+// import ml8 from "./background-images/ml8.png";
+// import ml9 from "./background-images/ml9.png";
+// import ml10 from "./background-images/ml10.png";
 import Faq from "./components/Faq/Faq";
 import Landing from "./components/Landing";
 
@@ -43,7 +43,7 @@ class App extends Component {
   render() {
     return (
       <ThemeProvider theme={theme}>
-        <Sky
+        {/* <Sky
           images={{
             0: ml1,
             1: ml2,
@@ -56,13 +56,12 @@ class App extends Component {
             8: ml9,
             9: ml10,
           }}
-          how={
-            60
-          } /* Pass the number of images Sky will render chosing randomly */
-          time={40} /* time of animation */
-          size={"60px"} /* size of the rendered images */
-          background={"palettedvioletred"} /* color of background */
-        />
+          how={60} // Pass the number of images Sky will render chosing randomly
+          time={40} // time of animation
+          size={"60px"} // size of the rendered images
+          background={"palettedvioletred"} // color of background
+        /> */}
+
         <div className="root">
           <Router>
             <Switch>

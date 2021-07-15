@@ -22,7 +22,7 @@ const Faq = () => {
   return (
     <div className="Faq">
       <div className="containerFaq">
-        <h1>AUTO ML: FAQ</h1>
+        <h1>Frequently Asked Questions</h1>
         <br />
         <br />
 

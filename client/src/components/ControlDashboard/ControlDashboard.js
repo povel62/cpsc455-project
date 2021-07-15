@@ -1,5 +1,4 @@
-import React from "react";
-// import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -10,20 +9,24 @@ import Paper from "@material-ui/core/Paper";
 import "./ControlDashboard.css";
 import Row from "./Row.js";
 import { makeStyles } from "@material-ui/core/styles";
+import JobModal from "../JobModal/JobModal";
+import { useSelector, useDispatch } from "react-redux";
+import { setJobs } from "../../redux/actions/actions";
 import Tooltip from "@material-ui/core/Tooltip";
-import Grid from "@material-ui/core/Grid";
-// import { useSelector } from "react-redux";
-import JobModal from "../../JobModal/JobModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
+    width: "90%",
     color: theme.palette.text.secondary,
   },
 }));
@@ -33,7 +36,7 @@ const createData = (
   status,
   jobType,
   jobDate,
-  jobHash,
+  t_col,
   computeTime,
   alertText
 ) => {
@@ -42,132 +45,99 @@ const createData = (
     status,
     jobType,
     alertText,
-    extra: [{ date: jobDate, jobHash: jobHash, computeTime: computeTime }],
+    extra: [{ date: jobDate, t_col: t_col, computeTime: computeTime }],
   };
 };
 
-const rows = [
-  createData(
-    "Job 1",
-    "In-progress",
-    "Tabular",
-    "2022-51-95",
-    "ABCD-1189",
-    "25 minutes",
-    "hello"
-  ),
-  createData(
-    "TestMLJob",
-    "Completed",
-    "Tabular",
-    "999-99-99",
-    "CDF-892G",
-    "6 minutes",
-    "bye bye"
-  ),
-];
-
 export default function ControlDashboard() {
+  const dispatch = useDispatch();
+
+  const axios = require("axios");
   const classes = useStyles();
 
-  // const login_token = useSelector((state) => state.loginReducer);
+  const login_token = useSelector((state) => state.loginReducer);
 
-  // const [values, setValues] = useState({
-  //   response: "",
-  //   post: "",
-  //   responseToPost: "",
-  //   email: login_token.email,
-  //   guest: login_token.isGuest,
-  //   pwd: "",
-  //   kusername: login_token.kusername,
-  //   kapi: login_token.kapi,
-  //   showPassword: false,
-  //   fname: login_token.fname,
-  //   lname: login_token.lname,
-  // });
+  let rows = login_token.jobs.map((entry) =>
+    createData(
+      entry.name,
+      entry.status,
+      "Tabular",
+      entry.createdAt.substr(0, 10),
+      entry.targetColumnName,
+      entry.durationLimit,
+      "hello"
+    )
+  );
 
-  // const add_handler = async (e) => {
-  //   e.preventDefault();
+  async function loadJobs() {
+    axios
+      .get(`/api/user/jobs`, {
+        headers: {
+          Authorization: "Bearer " + login_token.accessToken,
+        },
+      })
+      .then((response) => {
+        if (response.status === 201 || response.status === 200) {
+          let jobData = response.data.data;
+          if (jobData) {
+            console.log("success get jobs");
+            dispatch(setJobs(jobData));
+          }
+        } else {
+          console.log("error");
+          alert(response.status);
+        }
+      });
+  }
 
-  //   const response = await fetch("/api/user/update", {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + login_token.accessToken,
-  //     },
-  //     body: JSON.stringify({
-  //       email: values.email,
-  //       fname: values.fname,
-  //       lname: values.lname,
-  //       kusername: values.kusername,
-  //       kapi: values.kapi,
-  //     }),
-  //   });
-
-  //   if (response.status === 200) {
-  //     alert("Couldn't Add job");
-  //   } else {
-  //     alert(response.status);
-  //   }
-  // };
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <Paper className={classes.paper}>
-              <h1>CONTROL DASHBOARD</h1>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={classes.paper}>
-              <Tooltip title="Refresh" aria-label="Refresh">
-                <IconButton
-                  size="large"
-                  color="primary"
-                  aria-label="Refresh jobs"
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={classes.paper}>
-              {/* <button onClick={add_handler}> Add Job </button> */}
-              <JobModal />
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Paper className={classes.paper}>
-              <TableContainer className="table" component={Paper}>
-                <Table aria-label="collapsible table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell />
-                      <TableCell>
-                        <strong>Job Name</strong>
-                      </TableCell>
-                      <TableCell align="center">
-                        <strong>Status</strong>
-                      </TableCell>
-                      <TableCell align="center">
-                        <strong>Type</strong>
-                      </TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <Row key={row.name} row={row} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-        </Grid>
+        <Paper className={classes.paper}>
+          <TableContainer className="table" component={Paper}>
+            <Table stickyHeader aria-label="jobs table">
+              <TableHead className={classes.table_head}>
+                <TableRow>
+                  <TableCell />
+                  <TableCell>
+                    <strong>Job Name</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Status</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Type</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    {/* JobModal contains add job button */}
+                    <JobModal refreshJobs={() => loadJobs()} />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="Refresh" aria-label="Refresh">
+                      <IconButton
+                        size="large"
+                        color="primary"
+                        aria-label="Refresh jobs"
+                        onClick={() => loadJobs()}
+                      >
+                        <RefreshIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row, index) => (
+                  <Row key={index} row={row} />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       </div>
     </div>
   );

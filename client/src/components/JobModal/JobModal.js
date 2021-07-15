@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 //import { DropzoneArea } from "material-ui-dropzone";
 
 function getModalStyle() {
-  const top = 25;
+  const top = 5;
 
   return {
     top: `${top}%`,
@@ -20,7 +20,8 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: 900,
+    width: "70vw",
+    height: "70vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function JobModal() {
+export default function JobModal({ refreshJobs }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -39,6 +40,7 @@ export default function JobModal() {
 
   const handleClose = () => {
     setOpen(false);
+    refreshJobs();
   };
 
   const body = (

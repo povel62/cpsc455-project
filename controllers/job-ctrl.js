@@ -15,6 +15,10 @@ const { sendTemplateEmail } = require("./send-email");
 const fs = require("fs");
 const csv = require("csv-parser");
 
+const { validateGuest } = require("../util/validation");
+const jwt = require("jsonwebtoken");
+const { secret } = require("../util/security");
+
 tryTest = async () => {
   let options = {
     args: ["ls"],
@@ -93,25 +97,45 @@ createJob = async (req, res) => {
 };
 
 uploadJob = async (req, res) => {
+  console.log("request received");
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+  console.log("user id here");
+  console.log(userId);
+
   const body = req.body;
 
+  console.log("body here");
+  console.log(body);
+  console.log(req.files);
+
+  //console.log(req);
+
   if (!body) {
+    console.log("error 1 no body");
     return res.status(400).json({
       success: false,
       error: "You must provide a job",
     });
   }
 
+  console.log("request here");
+  //console.log(req);
+
   if (!req.files) {
+    console.log("error 2 no file");
     return res.status(400).json({
       success: false,
       message: "No file uploaded",
     });
   }
 
+  console.log("reached here 1");
+
   let fileData = req.files.file.data.toString("utf8");
   let newJob = body;
-  newJob.users = [req.params.id];
+  newJob.users = userId;
   let job = new Job(newJob);
 
   job.headers = fileData
@@ -128,7 +152,7 @@ uploadJob = async (req, res) => {
   job
     .save()
     .then(() => {
-      addJobToUser(req.params.id, job);
+      addJobToUser(userId, job);
       uploadFileToServer(job._id, fileData, "train.csv").then((s1) => {
         runPhase(
           CSV_FILES + "/" + job._id + "/" + "train.csv",
@@ -287,7 +311,8 @@ getPredFile = async (req, res) => {
     let path = `./util/${req.params.name}`;
     let cols = [];
     if (req.query.cols) {
-      try { // postman won't send this as json but axios does?
+      try {
+        // postman won't send this as json but axios does?
         cols = JSON.parse(req.query.cols);
       } catch (e) {
         cols = req.query.cols;
@@ -527,13 +552,24 @@ getJobs = async (req, res) => {
 };
 
 getUserJobs = async (req, res) => {
+  console.log("get request received");
+  console.log("request received");
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+  console.log("user id here");
+  console.log(userId);
+
   return await Job.find(
-    { users: { $elemMatch: { $eq: ObjectId(req.params.id) } } },
+    { users: { $elemMatch: { $eq: ObjectId(userId) } } },
     (err, job) => {
       if (err) {
+        console.log("error 1");
+        console.log(err);
         return res.status(400).json({ success: false, error: err });
       }
       if (!job.length) {
+        console.log("error 2");
         return res.status(404).json({ success: false, error: `Job not found` });
       }
       return res.status(200).json({ success: true, data: job });

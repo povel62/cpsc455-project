@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/user/:id/job", JobCtrl.createJob);
 router.post("/user/job/upload", GenericCtrl.verifyToken, JobCtrl.uploadJob);
-router.get("/user/:id/jobs", JobCtrl.getUserJobs);
+router.get("/user/jobs", GenericCtrl.verifyToken, JobCtrl.getUserJobs);
 router.patch("/job/:id/status/:statusName", JobCtrl.updateJobStatus);
 router.put("/job/:id", JobCtrl.updateJob);
 router.delete("/job/:id", GenericCtrl.verifyToken, JobCtrl.deleteJob);

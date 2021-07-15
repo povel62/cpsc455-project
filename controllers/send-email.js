@@ -4,14 +4,14 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 //   "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"
 // );
 
-templates = {
+const templates = {
   shared: "d-00e2b1e109ae4ba2ba991abe6a08c978",
   training_completed: "d-5354636450eb42efaa40c473b4eba943",
   prediction_completed: "d-6f69b38eae6d4a6da159096a4a306f9d",
   welcome: "d-dfc22099629245d7b7ce36bff7b05c08",
 };
 
-sendEmail = async (data) => {
+const sendEmail = async (data) => {
   const msg = {
     to: data.to,
     from: "automl.donotreply@gmail.com",
@@ -31,7 +31,7 @@ sendEmail = async (data) => {
     });
 };
 
-sendTemplateEmail = async (data) => {
+const sendTemplateEmail = async (data) => {
   const msg = {
     to: data.to,
     from: "automl.donotreply@gmail.com",

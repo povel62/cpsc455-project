@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
-import UploadButtons from "../components/Upload_button/Upload_button";
+import UploadButtons from "../Upload_button/Upload_button";
 import PropTypes from "prop-types";
 
 const computeTimes = [
@@ -119,8 +119,8 @@ function AddStepper() {
           <div>
             <p> Upload your Dataset</p>
             <UploadButtons
-              changeTarget={(target_col) => setTarget(target_col)}
-              changeData={(data) => setData(data)}
+              changeTarget={(t_col) => setTarget(t_col)}
+              changeData={(fData) => setData(fData)}
             ></UploadButtons>
           </div>
         );
@@ -169,38 +169,35 @@ function AddStepper() {
   };
 
   const handleFinish = async () => {
-    // const response = await fetch("/api/user/update", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + login_token.accessToken,
-    //   },
-    //   body: JSON.stringify({
-    //     email: values.email,
-    //     fname: values.fname,
-    //     lname: values.lname,
-    //     kusername: values.kusername,
-    //     kapi: values.kapi,
-    //   }),
-    // });
-    // if (response.status === 200) {
-    //   dispatch(setEmail(values.email));
-    //   dispatch(setFName(values.fname));
-    //   dispatch(setLName(values.lname));
-    //   dispatch(setKaggleUsername(values.kusername));
-    //   dispatch(setKaggleAPI(values.kapi));
-    // }
-    // alert(response.status);
+    console.log(data);
+
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("file", data);
+    formData.append("name", values.jobName);
+    formData.append("durationLimit", values.jobTime);
+    formData.append("targetColumnName", target_col);
+
+    const response = await fetch("/api/user/job/upload", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+      body: formData,
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      alert(response.status);
+    } else {
+      alert("Something went wrong");
+    }
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     console.log(target_col);
     console.log(data);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
   };
 
   return (
@@ -216,9 +213,8 @@ function AddStepper() {
         {activeStep === steps.length ? (
           <div>
             <Typography className={classes.instructions}>
-              All steps completed
+              Job Submitted!
             </Typography>
-            <Button onClick={handleReset}>Reset</Button>
           </div>
         ) : (
           <div>
