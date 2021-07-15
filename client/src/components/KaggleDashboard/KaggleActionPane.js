@@ -97,7 +97,7 @@ const KaggleActionPane = (props) => {
   const login_token = useSelector((state) => state.loginReducer);
 
   const [predictCanClose, setPredictCanClose] = useState(false);
-  
+
   let dispatch = useDispatch();
 
   KaggleActionPane.propTypes = {
@@ -779,13 +779,7 @@ const KaggleActionPane = (props) => {
       </Dialog>
       <Dialog
         open={submitterOpen}
-        onClose={() => {
-          if (
-          
-          ) {
-            setSubmitterOpen(false);
-          }
-        }}
+        onClose={() => setSubmitterOpen(false)}
         fullWidth
         maxWidth="lg"
         style={{ minHeight: "40vh" }}
