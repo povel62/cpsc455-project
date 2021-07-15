@@ -1,5 +1,5 @@
 import React from "react";
-// import React, { useState } from "react";
+//import React, { useState } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -12,10 +12,11 @@ import Row from "./Row.js";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import JobModal from "../../JobModal/JobModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,49 +69,48 @@ const rows = [
 ];
 
 export default function ControlDashboard() {
+  //const axios = require("axios");
   const classes = useStyles();
 
-  // const login_token = useSelector((state) => state.loginReducer);
+  const login_token = useSelector((state) => state.loginReducer);
 
-  // const [values, setValues] = useState({
-  //   response: "",
-  //   post: "",
-  //   responseToPost: "",
-  //   email: login_token.email,
-  //   guest: login_token.isGuest,
-  //   pwd: "",
-  //   kusername: login_token.kusername,
-  //   kapi: login_token.kapi,
-  //   showPassword: false,
-  //   fname: login_token.fname,
-  //   lname: login_token.lname,
-  // });
+  async function loadJobs() {
+    const response = await fetch("/api/user/jobs", {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+    });
 
-  // const add_handler = async (e) => {
-  //   e.preventDefault();
+    if (response.status === 201 || response.status === 200) {
+      console.log(response);
+      alert("success");
+    } else {
+      //resetValues();
+      console.log("error");
+      alert(response.status);
+    }
 
-  //   const response = await fetch("/api/user/update", {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + login_token.accessToken,
-  //     },
-  //     body: JSON.stringify({
-  //       email: values.email,
-  //       fname: values.fname,
-  //       lname: values.lname,
-  //       kusername: values.kusername,
-  //       kapi: values.kapi,
-  //     }),
-  //   });
+    //setState(!state);
 
-  //   if (response.status === 200) {
-  //     alert("Couldn't Add job");
-  //   } else {
-  //     alert(response.status);
-  //   }
-  // };
+    // axios
+    //   .get("/api/user/jobs", {
+    //     headers: {
+    //       Authorization: "Bearer " + login_token.accessToken,
+    //     },
+    //   })
+    //   .then(console.log("success"))
+    //   .catch((error) => {
+    //     console.log("error");
+    //     console.error(error);
+    //   });
+  }
 
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
+  //loadJobs();
   return (
     <div className="controlDashboard">
       <div className={classes.root}>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
+import { useSelector } from "react-redux";
 export const dataType = "DATA";
 export const compType = "COMPETITION";
 export const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
@@ -79,11 +80,17 @@ export const KaggleAuthCheck = (email) => {
 };
 
 export const userJobItems = (email) => {
+  const login_token = useSelector((state) => state.loginReducer);
   return new Promise((resolve) => {
     axios.get("/api/user", { params: { email: email } }).then((user) => {
-      let id = user.data.data.id;
+      // let id = user.data.data.id;
+      console.log(user);
       axios
-        .get(`/api/user/${id}/jobs`)
+        .get(`/api/user/jobs`, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
         .then((data) => {
           if (data.status === 200) {
             let jobData = data.data.data;

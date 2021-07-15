@@ -552,18 +552,32 @@ getJobs = async (req, res) => {
 };
 
 getUserJobs = async (req, res) => {
+  console.log("get request received");
+  console.log("request received");
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+  console.log("user id here");
+  console.log(userId);
+
   return await Job.find(
-    { users: { $elemMatch: { $eq: ObjectId(req.params.id) } } },
+    { users: { $elemMatch: { $eq: ObjectId(userId) } } },
     (err, job) => {
       if (err) {
+        console.log("error 1");
+        console.log(err);
         return res.status(400).json({ success: false, error: err });
       }
       if (!job.length) {
+        console.log("error 2");
         return res.status(404).json({ success: false, error: `Job not found` });
+      } else {
+        return res.status(200).json({ success: true, data: job });
       }
-      return res.status(200).json({ success: true, data: job });
     }
   );
+
+  //return res.send("hello");
 };
 
 addUsersToJob = async (req, res) => {
