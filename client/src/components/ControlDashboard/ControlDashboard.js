@@ -9,7 +9,6 @@ import Paper from "@material-ui/core/Paper";
 import "./ControlDashboard.css";
 import Row from "./Row.js";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 import JobModal from "../JobModal/JobModal";
 import { useSelector, useDispatch } from "react-redux";
 import { setJobs } from "../../redux/actions/actions";
@@ -20,10 +19,14 @@ import IconButton from "@material-ui/core/IconButton";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
+    width: "90%",
     color: theme.palette.text.secondary,
   },
 }));
@@ -94,61 +97,47 @@ export default function ControlDashboard() {
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <Paper className={classes.paper}>
-              <h1>CONTROL DASHBOARD</h1>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={classes.paper}>
-              <Tooltip title="Refresh" aria-label="Refresh">
-                <IconButton
-                  size="large"
-                  color="primary"
-                  aria-label="Refresh jobs"
-                  onClick={() => loadJobs()}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={classes.paper}>
-              {/* JobModal contains add job button */}
-              <JobModal refreshJobs={() => loadJobs()} />
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Paper className={classes.paper}>
-              <TableContainer className="table" component={Paper}>
-                <Table aria-label="collapsible table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell />
-                      <TableCell>
-                        <strong>Job Name</strong>
-                      </TableCell>
-                      <TableCell align="center">
-                        <strong>Status</strong>
-                      </TableCell>
-                      <TableCell align="center">
-                        <strong>Type</strong>
-                      </TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row, index) => (
-                      <Row key={index} row={row} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-        </Grid>
+        <Paper className={classes.paper}>
+          <TableContainer className="table" component={Paper}>
+            <Table aria-label="collapsible table">
+              <TableHead>
+                <TableRow>
+                  <TableCell />
+                  <TableCell>
+                    <strong>Job Name</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Status</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Type</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    {/* JobModal contains add job button */}
+                    <JobModal refreshJobs={() => loadJobs()} />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="Refresh" aria-label="Refresh">
+                      <IconButton
+                        size="large"
+                        color="primary"
+                        aria-label="Refresh jobs"
+                        onClick={() => loadJobs()}
+                      >
+                        <RefreshIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row, index) => (
+                  <Row key={index} row={row} />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       </div>
     </div>
   );
