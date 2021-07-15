@@ -1,5 +1,5 @@
-import React from "react";
-//import React, { useState } from "react";
+//import React from "react";
+import React, { useState } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -69,40 +69,36 @@ const rows = [
 ];
 
 export default function ControlDashboard() {
-  //const axios = require("axios");
+  const axios = require("axios");
+  const [data, setData] = useState([]);
   const classes = useStyles();
 
   const login_token = useSelector((state) => state.loginReducer);
 
   async function loadJobs() {
-    const response = await fetch("/api/user/jobs", {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + login_token.accessToken,
-      },
-    });
-
-    if (response.status === 201 || response.status === 200) {
-      console.log(response.data);
-      alert("success");
-    } else {
-      //resetValues();
-      console.log("error");
-      alert(response.status);
-    }
-
-    // axios
-    //   .get("/api/user/jobs", {
-    //     headers: {
-    //       Authorization: "Bearer " + login_token.accessToken,
-    //     },
-    //   })
-    //   .then(console.log("success"))
-    //   .catch((error) => {
-    //     console.log("error");
-    //     console.error(error);
-    //   });
+    axios
+      .get(`/api/user/jobs`, {
+        headers: {
+          Authorization: "Bearer " + login_token.accessToken,
+        },
+      })
+      .then((response) => {
+        if (response.status === 201 || response.status === 200) {
+          let jobData = response.data.data;
+          if (jobData) {
+            console.log("success");
+            //console.log(jobData);
+            setData(jobData);
+          }
+        } else {
+          console.log("error");
+          alert(response.status);
+        }
+      });
   }
+
+  console.log("data here");
+  console.log(data);
 
   useEffect(() => {
     loadJobs();
@@ -132,7 +128,6 @@ export default function ControlDashboard() {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Paper className={classes.paper}>
-              {/* <button onClick={add_handler}> Add Job </button> */}
               <JobModal />
             </Paper>
           </Grid>

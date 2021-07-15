@@ -1,10 +1,11 @@
 import axios from "axios";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 export const dataType = "DATA";
 export const compType = "COMPETITION";
 export const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
+
 export const credentials = (email) => {
   // TODO reject to unauthorized instead of blank
   if (!email) {
@@ -79,8 +80,7 @@ export const KaggleAuthCheck = (email) => {
   });
 };
 
-export const userJobItems = (email) => {
-  const login_token = useSelector((state) => state.loginReducer);
+export const userJobItems = (email, login_token) => {
   return new Promise((resolve) => {
     axios.get("/api/user", { params: { email: email } }).then((user) => {
       // let id = user.data.data.id;

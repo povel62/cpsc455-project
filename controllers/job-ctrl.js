@@ -571,13 +571,10 @@ getUserJobs = async (req, res) => {
       if (!job.length) {
         console.log("error 2");
         return res.status(404).json({ success: false, error: `Job not found` });
-      } else {
-        return res.status(200).json({ success: true, data: job });
       }
+      return res.status(200).json({ success: true, data: job });
     }
   );
-
-  //return res.send("hello");
 };
 
 addUsersToJob = async (req, res) => {

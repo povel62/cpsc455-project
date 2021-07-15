@@ -89,6 +89,9 @@ const KaggleActionPane = (props) => {
   const [columnElement, setColumnElement] = useState(null);
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
+
+  const login_token = useSelector((state) => state.loginReducer);
+
   let dispatch = useDispatch();
 
   KaggleActionPane.propTypes = {
@@ -630,7 +633,7 @@ const KaggleActionPane = (props) => {
                     ).then((entered) => {
                       if (entered === true) {
                         dispatch(set_checked([]));
-                        userJobItems(email).then((entries) => {
+                        userJobItems(email, login_token).then((entries) => {
                           dispatch(setJobs(entries));
                           setSubmitterOpen(true);
                         });
@@ -649,7 +652,7 @@ const KaggleActionPane = (props) => {
                   startIcon={<CloudUpload />}
                   onClick={() => {
                     dispatch(set_checked([]));
-                    userJobItems(email).then((entries) => {
+                    userJobItems(email, login_token).then((entries) => {
                       dispatch(setJobs(entries));
                       setSubmitterOpen(true);
                     });
@@ -697,7 +700,7 @@ const KaggleActionPane = (props) => {
                 <Button
                   startIcon={<AddCircle />}
                   onClick={() => {
-                    userJobItems(email).then((entries) =>
+                    userJobItems(email, login_token).then((entries) =>
                       dispatch(setJobs(entries))
                     );
                     retrainJob();
@@ -710,7 +713,7 @@ const KaggleActionPane = (props) => {
                   variant="contained"
                   startIcon={<CloudUpload />}
                   onClick={() => {
-                    userJobItems(email).then((entries) => {
+                    userJobItems(email, login_token).then((entries) => {
                       dispatch(setJobs(entries));
                       createPredict();
                     });
