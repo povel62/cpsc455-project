@@ -83,15 +83,13 @@ export default function ControlDashboard() {
     });
 
     if (response.status === 201 || response.status === 200) {
-      console.log(response);
+      console.log(response.data);
       alert("success");
     } else {
       //resetValues();
       console.log("error");
       alert(response.status);
     }
-
-    //setState(!state);
 
     // axios
     //   .get("/api/user/jobs", {
@@ -110,7 +108,6 @@ export default function ControlDashboard() {
     loadJobs();
   }, []);
 
-  //loadJobs();
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
