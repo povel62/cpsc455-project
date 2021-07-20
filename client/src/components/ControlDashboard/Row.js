@@ -117,7 +117,7 @@ const Row = (props) => {
                   {row.extra.map((extraRow) => (
                     <TableRow key={extraRow.date}>
                       <TableCell component="th" scope="row">
-                        {extraRow.date}
+                        {extraRow.date.substr(0, 10)}
                       </TableCell>
                       <TableCell>{extraRow.t_col}</TableCell>
                       <TableCell align="center">

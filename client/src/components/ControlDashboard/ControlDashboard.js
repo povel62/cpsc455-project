@@ -63,7 +63,7 @@ export default function ControlDashboard() {
         entry.name,
         entry.status,
         "Tabular",
-        entry.createdAt.substr(0, 10),
+        entry.createdAt,
         entry.targetColumnName,
         entry.durationLimit,
         "hello"
