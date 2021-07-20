@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
-    width: "90%",
+    width: "90vw",
     color: theme.palette.text.secondary,
   },
 }));
@@ -63,7 +63,7 @@ export default function ControlDashboard() {
         entry.name,
         entry.status,
         "Tabular",
-        entry.createdAt.substr(0, 10),
+        entry.createdAt,
         entry.targetColumnName,
         entry.durationLimit,
         "hello"
@@ -130,10 +130,11 @@ export default function ControlDashboard() {
                       </IconButton>
                     </Tooltip>
                   </TableCell>
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, index) => (
+                {rows.reverse().map((row, index) => (
                   <Row key={index} row={row} />
                 ))}
               </TableBody>
