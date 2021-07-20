@@ -98,7 +98,7 @@ const Row = (props) => {
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          <ProgressBar />
+          <ProgressBar status={row.status} />
         </TableCell>
       </TableRow>
       <TableRow>
