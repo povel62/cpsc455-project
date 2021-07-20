@@ -134,7 +134,7 @@ export default function ControlDashboard() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, index) => (
+                {rows.reverse().map((row, index) => (
                   <Row key={index} row={row} />
                 ))}
               </TableBody>
