@@ -130,6 +130,7 @@ export default function ControlDashboard() {
                       </IconButton>
                     </Tooltip>
                   </TableCell>
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>

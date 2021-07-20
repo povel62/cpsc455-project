@@ -14,6 +14,8 @@ import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
+import DonutLargeIcon from "@material-ui/icons/DonutLarge";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
 
 const useRowStyles = makeStyles({
@@ -26,6 +28,8 @@ const useRowStyles = makeStyles({
 
 const Row = (props) => {
   const shareEvent = () => alert(row.alertText);
+  const predictEvent = () => alert("predict");
+  const deleteJobEvent = () => alert("delete job");
 
   const { row } = props;
 
@@ -35,7 +39,7 @@ const Row = (props) => {
 
   return (
     <React.Fragment>
-      <TableRow className={classes.root}>
+      <TableRow className={classes.root} hover="true">
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -50,7 +54,20 @@ const Row = (props) => {
         </TableCell>
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
-        <TableCell>
+        <TableCell align="center">
+          <Tooltip title="predit job" aria-label="click to start predicting">
+            <Button
+              variant="contained"
+              // color="secondary"
+              component="span"
+              onClick={predictEvent}
+              endIcon={<DonutLargeIcon />}
+            >
+              Predict
+            </Button>
+          </Tooltip>
+        </TableCell>
+        <TableCell align="center">
           <Tooltip
             title="Get share link for this job"
             aria-label="get link to share this job"
@@ -64,6 +81,17 @@ const Row = (props) => {
             >
               Share
             </Button>
+          </Tooltip>
+        </TableCell>
+        <TableCell align="center">
+          <Tooltip title="Delete job" aria-label="Delete this job">
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={deleteJobEvent}
+            >
+              <DeleteOutlineIcon color="error" />
+            </IconButton>
           </Tooltip>
         </TableCell>
       </TableRow>
