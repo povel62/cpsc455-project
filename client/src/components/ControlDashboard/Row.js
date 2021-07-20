@@ -17,6 +17,7 @@ import AddIcon from "@material-ui/icons/Add";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
+import ProgressBar from "./ProgressBar";
 
 const useRowStyles = makeStyles({
   root: {
@@ -93,6 +94,11 @@ const Row = (props) => {
               <DeleteOutlineIcon color="error" />
             </IconButton>
           </Tooltip>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+          <ProgressBar />
         </TableCell>
       </TableRow>
       <TableRow>
