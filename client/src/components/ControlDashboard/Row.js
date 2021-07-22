@@ -29,7 +29,7 @@ const useRowStyles = makeStyles({
 
 const Row = (props) => {
   const predictEvent = () => alert("predict");
-  const deleteJobEvent = () => alert("delete job");
+  const deleteJobEvent = async () => {};
 
   const { row } = props;
 
