@@ -1,0 +1,134 @@
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Modal from "@material-ui/core/Modal";
+// import AddStepper from "./AddStepper";
+import { FaTimesCircle } from "react-icons/fa";
+import Tooltip from "@material-ui/core/Tooltip";
+// import AddBoxIcon from "@material-ui/icons/AddBox";
+// import IconButton from "@material-ui/core/IconButton";
+
+function getModalStyle() {
+  const top = 5;
+
+  return {
+    top: `${top}%`,
+    margin: "auto",
+  };
+}
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: "absolute",
+    width: "70vw",
+    height: "70vh",
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
+export default function ShareModal() {
+  const login_token = useSelector((state) => state.loginReducer);
+
+  const [values, setValues] = useState({
+    response: "",
+    post: "",
+    responseToPost: "",
+    user: "",
+    guest: login_token.isGuest,
+  });
+
+  const classes = useStyles();
+  const [modalStyle] = useState(getModalStyle);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const body = (
+    <div style={modalStyle} className={classes.paper}>
+      <Tooltip title="close" aria-label="close">
+        <FaTimesCircle
+          size="1.5em"
+          title="close"
+          onClick={handleClose}
+          style={{ cursor: "pointer" }}
+        />
+      </Tooltip>
+      <h2 id="modal-title">Share job with another user</h2>
+      <p id="modal-description">Please enter the of the user job</p>
+      {/* <AddStepper /> */}
+      <TextField
+        autoComplete="User_email"
+        name="User_email"
+        variant="outlined"
+        required
+        fullWidth
+        id="User_email"
+        defaultValue={values.user}
+        label="User Email"
+        autoFocus
+        onChange={(e) => setValues({ ...values, jobName: e.target.user })}
+      />
+    </div>
+  );
+
+  return (
+    <div>
+      <Tooltip title="Add a user" aria-label="add a user">
+        <Button
+          variant="contained"
+          color="primary"
+          component="span"
+          onClick={handleOpen}
+          endIcon={<AddIcon />}
+        >
+          Share
+        </Button>
+        {/* <IconButton
+          color="primary"
+          aria-label="add a new user"
+          onClick={handleOpen}
+          size="large"
+        >
+          <AddBoxIcon />
+        </IconButton> */}
+      </Tooltip>
+      <Modal
+        open={open}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+
+  const handleSubmit = async () => {
+    console.log(data);
+    const response = await fetch("/api/user/job/upload", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+      body: formData,
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      alert(response.status);
+    } else {
+      alert("Something went wrong");
+    }
+  };
+}
