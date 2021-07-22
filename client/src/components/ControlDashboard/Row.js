@@ -13,7 +13,6 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-//import AddIcon from "@material-ui/icons/Add";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -29,7 +28,6 @@ const useRowStyles = makeStyles({
 });
 
 const Row = (props) => {
-  //const shareEvent = () => alert(row.alertText);
   const predictEvent = () => alert("predict");
   const deleteJobEvent = () => alert("delete job");
 
@@ -74,15 +72,6 @@ const Row = (props) => {
             title="Get share link for this job"
             aria-label="get link to share this job"
           >
-            {/* <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              onClick={shareEvent}
-              endIcon={<AddIcon />}
-            >
-              Share
-            </Button> */}
             <ShareModal></ShareModal>
           </Tooltip>
         </TableCell>
