@@ -31,8 +31,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ShareModal() {
-  //const login_token = useSelector((state) => state.loginReducer);
-
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -82,7 +80,6 @@ export default function ShareModal() {
       </Tooltip>
       <h2 id="modal-title">Share job with another user</h2>
       <p id="modal-description">Please enter the email of the user</p>
-      {/* <AddStepper /> */}
       <TextField
         autoComplete="User_email"
         name="User_email"
@@ -123,14 +120,6 @@ export default function ShareModal() {
         >
           Share
         </Button>
-        {/* <IconButton
-          color="primary"
-          aria-label="add a new user"
-          onClick={handleOpen}
-          size="large"
-        >
-          <AddBoxIcon />
-        </IconButton> */}
       </Tooltip>
       <Modal
         open={open}
