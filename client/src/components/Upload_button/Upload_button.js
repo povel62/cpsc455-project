@@ -157,8 +157,6 @@ function UploadButtons(props) {
           ""
         )}
       </p>
-
-      {/* <DataTable pagination highlightOnHover columns={columns} data={data} /> */}
     </div>
   );
 }
