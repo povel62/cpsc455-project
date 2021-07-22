@@ -6,6 +6,8 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 // import AddBoxIcon from "@material-ui/icons/AddBox";
 // import IconButton from "@material-ui/core/IconButton";
+import { Button, TextField } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
 
 function getModalStyle() {
   const top = 5;
@@ -29,14 +31,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ShareModal() {
-  const login_token = useSelector((state) => state.loginReducer);
+  //const login_token = useSelector((state) => state.loginReducer);
 
   const [values, setValues] = useState({
     response: "",
     post: "",
     responseToPost: "",
     user: "",
-    guest: login_token.isGuest,
   });
 
   const classes = useStyles();
@@ -51,6 +52,24 @@ export default function ShareModal() {
     setOpen(false);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(values.user);
+    // const response = await fetch("/job/:id/addUsers", {
+    //   method: "POST",
+    //   // headers: {
+    //   //   Authorization: "Bearer " + login_token.accessToken,
+    //   // },
+    //   body: { user: values.user },
+    // });
+
+    // if (response.status === 201 || response.status === 200) {
+    //   alert(response.status);
+    // } else {
+    //   alert("Something went wrong");
+    // }
+  };
+
   const body = (
     <div style={modalStyle} className={classes.paper}>
       <Tooltip title="close" aria-label="close">
@@ -62,7 +81,7 @@ export default function ShareModal() {
         />
       </Tooltip>
       <h2 id="modal-title">Share job with another user</h2>
-      <p id="modal-description">Please enter the of the user job</p>
+      <p id="modal-description">Please enter the email of the user</p>
       {/* <AddStepper /> */}
       <TextField
         autoComplete="User_email"
@@ -74,8 +93,21 @@ export default function ShareModal() {
         defaultValue={values.user}
         label="User Email"
         autoFocus
+        type="email"
         onChange={(e) => setValues({ ...values, jobName: e.target.user })}
       />
+      <br />
+      <br />
+      <Button
+        type="submit"
+        fullWidth
+        variant="contained"
+        color="primary"
+        className={classes.submit}
+        onClick={handleSubmit}
+      >
+        Add user
+      </Button>
     </div>
   );
 
@@ -114,21 +146,4 @@ export default function ShareModal() {
       </Modal>
     </div>
   );
-
-  const handleSubmit = async () => {
-    console.log(data);
-    const response = await fetch("/api/user/job/upload", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + login_token.accessToken,
-      },
-      body: formData,
-    });
-
-    if (response.status === 201 || response.status === 200) {
-      alert(response.status);
-    } else {
-      alert("Something went wrong");
-    }
-  };
 }
