@@ -26,6 +26,8 @@ import {
   dataType,
   userJobItems,
   sourceRef,
+  fileDownload,
+  getColumnDownloadMethod,
 } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
@@ -118,34 +120,35 @@ const KaggleActionPane = (props) => {
     }
   };
 
-  const fileDownload = (url, file) => {
-    axios.get("/api/user", { params: { email: email } }).then((user) => {
-      let id = user.data.data.id;
-      axios
-        .get(`/api/kaggle/getKaggleFile/${id}`, {
-          responseType: "arraybuffer",
-          auth: token,
-          params: { url: url },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            let name =
-              res.headers["content-type"] === "application/zip"
-                ? file.name + ".zip"
-                : file.name;
-            const addr = window.URL.createObjectURL(new Blob([res.data]));
-            const link = document.createElement("a");
-            link.href = addr;
-            link.setAttribute("download", name);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(addr);
-          }
-        });
-    });
-  };
+  // const fileDownload = (url, file) => {
+  //   axios.get("/api/user", { params: { email: email } }).then((user) => {
+  //     let id = user.data.data.id;
+  //     axios
+  //       .get(`/api/kaggle/getKaggleFile/${id}`, {
+  //         responseType: "arraybuffer",
+  //         auth: token,
+  //         params: { url: url },
+  //       })
+  //       .then((res) => {
+  //         if (res.status === 200) {
+  //           let name =
+  //             res.headers["content-type"] === "application/zip"
+  //               ? file.name + ".zip"
+  //               : file.name;
+  //           const addr = window.URL.createObjectURL(new Blob([res.data]));
+  //           const link = document.createElement("a");
+  //           link.href = addr;
+  //           link.setAttribute("download", name);
+  //           document.body.appendChild(link);
+  //           link.click();
+  //           link.remove();
+  //           window.URL.revokeObjectURL(addr);
+  //         }
+  //       });
+  //   });
+  // };
 
+  // TODO refactor this into multiple pieces, move some to kaggleapi
   const handleDownload = (download) => {
     let file = fileRef();
     let url = "";
@@ -161,7 +164,7 @@ const KaggleActionPane = (props) => {
                   competitions[+source.index].ref
                 }/${file.name}`;
                 if (download) {
-                  fileDownload(url, file);
+                  fileDownload(url, file, token, email);
                 }
                 resolve(url);
               }
@@ -170,7 +173,7 @@ const KaggleActionPane = (props) => {
         } else {
           url = `/datasets/download/${file.datasetRef}/${file.name}`;
           if (download) {
-            fileDownload(url, file);
+            fileDownload(url, file, token, email);
           }
           resolve(url);
         }
@@ -264,22 +267,11 @@ const KaggleActionPane = (props) => {
       }
       if (datafile && col.length === 0) {
         // try to get columns via alternate method
-        axios.get("/api/user", { params: { email: email } }).then((user) => {
-          let id = user.data.data.id;
-          handleDownload().then((url) => {
-            axios
-              .get(`/api/kaggle/getCompetitionsColumns/${id}`, {
-                auth: token,
-                params: { url: url },
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  col = res.data.data;
-                  resolve(col);
-                }
-              });
-          });
-        });
+        getColumnDownloadMethod(email, token, handleDownload, col).then(
+          (cols) => {
+            resolve(cols);
+          }
+        );
       } else {
         resolve(col);
       }
@@ -640,7 +632,7 @@ const KaggleActionPane = (props) => {
         </DialogContent>
       </Dialog>
       <Paper>
-        <h4>Options</h4>
+        <h2 className="KagglePanelHeader">Available Actions</h2>
         {files && (
           <div>
             <h5>Source Options:</h5>

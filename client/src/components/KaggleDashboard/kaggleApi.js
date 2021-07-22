@@ -1,7 +1,6 @@
 import axios from "axios";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
-//import { useSelector } from "react-redux";
 export const dataType = "DATA";
 export const compType = "COMPETITION";
 export const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
@@ -83,7 +82,6 @@ export const KaggleAuthCheck = (email) => {
 export const userJobItems = (email, login_token) => {
   return new Promise((resolve) => {
     axios.get("/api/user", { params: { email: email } }).then((user) => {
-      // let id = user.data.data.id;
       console.log(user);
       axios
         .get(`/api/user/jobs`, {
@@ -189,3 +187,52 @@ export function acceptableJobStatus(status) {
       return false;
   }
 }
+
+export const fileDownload = (url, file, token, email) => {
+  axios.get("/api/user", { params: { email: email } }).then((user) => {
+    let id = user.data.data.id;
+    axios
+      .get(`/api/kaggle/getKaggleFile/${id}`, {
+        responseType: "arraybuffer",
+        auth: token,
+        params: { url: url },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          let name =
+            res.headers["content-type"] === "application/zip"
+              ? file.name + ".zip"
+              : file.name;
+          const addr = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement("a");
+          link.href = addr;
+          link.setAttribute("download", name);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(addr);
+        }
+      });
+  });
+};
+
+export const getColumnDownloadMethod = (email, token, handleDownload, col) => {
+  return new Promise((resolve) => {
+    axios.get("/api/user", { params: { email: email } }).then((user) => {
+      let id = user.data.data.id;
+      handleDownload().then((url) => {
+        axios
+          .get(`/api/kaggle/getCompetitionsColumns/${id}`, {
+            auth: token,
+            params: { url: url },
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              col = res.data.data;
+              resolve(col);
+            }
+          });
+      });
+    });
+  });
+};

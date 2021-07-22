@@ -27,7 +27,7 @@ const KaggleDataPane = () => {
   return (
     <Paper>
       <div className="KagglePanel">
-        <h4>Supported Data Files:</h4>
+        <h2 className="KagglePanelHeader">Supported Data Files</h2>
         {Formatted}
       </div>
     </Paper>
