@@ -145,10 +145,40 @@ getPredFileText = (id, name, path, cols) => {
           if (err) {
             if (err != null) {
               console.log(err);
-              resolve(err);
+              reject(err);
             }
           }
           console.log(results1);
+          resolve(results1);
+        }
+      );
+    } catch (err) {
+      console.log(err);
+      reject("error running python code'");
+    }
+  });
+};
+
+getPredErrorOutputFileText = (id, path, fileName) => {
+  let options = {
+    args: [path, id, fileName],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run(
+        "./util/run_getErrorOutFile.py",
+        options,
+        function (err, results1) {
+          if (err) {
+            if (err != null) {
+              console.log(err);
+              reject(err);
+            }
+          }
+          if (results1.toString().includes("[Errno 2] No such file")) {
+            reject(fileName + ": not found");
+          }
           resolve(results1);
         }
       );
@@ -166,4 +196,5 @@ module.exports = {
   runPhase,
   getPredFileNames,
   getPredFileText,
+  getPredErrorOutputFileText,
 };

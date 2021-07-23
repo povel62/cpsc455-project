@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const createData = (
+  id,
   name,
   status,
   jobType,
@@ -41,6 +42,7 @@ const createData = (
   alertText
 ) => {
   return {
+    id,
     name,
     status,
     jobType,
@@ -60,6 +62,7 @@ export default function ControlDashboard() {
   if (login_token.jobs) {
     rows = login_token.jobs.map((entry) =>
       createData(
+        entry._id,
         entry.name,
         entry.status,
         "Tabular",
