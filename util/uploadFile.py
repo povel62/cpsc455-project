@@ -130,6 +130,17 @@ def copy_file_back_to_local(ssh2, localfilepath, id, filename, cols):
     except Exception as e:
         print(e)
 
+def copy_error_file_back_to_local(ssh2, localfilepath, id, fileName):
+    try:
+        dirname = SESSIONS + "/" + id + "/logs/t5_s0/" + fileName
+        print("Opening Dir: " + dirname)
+        sftp = ssh2.open_sftp()
+        print("Putting file remotely")
+        sftp.get(dirname, localfilepath)
+        print("File successfuly downloaded")
+    except Exception as e:
+        print(e)
+
 def get_pred_files_names(id):
     get_pred_files('remote.cs.ubc.ca', 'blkbx-ml', '1qaz2wsx', SESSIONS + "/" + id + "/predictions")
 

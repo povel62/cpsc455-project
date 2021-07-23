@@ -18,6 +18,7 @@ import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
 import ProgressBar from "./ProgressBar";
+import ErrorModal from "../ErrorModal";
 
 const useRowStyles = makeStyles({
   root: {
@@ -31,6 +32,7 @@ const Row = (props) => {
   const shareEvent = () => alert(row.alertText);
   const predictEvent = () => alert("predict");
   const deleteJobEvent = () => alert("delete job");
+  // const seeJobErrorEvent = () => alert("checkout job error/output");
 
   const { row } = props;
 
@@ -94,6 +96,13 @@ const Row = (props) => {
               <DeleteOutlineIcon color="error" />
             </IconButton>
           </Tooltip>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            // onClick={seeJobErrorEvent}
+          >
+            <ErrorModal jobId={row.id} />
+          </IconButton>
         </TableCell>
       </TableRow>
       <TableRow>
