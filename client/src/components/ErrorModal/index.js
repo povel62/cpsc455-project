@@ -8,6 +8,7 @@ import ErrorOutlinedIcon from "@material-ui/icons/ErrorOutlined";
 import Grid from "@material-ui/core/Grid";
 import { FaTimesCircle } from "react-icons/fa";
 import { CircularProgress } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
 
 function getModalStyle() {
   const top = 5;
@@ -21,12 +22,17 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: "70vw",
-    height: "70vh",
+    width: "90vw",
+    height: "90vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
+    padding: theme.spacing(2, 4, 2, 4),
+  },
+  paper2: {
+    height: "90%",
+    color: theme.palette.text.secondary,
+    backgroundColor: "#a7a7a7",
   },
 }));
 
@@ -155,27 +161,31 @@ export default function ErrorModal(props) {
           alignItems="center"
           style={{ height: "100%" }}
         >
-          <Grid item xs={6} style={{ height: "100%" }}>
-            <h2> Search Output File: </h2>{" "}
-            {loadingSO && <CircularProgress size={24} />}
-            <p style={{ height: "80%", overflowY: "auto" }}>
-              <ul>
-                {searchOutText.map((x, i) => {
-                  return <li key={i}>{x}</li>;
-                })}
-              </ul>
-            </p>
+          <Grid item xs={6} style={{ paddingRight: 2, height: "100%" }}>
+            <Paper className={classes.paper2}>
+              <h2> Search Output File: </h2>{" "}
+              {loadingSO && <CircularProgress size={24} />}
+              <p style={{ height: "80%", overflowY: "auto" }}>
+                <ul>
+                  {searchOutText.map((x, i) => {
+                    return <li key={i}>{x}</li>;
+                  })}
+                </ul>
+              </p>
+            </Paper>
           </Grid>
           <Grid item xs={6} style={{ height: "100%" }}>
-            <h2> Search Error File: </h2>{" "}
-            {loadingSE && <CircularProgress size={24} />}
-            <p style={{ height: "80%", overflowY: "auto" }}>
-              <ul>
-                {searchErrorText.map((x, i) => {
-                  return <li key={i}>{x}</li>;
-                })}
-              </ul>
-            </p>
+            <Paper className={classes.paper2}>
+              <h2> Search Error File: </h2>{" "}
+              {loadingSE && <CircularProgress size={24} />}
+              <p style={{ height: "80%", overflowY: "auto" }}>
+                <ul>
+                  {searchErrorText.map((x, i) => {
+                    return <li key={i}>{x}</li>;
+                  })}
+                </ul>
+              </p>
+            </Paper>
           </Grid>
         </Grid>
         <Grid
@@ -183,29 +193,33 @@ export default function ErrorModal(props) {
           direction="row"
           justifyContent="center"
           alignItems="center"
-          style={{ height: "100%" }}
+          style={{ height: "100%", paddingTop: 2 }}
         >
-          <Grid item xs={6} style={{ height: "100%" }}>
-            <h2> Predict Output File: </h2>{" "}
-            {loadingPO && <CircularProgress size={24} />}
-            <p style={{ height: "80%", overflowY: "auto" }}>
-              <ul>
-                {predictOutText.map((x, i) => {
-                  return <li key={i}>{x}</li>;
-                })}
-              </ul>
-            </p>
+          <Grid item xs={6} style={{ paddingRight: 2, height: "100%" }}>
+            <Paper className={classes.paper2}>
+              <h2> Predict Output File: </h2>{" "}
+              {loadingPO && <CircularProgress size={24} />}
+              <p style={{ height: "80%", overflowY: "auto" }}>
+                <ul>
+                  {predictOutText.map((x, i) => {
+                    return <li key={i}>{x}</li>;
+                  })}
+                </ul>
+              </p>
+            </Paper>
           </Grid>
           <Grid item xs={6} style={{ height: "100%" }}>
-            <h2> Predict Error File: </h2>{" "}
-            {loadingPE && <CircularProgress size={24} />}
-            <p style={{ height: "80%", overflowY: "auto" }}>
-              <ul>
-                {predictErrorText.map((x, i) => {
-                  return <li key={i}>{x}</li>;
-                })}
-              </ul>
-            </p>
+            <Paper className={classes.paper2}>
+              <h2> Predict Error File: </h2>{" "}
+              {loadingPE && <CircularProgress size={24} />}
+              <p style={{ height: "80%", overflowY: "auto" }}>
+                <ul>
+                  {predictErrorText.map((x, i) => {
+                    return <li key={i}>{x}</li>;
+                  })}
+                </ul>
+              </p>
+            </Paper>
           </Grid>
         </Grid>
       </Grid>
