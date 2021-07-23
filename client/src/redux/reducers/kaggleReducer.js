@@ -37,8 +37,8 @@ const kaggleReducer = (state = {}, action) => {
     case "REMOVE_CHECKED":
       newState.checked.filter((e) => e !== action.payload);
       break;
-    case "SET_JOBS":
-      newState.jobs = action.payload;
+    case "SET_KJOBS":
+      newState.kjobs = action.payload;
       break;
     case "SET_KSUCCESS":
       newState.KSuccess = action.payload;

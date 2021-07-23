@@ -145,7 +145,6 @@ datasetCreateVersion = async (req, res) => {
       getPredFileText(job._id, req.params.name, path, cols)
         // eslint-disable-next-line no-unused-vars
         .then((s1) => {
-          // TODO write config json
           let config = {
             title: title,
             id: `${user.kusername}/${title}`,

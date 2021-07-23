@@ -21,6 +21,7 @@ import clsx from "clsx";
 import { makeStyles } from "@material-ui/styles";
 import { green, red } from "@material-ui/core/colors";
 import { setKaggleSuccess } from "../../redux/actions/actions";
+import { LooksOne, LooksTwo, Looks3 } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
   buttonProgress: {
@@ -52,7 +53,7 @@ const useStyles = makeStyles(() => ({
 
 const KagglePredictDialog = (props) => {
   let source = useSelector((state) => state.kaggleReducer.source);
-  let jobs = useSelector((state) => state.kaggleReducer.jobs);
+  let jobs = useSelector((state) => state.kaggleReducer.kjobs);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
   let email = useSelector((state) => state.loginReducer.email);
@@ -118,7 +119,7 @@ const KagglePredictDialog = (props) => {
     setOpen(false);
     dispatch(setKaggleSuccess(true));
     setTimeout(() => {
-      setTab(3);
+      setTab(0);
       dispatch(setKaggleSuccess(false));
     }, 2000);
   };
@@ -172,7 +173,11 @@ const KagglePredictDialog = (props) => {
       setChecked([]);
       handlePred(newVal.value);
       handleColumns(newVal.value);
-      setJob(newVal.value);
+      setJob({
+        id: newVal.value,
+        kaggleType: newVal.kaggleType,
+        kaggleId: newVal.kaggleId,
+      });
       resetErrors();
       setSubmitting(false);
     } else {
@@ -188,7 +193,7 @@ const KagglePredictDialog = (props) => {
     setSubmitting(true);
     setPredictCanClose(false);
     axios
-      .get(`/api/job/${job}/pred/${pred}`, { params: { cols: cols } })
+      .get(`/api/job/${job.id}/pred/${pred}`, { params: { cols: cols } })
       .then((res) => {
         if (res.status === 200) {
           let name = pred;
@@ -225,9 +230,12 @@ const KagglePredictDialog = (props) => {
       .then((user) => {
         let id = user.data.data.id;
         axios
-          .post(`/api/kaggle/${id}/${job}/competitions/${ref}/submit/${pred}`, {
-            params: { cols: checkedCols },
-          })
+          .post(
+            `/api/kaggle/${id}/${job.id}/competitions/${ref}/submit/${pred}`,
+            {
+              params: { cols: checkedCols },
+            }
+          )
           .then((res) => {
             if (res.status === 201) {
               submitSuccess();
@@ -268,7 +276,7 @@ const KagglePredictDialog = (props) => {
         .then((user) => {
           let id = user.data.data.id;
           axios
-            .post(`/api/kaggle/${id}/${job}/datasets/version/new/${pred}`, {
+            .post(`/api/kaggle/${id}/${job.id}/datasets/version/new/${pred}`, {
               params: { cols: checkedCols, title: title },
             })
             .then((res) => {
@@ -301,13 +309,17 @@ const KagglePredictDialog = (props) => {
       <DialogContent style={{ overflow: "hidden", minHeight: "45vh" }}>
         <Grid container spacing={3}>
           <Grid item xs={4}>
+            <LooksOne style={{ textAlign: "center", alignSelf: "center" }} />
+            <br />
             <h4>Select Job</h4>
             <Autocomplete
               required
               options={jobs.map((e) => {
                 return {
-                  title: e.props["data-my-value"],
+                  title: e.props["data-my-value"].title,
                   value: e.props.value,
+                  kaggleId: e.props["data-my-value"].kaggleId,
+                  kaggleType: e.props["data-my-value"].kaggleType,
                 };
               })}
               getOptionLabel={(option) => option.title}
@@ -334,8 +346,18 @@ const KagglePredictDialog = (props) => {
                 />
               )}
             ></Autocomplete>
+            {!init && !load && job && job.kaggleId && job.kaggleType && (
+              <p>
+                Source: {job.kaggleId} ({job.kaggleType}){" "}
+              </p>
+            )}
+            {!init && !load && job && (!job.kaggleId || !job.kaggleType) && (
+              <p>No Associated Kaggle Source </p>
+            )}
           </Grid>
           <Grid item xs={4}>
+            <LooksTwo style={{ textAlign: "center", alignSelf: "center" }} />
+            <br />
             <h4>Select Prediction File</h4>
             {init && <p>Select A Job First</p>}
             {load && <CircularProgress />}
@@ -367,6 +389,8 @@ const KagglePredictDialog = (props) => {
             )}
           </Grid>
           <Grid item xs={4}>
+            <Looks3 style={{ textAlign: "center", alignSelf: "center" }} />
+            <br />
             <h4>Select Desired Columns</h4>
             {init && <p>Select A Job First</p>}
             {!unacceptable && preds && preds.length !== 0 && (

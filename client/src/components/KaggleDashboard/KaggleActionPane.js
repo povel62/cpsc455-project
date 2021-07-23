@@ -34,7 +34,7 @@ import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
 import {
-  setJobs,
+  setKJobs,
   set_loading,
   set_checked,
   setKaggleSuccess,
@@ -81,7 +81,7 @@ const KaggleActionPane = (props) => {
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let email = useSelector((state) => state.loginReducer.email);
   let token = useSelector((state) => state.loginReducer.accessToken);
-  let jobs = useSelector((state) => state.kaggleReducer.jobs);
+  let jobs = useSelector((state) => state.kaggleReducer.kjobs);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
@@ -436,6 +436,25 @@ const KaggleActionPane = (props) => {
     console.log(e);
   };
 
+  const jobAssociated = () => {
+    if (jobs) {
+      let job = jobs.find((ele) => ele.props.value === selectJob);
+      if (
+        job &&
+        job.props &&
+        job.props["data-my-value"] &&
+        job.props["data-my-value"].kaggleId &&
+        job.props["data-my-value"].kaggleType
+      ) {
+        return `Source: ${job.props["data-my-value"].kaggleId} (${job.props["data-my-value"].kaggleType})`;
+      } else {
+        return "No associated Kaggle Source";
+      }
+    }
+    return "";
+    // TODO GET KAGGLE SRC AND COMP TYPE
+  };
+
   const offboardToKaggle = () => {
     try {
       let url = competitions[source.index].url;
@@ -594,13 +613,17 @@ const KaggleActionPane = (props) => {
               <Grid item xs={6}>
                 <InputLabel>Available Trained Jobs</InputLabel>
                 {!submittingJob && (
-                  <Select
-                    onChange={(e) => handleSelectJob(e.target.value)}
-                    value={selectJob}
-                    required
-                  >
-                    {jobs}
-                  </Select>
+                  <div>
+                    <Select
+                      onChange={(e) => handleSelectJob(e.target.value)}
+                      value={selectJob}
+                      required
+                    >
+                      {jobs}
+                    </Select>
+                    <br />
+                    {selectJob && selectJob !== {} && jobAssociated()}
+                  </div>
                 )}
               </Grid>
               <Grid item xs={6}>
@@ -649,7 +672,7 @@ const KaggleActionPane = (props) => {
                       if (entered === true) {
                         dispatch(set_checked([]));
                         userJobItems(email, login_token).then((entries) => {
-                          dispatch(setJobs(entries));
+                          dispatch(setKJobs(entries));
                           setSubmitterOpen(true);
                         });
                       } else {
@@ -668,7 +691,7 @@ const KaggleActionPane = (props) => {
                   onClick={() => {
                     dispatch(set_checked([]));
                     userJobItems(email, login_token).then((entries) => {
-                      dispatch(setJobs(entries));
+                      dispatch(setKJobs(entries));
                       setPredictCanClose(true);
                       setSubmitterOpen(true);
                     });
@@ -717,7 +740,7 @@ const KaggleActionPane = (props) => {
                   startIcon={<AddCircle />}
                   onClick={() => {
                     userJobItems(email, login_token).then((entries) =>
-                      dispatch(setJobs(entries))
+                      dispatch(setKJobs(entries))
                     );
                     retrainJob();
                   }}
@@ -730,7 +753,7 @@ const KaggleActionPane = (props) => {
                   startIcon={<CloudUpload />}
                   onClick={() => {
                     userJobItems(email, login_token).then((entries) => {
-                      dispatch(setJobs(entries));
+                      dispatch(setKJobs(entries));
                       createPredict();
                     });
                   }}

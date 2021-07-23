@@ -130,6 +130,13 @@ export const setJobs = (s) => {
   };
 };
 
+export const setKJobs = (s) => {
+  return {
+    type: "SET_KJOBS",
+    payload: s,
+  };
+};
+
 export const setKaggleSuccess = (s) => {
   return {
     type: "SET_KSUCCESS",

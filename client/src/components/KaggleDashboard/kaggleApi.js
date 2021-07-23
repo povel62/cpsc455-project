@@ -101,7 +101,15 @@ export const userJobItems = (email, login_token) => {
               }
               let elements = accepted.map((job, i) => {
                 return (
-                  <MenuItem value={job.id} key={i} data-my-value={job.name}>
+                  <MenuItem
+                    value={job.id}
+                    key={i}
+                    data-my-value={{
+                      title: job.name,
+                      kaggleType: job.kaggleType,
+                      kaggleId: job.kaggleId,
+                    }}
+                  >
                     {job.name}
                   </MenuItem>
                 );
@@ -236,3 +244,19 @@ export const getColumnDownloadMethod = (email, token, handleDownload, col) => {
     });
   });
 };
+
+// export const getSubmissions = () => {
+//   return new Promise((resolve) => {
+//     // www.kaggle.com/api/v1/competitions/submissions/list/titanic?page=2
+//     // get user submissions, until [] is returned (end of list)
+//     // TODO
+//     resolve([]);
+//   });
+// };
+
+// const getSubmissionPage = (ref, page) => {
+//   // TODO get a single submission page
+// };
+
+// TODO get more info from datasets, (license data,...? )
+// /datasets/view/{ownerSlug}/{datasetSlug}
