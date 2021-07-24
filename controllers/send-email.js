@@ -9,6 +9,7 @@ const templates = {
   training_completed: "d-5354636450eb42efaa40c473b4eba943",
   prediction_completed: "d-6f69b38eae6d4a6da159096a4a306f9d",
   welcome: "d-dfc22099629245d7b7ce36bff7b05c08",
+  error: "d-574506b05dfb4affaa2ec351216ca099",
 };
 
 const sendEmail = async (data) => {

@@ -10,11 +10,11 @@ const {
   runPhase,
   getPredFileNames,
   getPredFileText,
+  getPredErrorOutputFileText,
 } = require("./generic-ctrl");
 const { sendTemplateEmail } = require("./send-email");
 const fs = require("fs");
 const csv = require("csv-parser");
-
 const { validateGuest } = require("../util/validation");
 const jwt = require("jsonwebtoken");
 const { secret } = require("../util/security");
@@ -58,6 +58,7 @@ const JobStatus = {
   TRAINING_COMPLETED: "TRAINING_COMPLETED",
   PREDICTING: "PREDICTING",
   PREDICTING_COMPLETED: "PREDICTING_COMPLETED", // or PREDICTION_COMPLETED
+  ERROR: "ERROR",
 };
 
 createJob = async (req, res) => {
@@ -300,6 +301,45 @@ getPreds = async (req, res) => {
   });
 };
 
+getFileText = async (req, res) => {
+  Job.findOne({ _id: req.params.id }, (err, job) => {
+    if (err) {
+      return res.status(404).json({
+        err,
+        message: "Job not found!",
+      });
+    }
+    //let fileName = job.trainingFinishedAt > job.predictionFinishedAt;
+    let path = `./util/${req.params.id}-${req.params.fileName}`;
+    getPredErrorOutputFileText(job._id, path, req.params.fileName)
+      .then((s1) => {
+        try {
+          var array = fs.readFileSync(path).toString("utf8").split("\n");
+          fs.unlinkSync(path);
+          return res.status(200).json(array);
+        } catch (err) {
+          return res.status(404).json({
+            error,
+            message: "Cannot find file!",
+          });
+        }
+      })
+      .catch((error) => {
+        fs.unlinkSync(path);
+
+        return res.status(404).json({
+          error,
+          message: "Cannot find file!",
+        });
+      });
+  }).catch((err) => {
+    return res.status(404).json({
+      error: err,
+      message: "Cannot find files!",
+    });
+  });
+};
+
 getPredFile = async (req, res) => {
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
@@ -406,6 +446,8 @@ updateJob = async (req, res) => {
 };
 
 updateJobStatus = async (req, res) => {
+  const body = req.body;
+
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
       return res.status(404).json({
@@ -420,6 +462,7 @@ updateJobStatus = async (req, res) => {
           job.trainingStartedAt = new Date().getTime();
         if (req.params.statusName === JobStatus.TRAINING_COMPLETED) {
           job.trainingFinishedAt = new Date().getTime();
+          job.status = body.isSuccess ? job.status : JobStatus.ERROR;
           job.users.forEach(async (element) => {
             await User.findOne({ _id: element }, async (err, user) => {
               if (err) {
@@ -434,7 +477,7 @@ updateJobStatus = async (req, res) => {
                 await sendTemplateEmail({
                   to: user.email,
                   user: user.fname + " " + user.lname,
-                  templateName: "training_completed",
+                  templateName: body.isSuccess ? "training_completed" : "error",
                   job_name: job.name,
                 });
               } catch (error) {
@@ -449,6 +492,7 @@ updateJobStatus = async (req, res) => {
           job.predictionStartedAt = new Date().getTime();
         if (req.params.statusName === JobStatus.PREDICTING_COMPLETED) {
           job.predictionFinishedAt = new Date().getTime();
+          job.status = body.isSuccess ? job.status : JobStatus.ERROR;
           job.users.forEach(async (element) => {
             await User.findOne({ _id: element }, async (err, user) => {
               if (err) {
@@ -463,7 +507,9 @@ updateJobStatus = async (req, res) => {
                 await sendTemplateEmail({
                   to: user.email,
                   user: user.fname + " " + user.lname,
-                  templateName: "prediction_completed",
+                  templateName: body.isSuccess
+                    ? "prediction_completed"
+                    : "error",
                   job_name: job.name,
                   size: "0.51 KB",
                 });
@@ -672,4 +718,5 @@ module.exports = {
   JobStatus,
   getPreds,
   getPredFile,
+  getFileText,
 };

@@ -21,5 +21,10 @@ router.post(
 );
 router.get("/job/:id/preds", JobCtrl.getPreds);
 router.get("/job/:id/pred/:name", JobCtrl.getPredFile);
+router.get(
+  "/job/:id/file/:fileName",
+  GenericCtrl.verifyToken,
+  JobCtrl.getFileText
+);
 
 module.exports = router;

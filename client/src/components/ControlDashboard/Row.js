@@ -19,6 +19,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ProgressBar from "./ProgressBar";
 import ShareModal from "../ShareModal/ShareModal";
 import { useSelector } from "react-redux";
+import ErrorModal from "../ErrorModal";
+
 
 const useRowStyles = makeStyles({
   root: {
@@ -32,6 +34,7 @@ const Row = ({ row, refreshJobs }) => {
   const login_token = useSelector((state) => state.loginReducer);
 
   const predictEvent = () => alert("predict");
+
   const deleteJobEvent = async () => {
     const response = await fetch("api/job/" + row.id, {
       method: "DELETE",
@@ -45,9 +48,11 @@ const Row = ({ row, refreshJobs }) => {
       console.log(response.data);
       alert(response.status);
     }
-
+ 
     refreshJobs();
   };
+  
+  // const seeJobErrorEvent = () => alert("checkout job error/output");
 
   const [open, setOpen] = React.useState(false);
 
@@ -101,6 +106,13 @@ const Row = ({ row, refreshJobs }) => {
               <DeleteOutlineIcon color="error" />
             </IconButton>
           </Tooltip>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            // onClick={seeJobErrorEvent}
+          >
+            <ErrorModal jobId={row.id} />
+          </IconButton>
         </TableCell>
       </TableRow>
       <TableRow>
