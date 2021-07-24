@@ -185,7 +185,6 @@ export const getPredCol = (job) => {
 };
 
 export function acceptableJobStatus(status) {
-  // TODO move to serverside
   switch (status) {
     case "TRAINING_COMPLETED":
     case "PREDICTING":

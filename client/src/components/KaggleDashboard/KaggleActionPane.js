@@ -18,12 +18,16 @@ import {
   Typography,
   DialogActions,
 } from "@material-ui/core";
-import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
+import {
+  CloudDownload,
+  AddCircle,
+  CloudUpload,
+  ViewList,
+} from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   competitionAuth,
   compType,
-  dataType,
   userJobItems,
   sourceRef,
   fileDownload,
@@ -209,6 +213,7 @@ const KaggleActionPane = (props) => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const retrainJob = () => {
     setFail(false);
     setSuccess(false);
@@ -452,7 +457,6 @@ const KaggleActionPane = (props) => {
       }
     }
     return "";
-    // TODO GET KAGGLE SRC AND COMP TYPE
   };
 
   const offboardToKaggle = () => {
@@ -658,7 +662,20 @@ const KaggleActionPane = (props) => {
         <h2 className="KagglePanelHeader">Available Actions</h2>
         {files && (
           <div>
-            <h5>Source Options:</h5>
+            <Button
+              variant="contained"
+              startIcon={<CloudUpload />}
+              onClick={() => {
+                dispatch(set_checked([]));
+                userJobItems(email, login_token).then((entries) => {
+                  dispatch(setKJobs(entries));
+                  setPredictCanClose(true);
+                  setSubmitterOpen(true);
+                });
+              }}
+            >
+              Upload Prediction as new dataset version
+            </Button>
             <ButtonGroup>
               {files.type === compType && (
                 <Button
@@ -684,20 +701,16 @@ const KaggleActionPane = (props) => {
                   Submit Prediction
                 </Button>
               )}
-              {files.type === dataType && (
+              {files.type === compType && (
                 <Button
                   variant="contained"
-                  startIcon={<CloudUpload />}
+                  startIcon={<ViewList />}
                   onClick={() => {
-                    dispatch(set_checked([]));
-                    userJobItems(email, login_token).then((entries) => {
-                      dispatch(setKJobs(entries));
-                      setPredictCanClose(true);
-                      setSubmitterOpen(true);
-                    });
+                    alert("TODO");
                   }}
                 >
-                  Upload Prediction as new dataset version
+                  {" "}
+                  Previous Submissions
                 </Button>
               )}
             </ButtonGroup>
@@ -705,9 +718,8 @@ const KaggleActionPane = (props) => {
         )}
         {datafile && (
           <div>
-            <h5>File Options:</h5>
             <p>{fileRef().description}</p>
-            <h6>Size: {fileRef().totalBytes} bytes</h6>
+            <h5>Size: {fileRef().totalBytes} bytes</h5>
             <Tooltip
               title={"Limited to CSV files"}
               placement="bottom"
@@ -736,7 +748,7 @@ const KaggleActionPane = (props) => {
                 >
                   Create Training Job
                 </Button>
-                <Button
+                {/* <Button
                   startIcon={<AddCircle />}
                   onClick={() => {
                     userJobItems(email, login_token).then((entries) =>
@@ -747,7 +759,7 @@ const KaggleActionPane = (props) => {
                   disabled={true}
                 >
                   Retrain Existing Job
-                </Button>
+                </Button> */}
                 <Button
                   variant="contained"
                   startIcon={<CloudUpload />}
