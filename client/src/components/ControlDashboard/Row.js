@@ -21,7 +21,6 @@ import ShareModal from "../ShareModal/ShareModal";
 import { useSelector } from "react-redux";
 import ErrorModal from "../ErrorModal";
 
-
 const useRowStyles = makeStyles({
   root: {
     "& > *": {
@@ -48,10 +47,10 @@ const Row = ({ row, refreshJobs }) => {
       console.log(response.data);
       alert(response.status);
     }
- 
+
     refreshJobs();
   };
-  
+
   // const seeJobErrorEvent = () => alert("checkout job error/output");
 
   const [open, setOpen] = React.useState(false);
