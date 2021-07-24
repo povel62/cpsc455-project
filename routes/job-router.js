@@ -15,7 +15,7 @@ router.get("/job/:id", JobCtrl.getJobById);
 router.post("/job/:id/upload", JobCtrl.uploadTestFile);
 router.get("/jobs", JobCtrl.getJobs);
 router.post(
-  "/job/:id/addUsers",
+  "/job/addUsers/:id",
   GenericCtrl.verifyToken,
   JobCtrl.addUsersToJob
 );

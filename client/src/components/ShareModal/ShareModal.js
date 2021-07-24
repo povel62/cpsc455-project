@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ShareModal() {
+export default function ShareModal({ jobID }) {
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -53,15 +53,17 @@ export default function ShareModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(values.user);
-    const response = await fetch("api/job/:id/addUsers", {
+    const response = await fetch("api/job/addUsers/" + jobID, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Authorization: "Bearer " + login_token.accessToken,
       },
-      body: { users: values.user },
+      body: JSON.stringify({ users: values.user }),
     });
 
     if (response.status === 201 || response.status === 200) {
+      console.log(response);
       alert(response.status);
     } else {
       alert("Something went wrong");
@@ -81,17 +83,15 @@ export default function ShareModal() {
       <h2 id="modal-title">Share job with another user</h2>
       <p id="modal-description">Please enter the email of the user</p>
       <TextField
-        autoComplete="User_email"
-        name="User_email"
+        autoComplete="user"
+        name="user"
         variant="outlined"
         required
         fullWidth
         id="User_email"
-        defaultValue={values.user}
         label="User Email"
         autoFocus
-        type="email"
-        onChange={(e) => setValues({ ...values, user: e.target.user })}
+        onChange={(e) => setValues({ ...values, user: e.target.value })}
       />
       <br />
       <br />

@@ -620,7 +620,9 @@ getUserJobs = async (req, res) => {
 };
 
 addUsersToJob = async (req, res) => {
+  console.log("share received");
   const body = req.body;
+  console.log(body);
   return await User.find(
     {
       email: { $in: body.users },

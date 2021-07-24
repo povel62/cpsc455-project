@@ -88,7 +88,7 @@ const Row = ({ row, refreshJobs }) => {
             title="Get share link for this job"
             aria-label="get link to share this job"
           >
-            <ShareModal></ShareModal>
+            <ShareModal jobID={row.id}></ShareModal>
           </Tooltip>
         </TableCell>
         <TableCell align="center">
