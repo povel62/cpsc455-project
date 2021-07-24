@@ -59,10 +59,14 @@ export default function ControlDashboard() {
   let rows = [];
 
   const login_token = useSelector((state) => state.loginReducer);
+
+  console.log("jobs here");
+  console.log(login_token.jobs);
+
   if (login_token.jobs) {
     rows = login_token.jobs.map((entry) =>
       createData(
-        entry._id,
+        entry.id,
         entry.name,
         entry.status,
         "Tabular",
@@ -138,7 +142,7 @@ export default function ControlDashboard() {
               </TableHead>
               <TableBody>
                 {rows.reverse().map((row, index) => (
-                  <Row key={index} row={row} />
+                  <Row key={index} row={row} refreshJobs={() => loadJobs()} />
                 ))}
               </TableBody>
             </Table>

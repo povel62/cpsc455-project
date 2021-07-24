@@ -3,11 +3,9 @@ import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
-//import DataTable from "react-data-table-component";
 import "./Upload_button.css";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import TextField from "@material-ui/core/TextField";
-//import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from "prop-types";
 
@@ -23,8 +21,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function UploadButtons(props) {
-  //const login_token = useSelector((state) => state.loginReducer);
-  //const [selectedFile, setFile] = useState(null);
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -33,7 +29,6 @@ function UploadButtons(props) {
   });
 
   const [columns, setColumns] = useState([]);
-  // const [data, setData] = useState([]);
 
   // process CSV data
   const processData = (dataString) => {
@@ -81,17 +76,8 @@ function UploadButtons(props) {
   const handleFileUpload = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
-    //console.log(file);
-    // setFile(file);
-    //console.log(selectedFile);
 
     props.changeData(file);
-
-    // Details of the uploaded file
-    //console.log(selectedFile);
-    // data.append("file", selectedFile);
-
-    // console.log(selectedFile);
 
     const reader = new FileReader();
     reader.onload = (evt) => {
@@ -157,8 +143,6 @@ function UploadButtons(props) {
           ""
         )}
       </p>
-
-      {/* <DataTable pagination highlightOnHover columns={columns} data={data} /> */}
     </div>
   );
 }

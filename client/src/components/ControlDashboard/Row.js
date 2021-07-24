@@ -13,12 +13,14 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
 import ProgressBar from "./ProgressBar";
+import ShareModal from "../ShareModal/ShareModal";
+import { useSelector } from "react-redux";
 import ErrorModal from "../ErrorModal";
+
 
 const useRowStyles = makeStyles({
   root: {
@@ -28,13 +30,29 @@ const useRowStyles = makeStyles({
   },
 });
 
-const Row = (props) => {
-  const shareEvent = () => alert(row.alertText);
-  const predictEvent = () => alert("predict");
-  const deleteJobEvent = () => alert("delete job");
-  // const seeJobErrorEvent = () => alert("checkout job error/output");
+const Row = ({ row, refreshJobs }) => {
+  const login_token = useSelector((state) => state.loginReducer);
 
-  const { row } = props;
+  const predictEvent = () => alert("predict");
+
+  const deleteJobEvent = async () => {
+    const response = await fetch("api/job/" + row.id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+    });
+    if (response.status === 201 || response.status === 200) {
+      alert(response.status);
+    } else {
+      console.log(response.data);
+      alert(response.status);
+    }
+ 
+    refreshJobs();
+  };
+  
+  // const seeJobErrorEvent = () => alert("checkout job error/output");
 
   const [open, setOpen] = React.useState(false);
 
@@ -75,15 +93,7 @@ const Row = (props) => {
             title="Get share link for this job"
             aria-label="get link to share this job"
           >
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              onClick={shareEvent}
-              endIcon={<AddIcon />}
-            >
-              Share
-            </Button>
+            <ShareModal jobID={row.id}></ShareModal>
           </Tooltip>
         </TableCell>
         <TableCell align="center">

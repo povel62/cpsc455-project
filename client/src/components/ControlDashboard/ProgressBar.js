@@ -16,10 +16,10 @@ export default function ProgressBar({ status }) {
   React.useEffect(() => {
     const timer = setInterval(() => {
       setProgress((oldProgress) => {
-        if (status === "TRAINING" && oldProgress >= 40) {
+        if (status == "TRAINING" && oldProgress >= 40) {
           return 0;
         }
-        if (status === "TRAINING_COMPLETED") {
+        if (status == "TRAINING_COMPLETED") {
           setProgressColor("secondary");
           return 50;
         }
