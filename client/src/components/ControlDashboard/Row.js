@@ -18,6 +18,7 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
 import ProgressBar from "./ProgressBar";
 import ShareModal from "../ShareModal/ShareModal";
+import { useSelector } from "react-redux";
 
 const useRowStyles = makeStyles({
   root: {
@@ -27,11 +28,26 @@ const useRowStyles = makeStyles({
   },
 });
 
-const Row = (props) => {
-  const predictEvent = () => alert("predict");
-  const deleteJobEvent = async () => {};
+const Row = ({ row, refreshJobs }) => {
+  const login_token = useSelector((state) => state.loginReducer);
 
-  const { row } = props;
+  const predictEvent = () => alert("predict");
+  const deleteJobEvent = async () => {
+    const response = await fetch("api/job/" + row.id, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+    });
+    if (response.status === 201 || response.status === 200) {
+      alert(response.status);
+    } else {
+      console.log(response.data);
+      alert(response.status);
+    }
+
+    refreshJobs();
+  };
 
   const [open, setOpen] = React.useState(false);
 

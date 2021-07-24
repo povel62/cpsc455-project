@@ -97,11 +97,11 @@ createJob = async (req, res) => {
 };
 
 uploadJob = async (req, res) => {
-  console.log("request received");
+  // console.log("request received");
   let token = req.headers.authorization.split(" ")[1];
   const decoded = jwt.verify(token, secret);
   var userId = decoded._id;
-  console.log("user id here");
+  // console.log("user id here");
   console.log(userId);
 
   const body = req.body;
@@ -497,18 +497,60 @@ updateJobStatus = async (req, res) => {
 };
 
 deleteJob = async (req, res) => {
-  await Job.findOneAndDelete({ _id: req.params.id }, (err, job) => {
+  console.log("request received");
+  let token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, secret);
+  var userId = decoded._id;
+  console.log("user id here");
+  console.log(userId);
+
+  await User.findOne({ _id: userId }, async (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
-
-    if (!job) {
-      return res.status(404).json({ success: false, error: `Job not found` });
+    if (!user) {
+      console.log("request id here");
+      console.log(req.params.id);
+      // console.log("user jobs");
+      // console.log(user.jobs);
+      return res.status(404).json({ success: false, error: `User not found` });
     }
 
-    return res.status(200).json({ success: true, data: job });
-  }).catch((err) => {
-    return res.status(400).json({ success: false, error: err });
+    try {
+      console.log("request id here");
+      console.log(req.params.id);
+      console.log("user jobs");
+      console.log(user.jobs);
+
+      if (user.jobs.includes(req.params.id)) {
+        console.log("request id here");
+        console.log(req.params.id);
+        await Job.findOneAndDelete({ _id: req.params.id }, (err, job) => {
+          if (err) {
+            return res.status(400).json({ success: false, error: err });
+          }
+          if (!job) {
+            console.log("request id here");
+            console.log(req.params.id);
+            console.log("user jobs");
+            console.log(user.jobs);
+            return res
+              .status(404)
+              .json({ success: false, error: `Job not found` });
+          }
+
+          return res.status(200).json({ success: true, data: job });
+        }).catch((err) => {
+          return res.status(400).json({ success: false, error: err });
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ success: false, error: `User not authorized` });
+      }
+    } catch (error) {
+      return res.status(400).json({ success: false, error: error });
+    }
   });
 };
 
@@ -552,13 +594,13 @@ getJobs = async (req, res) => {
 };
 
 getUserJobs = async (req, res) => {
-  console.log("get request received");
-  console.log("request received");
+  // console.log("get request received");
+  // console.log("request received");
   let token = req.headers.authorization.split(" ")[1];
   const decoded = jwt.verify(token, secret);
   var userId = decoded._id;
-  console.log("user id here");
-  console.log(userId);
+  // console.log("user id here");
+  // console.log(userId);
 
   return await Job.find(
     { users: { $elemMatch: { $eq: ObjectId(userId) } } },

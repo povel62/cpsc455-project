@@ -14,7 +14,11 @@ router.delete("/job/:id", GenericCtrl.verifyToken, JobCtrl.deleteJob);
 router.get("/job/:id", JobCtrl.getJobById);
 router.post("/job/:id/upload", JobCtrl.uploadTestFile);
 router.get("/jobs", JobCtrl.getJobs);
-router.post("/job/:id/addUsers", JobCtrl.addUsersToJob);
+router.post(
+  "/job/:id/addUsers",
+  GenericCtrl.verifyToken,
+  JobCtrl.addUsersToJob
+);
 router.get("/job/:id/preds", JobCtrl.getPreds);
 router.get("/job/:id/pred/:name", JobCtrl.getPredFile);
 

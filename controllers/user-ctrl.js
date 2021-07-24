@@ -81,7 +81,7 @@ createUser = async (req, res) => {
 };
 
 update = async (req, res) => {
-  console.log("request received");
+  // console.log("request received");
 
   let token = req.headers.authorization.split(" ")[1];
   const decoded = jwt.verify(token, secret);

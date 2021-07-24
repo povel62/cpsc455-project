@@ -5,6 +5,7 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import { Button, TextField } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
+import { useSelector } from "react-redux";
 
 function getModalStyle() {
   const top = 5;
@@ -39,6 +40,8 @@ export default function ShareModal() {
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
 
+  const login_token = useSelector((state) => state.loginReducer);
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -50,19 +53,19 @@ export default function ShareModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(values.user);
-    // const response = await fetch("/job/:id/addUsers", {
-    //   method: "POST",
-    //   // headers: {
-    //   //   Authorization: "Bearer " + login_token.accessToken,
-    //   // },
-    //   body: { user: values.user },
-    // });
+    const response = await fetch("/job/:id/addUsers", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + login_token.accessToken,
+      },
+      body: { users: values.user },
+    });
 
-    // if (response.status === 201 || response.status === 200) {
-    //   alert(response.status);
-    // } else {
-    //   alert("Something went wrong");
-    // }
+    if (response.status === 201 || response.status === 200) {
+      alert(response.status);
+    } else {
+      alert("Something went wrong");
+    }
   };
 
   const body = (
@@ -88,7 +91,7 @@ export default function ShareModal() {
         label="User Email"
         autoFocus
         type="email"
-        onChange={(e) => setValues({ ...values, jobName: e.target.user })}
+        onChange={(e) => setValues({ ...values, user: e.target.user })}
       />
       <br />
       <br />
