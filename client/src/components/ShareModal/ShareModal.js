@@ -53,7 +53,7 @@ export default function ShareModal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(values.user);
-    const response = await fetch("/job/:id/addUsers", {
+    const response = await fetch("api/job/:id/addUsers", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + login_token.accessToken,

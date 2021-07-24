@@ -19,9 +19,6 @@ export default function ProgressBar({ status }) {
         if (status === "TRAINING" && oldProgress >= 40) {
           return 0;
         }
-        if (status === "TRAINING") {
-          return 0;
-        }
         if (status === "TRAINING_COMPLETED") {
           setProgressColor("secondary");
           return 50;
