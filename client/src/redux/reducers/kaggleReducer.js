@@ -43,6 +43,9 @@ const kaggleReducer = (state = {}, action) => {
     case "SET_KSUCCESS":
       newState.KSuccess = action.payload;
       break;
+    case "SET_SRCINFO":
+      newState.SET_SRCINFO = action.payload;
+      break;
   }
   return newState;
 };

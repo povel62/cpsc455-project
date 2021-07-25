@@ -28,6 +28,7 @@ import {
   setKaggleSuccess,
   set_loading,
   set_userFilter,
+  setSourceAdditionalInfo,
 } from "../../redux/actions/actions";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 
@@ -92,6 +93,7 @@ const KaggleDashBoard = (props) => {
       dispatch(set_loading(false));
       dispatch(setKaggleSuccess(false));
       setChecked(false);
+      dispatch(setSourceAdditionalInfo(null));
       dispatch(
         set_userFilter({
           dataFilter: "public",

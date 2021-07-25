@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import ReactMarkdown from "react-markdown";
 import {
   Paper,
   Button,
@@ -17,12 +18,15 @@ import {
   ButtonGroup,
   Typography,
   DialogActions,
+  Collapse,
 } from "@material-ui/core";
 import {
   CloudDownload,
   AddCircle,
   CloudUpload,
   ViewList,
+  ExpandMore,
+  ExpandLess,
 } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -32,6 +36,7 @@ import {
   sourceRef,
   fileDownload,
   getColumnDownloadMethod,
+  getSubmissions,
 } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
@@ -86,6 +91,7 @@ const KaggleActionPane = (props) => {
   let email = useSelector((state) => state.loginReducer.email);
   let token = useSelector((state) => state.loginReducer.accessToken);
   let jobs = useSelector((state) => state.kaggleReducer.kjobs);
+  let SET_SRCINFO = useSelector((state) => state.kaggleReducer.SET_SRCINFO);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
@@ -100,8 +106,8 @@ const KaggleActionPane = (props) => {
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
   const [predictCanClose, setPredictCanClose] = useState(true);
+  const [descOpen, setDescOpen] = useState(false);
   let dispatch = useDispatch();
-
   const login_token = useSelector((state) => state.loginReducer);
 
   KaggleActionPane.propTypes = {
@@ -113,6 +119,12 @@ const KaggleActionPane = (props) => {
     [classes.buttonSuccess]: success,
     [classes.buttonFail]: fail,
   });
+
+  useEffect(() => {
+    return () => {
+      setDescOpen(false);
+    };
+  }, []);
 
   const fileRef = () => {
     if (!datafile) {
@@ -683,7 +695,21 @@ const KaggleActionPane = (props) => {
                 startIcon={<ViewList />}
                 style={{ width: "50%" }}
                 onClick={() => {
-                  alert("TODO");
+                  competitionAuth(competitions[+source.index].ref, email).then(
+                    (entered) => {
+                      if (entered === true) {
+                        getSubmissions(
+                          email,
+                          sourceRef(source, datasets, competitions)
+                        ).then((res) => {
+                          console.log(res);
+                          // TODO
+                        });
+                      } else {
+                        setOffboard(true);
+                      }
+                    }
+                  );
                 }}
               >
                 {" "}
@@ -691,6 +717,9 @@ const KaggleActionPane = (props) => {
               </Button>
             )}
           </ButtonGroup>
+        )}
+        {SET_SRCINFO && SET_SRCINFO.licenseName && (
+          <p>License: {SET_SRCINFO.licenseName}</p>
         )}
         {datafile && (
           <div>
@@ -751,6 +780,20 @@ const KaggleActionPane = (props) => {
                 </Button>
               </ButtonGroup>
             </Tooltip>
+          </div>
+        )}
+        {SET_SRCINFO && SET_SRCINFO.description && (
+          <div>
+            <Button
+              endIcon={descOpen ? <ExpandLess /> : <ExpandMore />}
+              onClick={() => setDescOpen(!descOpen)}
+              style={{ display: "block", width: "100%" }}
+            >
+              Dataset Description
+            </Button>
+            <Collapse in={descOpen} timeout="auto" unmountOnExit>
+              <ReactMarkdown>{SET_SRCINFO.description}</ReactMarkdown>
+            </Collapse>
           </div>
         )}
       </Paper>

@@ -8,9 +8,15 @@ import {
   cache_files,
   select_datafile,
   set_loading,
+  setSourceAdditionalInfo,
 } from "../../redux/actions/actions";
 import axios from "axios";
-import { credentials, kaggleBaseUrl, dataType } from "./kaggleApi";
+import {
+  credentials,
+  kaggleBaseUrl,
+  dataType,
+  getDatasetView,
+} from "./kaggleApi";
 import { makeStyles } from "@material-ui/core/styles";
 
 const KaggleListEntry = (props) => {
@@ -52,12 +58,30 @@ const KaggleListEntry = (props) => {
           .then((res) => {
             if (res.status === 200) {
               dispatch(cache_files({ type: type, data: res.data }));
-              dispatch(set_loading(false));
+              if (type === dataType) {
+                getDatasetView(
+                  auth,
+                  type === dataType ? datasets[idx].ref : competitions[idx].ref
+                )
+                  .then((res) => {
+                    dispatch(setSourceAdditionalInfo(res));
+                  })
+                  .catch(() => {
+                    dispatch(setSourceAdditionalInfo(res));
+                  })
+                  .finally(() => {
+                    dispatch(set_loading(false));
+                  });
+              } else {
+                dispatch(set_loading(false));
+                dispatch(setSourceAdditionalInfo(null));
+              }
             }
           })
           .catch((err) => {
             console.log(kaggleBaseUrl + mid + end);
             console.log(err);
+            dispatch(set_loading(false));
           });
       });
     } else {

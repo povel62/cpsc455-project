@@ -244,23 +244,55 @@ export const getColumnDownloadMethod = (email, token, handleDownload, col) => {
   });
 };
 
-// export const getSubmissions = (email) => {
-//   return new Promise((resolve) => {
-// credentials(email).then((creds))
-//     // www.kaggle.com/api/v1/competitions/submissions/list/titanic?page=2
-//     // get user submissions, until [] is returned (end of list)
-//     // TODO
-//     resolve([]);
-//   });
-// };
+export const getSubmissions = async (email, ref) => {
+  return new Promise((resolve, reject) => {
+    credentials(email)
+      .then(async (auth) => {
+        let i = 1;
+        let subs = [];
+        let sub = [];
+        do {
+          sub = await axios.get(
+            `${kaggleBaseUrl}/competitions/submissions/list/${ref}`,
+            { params: { page: i }, auth: auth }
+          );
+          if (sub && sub.data) {
+            subs.push(...sub.data);
+          }
+          i++;
+        } while (i < 50 && sub.length > 0);
+        // www.kaggle.com/api/v1/competitions/submissions/list/titanic?page=2
+        // get user submissions, until [] is returned (end of list)
+        // TODO
+        resolve(subs);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+// eslint-disable-next-line no-unused-vars
+const getSubmissionPage = (ref, page, creds) => {
+  // TODO get a single submission page
+};
 
-// const getSubmissionPage = (ref, page,creds) => {
-//   // TODO get a single submission page
-// };
-
-// export const getDatasetView = (email) => {
-//   credentials(email).then((creds)=> {
-// // TODO get more info from datasets, (license data,...? )
-// // /datasets/view/{ownerSlug}/{datasetSlug}
-//   })
-// }
+export const getDatasetView = (auth, ref) => {
+  return new Promise((resolve, reject) => {
+    // TODO get more info from datasets, (license data,...? )
+    // /datasets/view/{ownerSlug}/{datasetSlug}
+    axios
+      .get(`${kaggleBaseUrl}/datasets/view/${ref}`, {
+        auth: auth,
+      })
+      .then((res) => {
+        if (res.data) {
+          resolve(res.data);
+        } else {
+          reject("No data");
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};

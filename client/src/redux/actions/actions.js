@@ -143,3 +143,10 @@ export const setKaggleSuccess = (s) => {
     payload: s,
   };
 };
+
+export const setSourceAdditionalInfo = (s) => {
+  return {
+    type: "SET_SRCINFO",
+    payload: s,
+  };
+};
