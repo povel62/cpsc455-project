@@ -124,34 +124,6 @@ const KaggleActionPane = (props) => {
     }
   };
 
-  // const fileDownload = (url, file) => {
-  //   axios.get("/api/user", { params: { email: email } }).then((user) => {
-  //     let id = user.data.data.id;
-  //     axios
-  //       .get(`/api/kaggle/getKaggleFile/${id}`, {
-  //         responseType: "arraybuffer",
-  //         auth: token,
-  //         params: { url: url },
-  //       })
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           let name =
-  //             res.headers["content-type"] === "application/zip"
-  //               ? file.name + ".zip"
-  //               : file.name;
-  //           const addr = window.URL.createObjectURL(new Blob([res.data]));
-  //           const link = document.createElement("a");
-  //           link.href = addr;
-  //           link.setAttribute("download", name);
-  //           document.body.appendChild(link);
-  //           link.click();
-  //           link.remove();
-  //           window.URL.revokeObjectURL(addr);
-  //         }
-  //       });
-  //   });
-  // };
-
   // TODO refactor this into multiple pieces, move some to kaggleapi
   const handleDownload = (download) => {
     let file = fileRef();
@@ -660,61 +632,65 @@ const KaggleActionPane = (props) => {
       </Dialog>
       <Paper>
         <h2 className="KagglePanelHeader">Available Actions</h2>
+        <Button
+          style={{ display: "block", width: "100%" }}
+          variant="contained"
+          startIcon={<CloudUpload />}
+          onClick={() => {
+            dispatch(set_checked([]));
+            dispatch(set_loading(true));
+            userJobItems(email, login_token).then((entries) => {
+              dispatch(setKJobs(entries));
+              setPredictCanClose(true);
+              dispatch(set_loading(false));
+              setSubmitterOpen(true);
+            });
+          }}
+        >
+          Upload Prediction as new dataset version
+        </Button>
         {files && (
-          <div>
-            <Button
-              variant="contained"
-              startIcon={<CloudUpload />}
-              onClick={() => {
-                dispatch(set_checked([]));
-                userJobItems(email, login_token).then((entries) => {
-                  dispatch(setKJobs(entries));
-                  setPredictCanClose(true);
-                  setSubmitterOpen(true);
-                });
-              }}
-            >
-              Upload Prediction as new dataset version
-            </Button>
-            <ButtonGroup>
-              {files.type === compType && (
-                <Button
-                  variant="contained"
-                  startIcon={<CloudUpload />}
-                  onClick={() => {
-                    competitionAuth(
-                      competitions[+source.index].ref,
-                      email
-                    ).then((entered) => {
+          <ButtonGroup style={{ width: "100%" }}>
+            {files.type === compType && (
+              <Button
+                variant="contained"
+                startIcon={<CloudUpload />}
+                style={{ display: "block", width: "50%" }}
+                onClick={() => {
+                  competitionAuth(competitions[+source.index].ref, email).then(
+                    (entered) => {
                       if (entered === true) {
                         dispatch(set_checked([]));
+                        dispatch(set_loading(true));
                         userJobItems(email, login_token).then((entries) => {
                           dispatch(setKJobs(entries));
+                          dispatch(set_loading(false));
                           setSubmitterOpen(true);
                         });
                       } else {
                         setOffboard(true);
                       }
-                    });
-                  }}
-                >
-                  Submit Prediction
-                </Button>
-              )}
-              {files.type === compType && (
-                <Button
-                  variant="contained"
-                  startIcon={<ViewList />}
-                  onClick={() => {
-                    alert("TODO");
-                  }}
-                >
-                  {" "}
-                  Previous Submissions
-                </Button>
-              )}
-            </ButtonGroup>
-          </div>
+                    }
+                  );
+                }}
+              >
+                Submit Prediction
+              </Button>
+            )}
+            {files.type === compType && (
+              <Button
+                variant="contained"
+                startIcon={<ViewList />}
+                style={{ width: "50%" }}
+                onClick={() => {
+                  alert("TODO");
+                }}
+              >
+                {" "}
+                Previous Submissions
+              </Button>
+            )}
+          </ButtonGroup>
         )}
         {datafile && (
           <div>

@@ -244,8 +244,9 @@ export const getColumnDownloadMethod = (email, token, handleDownload, col) => {
   });
 };
 
-// export const getSubmissions = () => {
+// export const getSubmissions = (email) => {
 //   return new Promise((resolve) => {
+// credentials(email).then((creds))
 //     // www.kaggle.com/api/v1/competitions/submissions/list/titanic?page=2
 //     // get user submissions, until [] is returned (end of list)
 //     // TODO
@@ -253,9 +254,13 @@ export const getColumnDownloadMethod = (email, token, handleDownload, col) => {
 //   });
 // };
 
-// const getSubmissionPage = (ref, page) => {
+// const getSubmissionPage = (ref, page,creds) => {
 //   // TODO get a single submission page
 // };
 
-// TODO get more info from datasets, (license data,...? )
-// /datasets/view/{ownerSlug}/{datasetSlug}
+// export const getDatasetView = (email) => {
+//   credentials(email).then((creds)=> {
+// // TODO get more info from datasets, (license data,...? )
+// // /datasets/view/{ownerSlug}/{datasetSlug}
+//   })
+// }

@@ -1,4 +1,4 @@
-import { CardMedia, Grid } from "@material-ui/core";
+import { ButtonGroup, CardMedia, Grid } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import KaggleActionPane from "./KaggleActionPane";
 import "./KaggleDashboard.css";
@@ -66,7 +66,7 @@ const KaggleDashBoard = (props) => {
     setTab: PropTypes.func.isRequired,
   };
 
-  if (!checked) {
+  const checkAuth = () => {
     dispatch(set_loading(true));
     KaggleAuthCheck(email).then((auth) => {
       setEnabled(auth);
@@ -74,6 +74,10 @@ const KaggleDashBoard = (props) => {
       dispatch(set_loading(false));
       dispatch(setKaggleSuccess(false));
     });
+  };
+
+  if (!checked) {
+    checkAuth();
   }
 
   useEffect(() => {
@@ -190,15 +194,44 @@ const KaggleDashBoard = (props) => {
                   </CardContent>
                 </CardActionArea>
                 <CardActions>
-                  <Button
+                  <ButtonGroup
                     size="small"
                     color="primary"
-                    onClick={() => {
-                      props.setTab(99);
-                    }}
+                    variant="contained"
+                    style={{ maxWidth: "100%" }}
                   >
-                    Add Kaggle Credentials
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        props.setTab(99);
+                      }}
+                    >
+                      <p>Add Kaggle Credentials</p>
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        try {
+                          const kaggleWindow = window.open(
+                            "https://www.kaggle.com/account/login?phase=startRegisterTab&returnUrl=%2F",
+                            "_blank",
+                            "noopener,noreferrer"
+                          );
+                          if (kaggleWindow) kaggleWindow.opener = null;
+                        } catch (e) {
+                          // TODO error
+                          console.log(e);
+                        }
+                      }}
+                    >
+                      <p>Kaggle Sign Up</p>
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        checkAuth();
+                      }}
+                    >
+                      <p>Retry</p>
+                    </Button>
+                  </ButtonGroup>
                 </CardActions>
               </Card>
             </Grid>

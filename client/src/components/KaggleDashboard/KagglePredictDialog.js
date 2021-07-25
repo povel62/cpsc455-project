@@ -234,7 +234,6 @@ const KagglePredictDialog = (props) => {
       });
   };
 
-  // eslint-disable-next-line no-unused-vars
   const handleSubmitToComp = () => {
     let ref = sourceRef(source, datasets, competitions);
     let checkedCols = checked.map((ele) => {
