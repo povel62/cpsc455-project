@@ -718,13 +718,31 @@ const KaggleActionPane = (props) => {
             )}
           </ButtonGroup>
         )}
+        {files && files.type === compType && (
+          <p>
+            Unable to determine license for competitions, please abide by the
+            competition rules.
+          </p>
+        )}
+        {SET_SRCINFO && SET_SRCINFO.ownerName && (
+          <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
+        )}
         {SET_SRCINFO && SET_SRCINFO.licenseName && (
           <p>License: {SET_SRCINFO.licenseName}</p>
         )}
+        {SET_SRCINFO && SET_SRCINFO.usabilityRating && (
+          <p>Usability Rating: {SET_SRCINFO.usabilityRating}</p>
+        )}
+
         {datafile && (
           <div>
-            <p>{fileRef().description}</p>
-            <h5>Size: {fileRef().totalBytes} bytes</h5>
+            <p>
+              File Description:{" "}
+              {fileRef().description && fileRef().description.trim() !== ""
+                ? fileRef().description
+                : "(none)"}
+            </p>
+            <h5>File Size: {fileRef().totalBytes} bytes</h5>
             <Tooltip
               title={"Limited to CSV files"}
               placement="bottom"
