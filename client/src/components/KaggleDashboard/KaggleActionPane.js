@@ -19,12 +19,17 @@ import {
   Typography,
   DialogActions,
   Collapse,
+  TableContainer,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
 } from "@material-ui/core";
 import {
   CloudDownload,
   AddCircle,
   CloudUpload,
-  ViewList,
   ExpandMore,
   ExpandLess,
 } from "@material-ui/icons";
@@ -47,6 +52,7 @@ import {
   set_loading,
   set_checked,
   setKaggleSuccess,
+  setSubTable,
 } from "../../redux/actions/actions";
 import KagglePredictDialog from "./KagglePredictDialog";
 
@@ -92,6 +98,8 @@ const KaggleActionPane = (props) => {
   let token = useSelector((state) => state.loginReducer.accessToken);
   let jobs = useSelector((state) => state.kaggleReducer.kjobs);
   let SET_SRCINFO = useSelector((state) => state.kaggleReducer.SET_SRCINFO);
+  let subTableOpen = useSelector((state) => state.kaggleReducer.subTableOpen);
+  let loading = useSelector((state) => state.kaggleReducer.loading);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
@@ -107,6 +115,8 @@ const KaggleActionPane = (props) => {
   const [submitterOpen, setSubmitterOpen] = useState(false);
   const [predictCanClose, setPredictCanClose] = useState(true);
   const [descOpen, setDescOpen] = useState(false);
+  const [subs, setSubs] = useState([]);
+
   let dispatch = useDispatch();
   const login_token = useSelector((state) => state.loginReducer);
 
@@ -123,6 +133,8 @@ const KaggleActionPane = (props) => {
   useEffect(() => {
     return () => {
       setDescOpen(false);
+      dispatch(setSubTable(false));
+      setSubs([]);
     };
   }, []);
 
@@ -451,7 +463,6 @@ const KaggleActionPane = (props) => {
         if (kaggleWindow) kaggleWindow.opener = null;
       }
     } catch (e) {
-      // TODO error
       console.log(e);
     }
   };
@@ -509,7 +520,7 @@ const KaggleActionPane = (props) => {
                     variant="contained"
                     color="primary"
                     type="submit"
-                    disabled={submittingJob}
+                    disabled={submittingJob || loading}
                     className={buttonClassname}
                   >
                     Queue Job
@@ -645,9 +656,10 @@ const KaggleActionPane = (props) => {
       <Paper>
         <h2 className="KagglePanelHeader">Available Actions</h2>
         <Button
-          style={{ display: "block", width: "100%" }}
+          style={{ width: "100%" }}
           variant="contained"
           startIcon={<CloudUpload />}
+          disabled={loading}
           onClick={() => {
             dispatch(set_checked([]));
             dispatch(set_loading(true));
@@ -659,70 +671,112 @@ const KaggleActionPane = (props) => {
             });
           }}
         >
-          Upload Prediction as new dataset version
+          Upload Prediction as new dataset
         </Button>
-        {files && (
-          <ButtonGroup style={{ width: "100%" }}>
-            {files.type === compType && (
-              <Button
-                variant="contained"
-                startIcon={<CloudUpload />}
-                style={{ display: "block", width: "50%" }}
-                onClick={() => {
-                  competitionAuth(competitions[+source.index].ref, email).then(
-                    (entered) => {
-                      if (entered === true) {
-                        dispatch(set_checked([]));
-                        dispatch(set_loading(true));
-                        userJobItems(email, login_token).then((entries) => {
-                          dispatch(setKJobs(entries));
-                          dispatch(set_loading(false));
-                          setSubmitterOpen(true);
-                        });
-                      } else {
-                        setOffboard(true);
-                      }
-                    }
-                  );
-                }}
-              >
-                Submit Prediction
-              </Button>
-            )}
-            {files.type === compType && (
-              <Button
-                variant="contained"
-                startIcon={<ViewList />}
-                style={{ width: "50%" }}
-                onClick={() => {
-                  competitionAuth(competitions[+source.index].ref, email).then(
-                    (entered) => {
-                      if (entered === true) {
-                        getSubmissions(
-                          email,
-                          sourceRef(source, datasets, competitions)
-                        ).then((res) => {
-                          console.log(res);
-                          // TODO
-                        });
-                      } else {
-                        setOffboard(true);
-                      }
-                    }
-                  );
-                }}
-              >
-                {" "}
-                Previous Submissions
-              </Button>
-            )}
-          </ButtonGroup>
+        {files && files.type === compType && (
+          <Button
+            variant="contained"
+            startIcon={<CloudUpload />}
+            style={{ display: "block", width: "100%" }}
+            disabled={loading}
+            onClick={() => {
+              competitionAuth(competitions[+source.index].ref, email).then(
+                (entered) => {
+                  if (entered === true) {
+                    dispatch(set_checked([]));
+                    dispatch(set_loading(true));
+                    userJobItems(email, login_token).then((entries) => {
+                      dispatch(setKJobs(entries));
+                      dispatch(set_loading(false));
+                      setSubmitterOpen(true);
+                    });
+                  } else {
+                    setOffboard(true);
+                  }
+                }
+              );
+            }}
+          >
+            Submit Prediction
+          </Button>
         )}
         {files && files.type === compType && (
           <p>
             Unable to determine license for competitions, please abide by the
             competition rules.
           </p>
+        )}
+        {source && source.mode === compType && (
+          <div>
+            <Button
+              endIcon={subTableOpen ? <ExpandLess /> : <ExpandMore />}
+              disabled={loading}
+              onClick={() => {
+                if (subTableOpen === false) {
+                  dispatch(set_loading(true));
+                  competitionAuth(competitions[+source.index].ref, email)
+                    .then((entered) => {
+                      if (entered === true) {
+                        getSubmissions(
+                          email,
+                          sourceRef(source, datasets, competitions)
+                        ).then((res) => {
+                          setSubs(res);
+                          dispatch(setSubTable(!subTableOpen));
+                          dispatch(set_loading(false));
+                        });
+                      } else {
+                        dispatch(set_loading(false));
+                        setOffboard(true);
+                      }
+                    })
+                    .catch(() => {
+                      dispatch(set_loading(false));
+                    });
+                } else {
+                  dispatch(setSubTable(false));
+                }
+              }}
+              style={{ display: "block", width: "100%" }}
+            >
+              Previous Submissions
+            </Button>
+            <Collapse in={subTableOpen} timeout="auto" unmountOnExit>
+              {subs.length > 0 && (
+                <TableContainer component={Paper}>
+                  <Table
+                    className={classes.table}
+                    size="small"
+                    style={{ display: "block", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>fileName</TableCell>
+                        <TableCell>privateScore</TableCell>
+                        <TableCell>publicScore</TableCell>
+                        <TableCell>date</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {subs.map((row) => (
+                        <TableRow key={row.fileName}>
+                          <TableCell component="th" scope="row">
+                            {row.fileName}
+                          </TableCell>
+                          <TableCell>{row.privateScore}</TableCell>
+                          <TableCell>{row.publicScore}</TableCell>
+                          <TableCell>{row.date}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+              {(!subs || subs.length === 0) && (
+                <p style={{ textAlign: "center" }}>No Previous Submissions</p>
+              )}
+            </Collapse>
+          </div>
         )}
         {SET_SRCINFO && SET_SRCINFO.ownerName && (
           <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
@@ -824,7 +878,7 @@ const KaggleActionPane = (props) => {
             <Grid item xs={12}>
               <Typography variant="body2" color="textSecondary" component="p">
                 Unfortunately, due to Kaggle’s policies, you must read and
-                accept the competition rules to access these files.
+                accept the competition rules to access this resource.
               </Typography>
             </Grid>
           </Grid>

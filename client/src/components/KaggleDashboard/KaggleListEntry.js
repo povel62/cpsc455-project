@@ -9,6 +9,7 @@ import {
   select_datafile,
   set_loading,
   setSourceAdditionalInfo,
+  setSubTable,
 } from "../../redux/actions/actions";
 import axios from "axios";
 import {
@@ -48,6 +49,7 @@ const KaggleListEntry = (props) => {
       !selected_source ||
       !(selected_source.index === idx && selected_source.mode === type)
     ) {
+      dispatch(setSubTable(false));
       dispatch(select_source({ index: idx, mode: type }));
       const mid =
         type === dataType ? "/datasets/list/" : "/competitions/data/list/";
@@ -85,6 +87,7 @@ const KaggleListEntry = (props) => {
           });
       });
     } else {
+      dispatch(setSubTable(false));
       dispatch(select_source({ index: -1, mode: "" }));
       dispatch(cache_files(null));
       dispatch(set_loading(false));

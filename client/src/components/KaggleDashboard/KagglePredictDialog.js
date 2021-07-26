@@ -416,7 +416,6 @@ const KagglePredictDialog = (props) => {
                   Source: {job.kaggleId} ({job.kaggleType}){" "}
                 </p>
               )}
-              {!init && !load && job && <p> Top Score: TODO</p>}
               {!init && !load && job && (!job.kaggleId || !job.kaggleType) && (
                 <p>No Associated Kaggle Source </p>
               )}

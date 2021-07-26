@@ -46,6 +46,9 @@ const kaggleReducer = (state = {}, action) => {
     case "SET_SRCINFO":
       newState.SET_SRCINFO = action.payload;
       break;
+    case "SET_SUBTABLEOPEN":
+      newState.subTableOpen = action.payload;
+      break;
   }
   return newState;
 };

@@ -36,6 +36,7 @@ const KaggleSearchPane = () => {
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
   let email = useSelector((state) => state.loginReducer.email);
+  let loading = useSelector((state) => state.kaggleReducer.loading);
 
   let datasetEntries = [];
   let competitionEntries = [];
@@ -181,6 +182,7 @@ const KaggleSearchPane = () => {
                   id="competition_filter"
                   value={userFilter ? userFilter.compFilter : "general"}
                   onChange={(e) => handleKaggleCompSelect(e)}
+                  disabled={loading}
                 >
                   <MenuItem value={"general"}>General</MenuItem>
                   <MenuItem value={"inClass"}>In Class</MenuItem>
@@ -208,6 +210,7 @@ const KaggleSearchPane = () => {
                   id="dataset_filter"
                   value={userFilter ? userFilter.dataFilter : "public"}
                   onChange={handleKaggleDataSelect}
+                  disabled={loading}
                 >
                   <MenuItem value={"public"}>Public</MenuItem>
                   <MenuItem value={"my"}>Personal</MenuItem>

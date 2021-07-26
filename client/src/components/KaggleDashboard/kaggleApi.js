@@ -261,9 +261,6 @@ export const getSubmissions = async (email, ref) => {
           }
           i++;
         } while (i < 50 && sub.length > 0);
-        // www.kaggle.com/api/v1/competitions/submissions/list/titanic?page=2
-        // get user submissions, until [] is returned (end of list)
-        // TODO
         resolve(subs);
       })
       .catch((err) => {
@@ -271,15 +268,9 @@ export const getSubmissions = async (email, ref) => {
       });
   });
 };
-// eslint-disable-next-line no-unused-vars
-const getSubmissionPage = (ref, page, creds) => {
-  // TODO get a single submission page
-};
 
 export const getDatasetView = (auth, ref) => {
   return new Promise((resolve, reject) => {
-    // TODO get more info from datasets, (license data,...? )
-    // /datasets/view/{ownerSlug}/{datasetSlug}
     axios
       .get(`${kaggleBaseUrl}/datasets/view/${ref}`, {
         auth: auth,

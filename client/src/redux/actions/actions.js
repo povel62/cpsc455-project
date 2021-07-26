@@ -150,3 +150,10 @@ export const setSourceAdditionalInfo = (s) => {
     payload: s,
   };
 };
+
+export const setSubTable = (s) => {
+  return {
+    type: "SET_SUBTABLEOPEN",
+    payload: s,
+  };
+};

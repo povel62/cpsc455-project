@@ -116,6 +116,10 @@ const KaggleDashBoard = (props) => {
           alignContent="center"
           alignItems="center"
           justify="center"
+          style={{
+            margin: 0,
+            width: "100%",
+          }}
         >
           <Grid item xs={3}>
             <Card className={classes.success}>
@@ -219,7 +223,6 @@ const KaggleDashBoard = (props) => {
                           );
                           if (kaggleWindow) kaggleWindow.opener = null;
                         } catch (e) {
-                          // TODO error
                           console.log(e);
                         }
                       }}
