@@ -35,7 +35,7 @@ const KaggleSearchPane = () => {
   let userFilter = useSelector((state) => state.kaggleReducer.userFilter);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
-  let email = useSelector((state) => state.loginReducer.email);
+  let token = useSelector((state) => state.loginReducer.accessToken);
   let loading = useSelector((state) => state.kaggleReducer.loading);
 
   let datasetEntries = [];
@@ -68,7 +68,7 @@ const KaggleSearchPane = () => {
         searchTerm: userFilter ? userFilter.searchTerm : "",
       };
     }
-    credentials(email).then((auth) => {
+    credentials(token).then((auth) => {
       let compConfig = {
         auth: auth,
         params: { group: config.compFilter, search: config.searchTerm },

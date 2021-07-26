@@ -94,7 +94,6 @@ const KaggleActionPane = (props) => {
   let source = useSelector((state) => state.kaggleReducer.source);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
-  let email = useSelector((state) => state.loginReducer.email);
   let token = useSelector((state) => state.loginReducer.accessToken);
   let jobs = useSelector((state) => state.kaggleReducer.kjobs);
   let SET_SRCINFO = useSelector((state) => state.kaggleReducer.SET_SRCINFO);
@@ -119,7 +118,6 @@ const KaggleActionPane = (props) => {
   const [uploadType, setUploadType] = useState("DATA");
 
   let dispatch = useDispatch();
-  const login_token = useSelector((state) => state.loginReducer);
 
   KaggleActionPane.propTypes = {
     tab: PropTypes.number.isRequired,
@@ -156,7 +154,7 @@ const KaggleActionPane = (props) => {
     if (file) {
       return new Promise((resolve) => {
         if (datafile.mode === "COMPETITION") {
-          competitionAuth(competitions[+source.index].ref, email).then(
+          competitionAuth(competitions[+source.index].ref, token).then(
             (entered) => {
               if (entered === false) {
                 setOffboard(true);
@@ -165,7 +163,7 @@ const KaggleActionPane = (props) => {
                   competitions[+source.index].ref
                 }/${file.name}`;
                 if (download) {
-                  fileDownload(url, file, token, email);
+                  fileDownload(url, file, token);
                 }
                 resolve(url);
               }
@@ -174,7 +172,7 @@ const KaggleActionPane = (props) => {
         } else {
           url = `/datasets/download/${file.datasetRef}/${file.name}`;
           if (download) {
-            fileDownload(url, file, token, email);
+            fileDownload(url, file, token);
           }
           resolve(url);
         }
@@ -189,7 +187,7 @@ const KaggleActionPane = (props) => {
     dispatch(set_loading(true));
     setTarget("");
     if (datafile.mode === "COMPETITION") {
-      competitionAuth(competitions[+source.index].ref, email).then(
+      competitionAuth(competitions[+source.index].ref, token).then(
         (entered) => {
           if (entered === true) {
             TargetColumn().then((col) => {
@@ -218,7 +216,7 @@ const KaggleActionPane = (props) => {
     dispatch(set_loading(true));
     setTarget("");
     if (datafile.mode === "COMPETITION") {
-      competitionAuth(competitions[+source.index].ref, email).then(
+      competitionAuth(competitions[+source.index].ref, token).then(
         (entered) => {
           if (entered === true) {
             TargetColumn().then((col) => {
@@ -244,7 +242,7 @@ const KaggleActionPane = (props) => {
     setSelectJob(null);
     setSuccess(false);
     if (datafile.mode === "COMPETITION") {
-      competitionAuth(competitions[+source.index].ref, email).then(
+      competitionAuth(competitions[+source.index].ref, token).then(
         (entered) => {
           if (entered === true) {
             setPredictOpen(true);
@@ -269,11 +267,9 @@ const KaggleActionPane = (props) => {
       }
       if (datafile && col.length === 0) {
         // try to get columns via alternate method
-        getColumnDownloadMethod(email, token, handleDownload, col).then(
-          (cols) => {
-            resolve(cols);
-          }
-        );
+        getColumnDownloadMethod(token, handleDownload, col).then((cols) => {
+          resolve(cols);
+        });
       } else {
         resolve(col);
       }
@@ -342,45 +338,44 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSubmittingJob(true);
     let sourceType = datafile ? datafile.mode : "invalid";
-    axios
-      .get("/api/user", { params: { email: email } })
-      .then((user) => {
-        let id = user.data.data.id;
-        handleDownload().then((src) => {
-          axios
-            .post(`/api/kaggle/${id}/job`, {
-              status: "CREATED",
-              targetColumnName: target,
-              name: nickname,
-              durationLimit: time,
-              kaggleSrc: src,
-              kaggleType: sourceType,
-              kaggleId: sourceRef(source, datasets, competitions),
-            })
-            .then((res) => {
-              if (res.status === 201) {
-                setSuccess(true);
-                setJobOpen(false);
-                dispatch(setKaggleSuccess(true));
-                setTimeout(() => {
-                  props.setTab(0);
-                  dispatch(setKaggleSuccess(false));
-                }, 2000);
-              } else {
-                setFail(true);
-              }
-              setSubmittingJob(false);
-            })
-            .catch(() => {
-              setFail(true);
-              setSubmittingJob(false);
-            });
+    handleDownload().then((src) => {
+      axios
+        .post(
+          `/api/kaggle/job`,
+          {
+            status: "CREATED",
+            targetColumnName: target,
+            name: nickname,
+            durationLimit: time,
+            kaggleSrc: src,
+            kaggleType: sourceType,
+            kaggleId: sourceRef(source, datasets, competitions),
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 201) {
+            setSuccess(true);
+            setJobOpen(false);
+            dispatch(setKaggleSuccess(true));
+            setTimeout(() => {
+              props.setTab(0);
+              dispatch(setKaggleSuccess(false));
+            }, 2000);
+          } else {
+            setFail(true);
+          }
+          setSubmittingJob(false);
+        })
+        .catch(() => {
+          setFail(true);
+          setSubmittingJob(false);
         });
-      })
-      .catch(() => {
-        setFail(true);
-        setSubmittingJob(false);
-      });
+    });
   };
 
   const handlePredict = (e) => {
@@ -389,39 +384,37 @@ const KaggleActionPane = (props) => {
     setFail(false);
     setSubmittingJob(true);
     let sourceType = datafile ? datafile.mode : "invalid";
-
-    axios
-      .get("/api/user", { params: { email: email } })
-      .then((user) => {
-        let id = user.data.data.id;
-        handleDownload()
-          .then((src) => {
-            axios
-              .post(`/api/kaggle/${id}/predict`, {
-                job: selectJob,
-                kaggleSrc: src,
-                kaggleType: sourceType,
-                kaggleId: sourceRef(source, datasets, competitions),
-              })
-              .then((res) => {
-                if (res.status === 201) {
-                  setSuccess(true);
-                  setPredictOpen(false);
-                  dispatch(setKaggleSuccess(true));
-                  setTimeout(() => {
-                    dispatch(setKaggleSuccess(false));
-                    props.setTab(0);
-                    setSubmittingJob(false);
-                  }, 2000);
-                } else {
-                  setFail(true);
-                  setSubmittingJob(false);
-                }
-              })
-              .catch(() => {
-                setFail(true);
+    handleDownload()
+      .then((src) => {
+        axios
+          .post(
+            `/api/kaggle/predict`,
+            {
+              job: selectJob,
+              kaggleSrc: src,
+              kaggleType: sourceType,
+              kaggleId: sourceRef(source, datasets, competitions),
+            },
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 201) {
+              setSuccess(true);
+              setPredictOpen(false);
+              dispatch(setKaggleSuccess(true));
+              setTimeout(() => {
+                dispatch(setKaggleSuccess(false));
+                props.setTab(0);
                 setSubmittingJob(false);
-              });
+              }, 2000);
+            } else {
+              setFail(true);
+              setSubmittingJob(false);
+            }
           })
           .catch(() => {
             setFail(true);
@@ -664,7 +657,7 @@ const KaggleActionPane = (props) => {
           onClick={() => {
             dispatch(set_checked([]));
             dispatch(set_loading(true));
-            userJobItems(email, login_token).then((entries) => {
+            userJobItems(token).then((entries) => {
               dispatch(setKJobs(entries));
               setPredictCanClose(true);
               dispatch(set_loading(false));
@@ -682,12 +675,12 @@ const KaggleActionPane = (props) => {
             style={{ display: "block", width: "100%" }}
             disabled={loading}
             onClick={() => {
-              competitionAuth(competitions[+source.index].ref, email).then(
+              competitionAuth(competitions[+source.index].ref, token).then(
                 (entered) => {
                   if (entered === true) {
                     dispatch(set_checked([]));
                     dispatch(set_loading(true));
-                    userJobItems(email, login_token).then((entries) => {
+                    userJobItems(token).then((entries) => {
                       dispatch(setKJobs(entries));
                       dispatch(set_loading(false));
                       setUploadType("COMPETITION");
@@ -717,11 +710,11 @@ const KaggleActionPane = (props) => {
               onClick={() => {
                 if (subTableOpen === false) {
                   dispatch(set_loading(true));
-                  competitionAuth(competitions[+source.index].ref, email)
+                  competitionAuth(competitions[+source.index].ref, token)
                     .then((entered) => {
                       if (entered === true) {
                         getSubmissions(
-                          email,
+                          token,
                           sourceRef(source, datasets, competitions)
                         ).then((res) => {
                           setSubs(res);
@@ -831,7 +824,7 @@ const KaggleActionPane = (props) => {
                 {/* <Button
                   startIcon={<AddCircle />}
                   onClick={() => {
-                    userJobItems(email, login_token).then((entries) =>
+                    userJobItems(token).then((entries) =>
                       dispatch(setKJobs(entries))
                     );
                     retrainJob();
@@ -844,7 +837,7 @@ const KaggleActionPane = (props) => {
                   variant="contained"
                   startIcon={<CloudUpload />}
                   onClick={() => {
-                    userJobItems(email, login_token).then((entries) => {
+                    userJobItems(token).then((entries) => {
                       dispatch(setKJobs(entries));
                       createPredict();
                     });

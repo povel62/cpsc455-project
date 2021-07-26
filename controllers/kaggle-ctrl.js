@@ -50,8 +50,7 @@ competitionUploadSubmit = async (req, res) => {
         cols = req.body.params.cols;
       }
     }
-    // TODO change to _id after token verify
-    User.findOne({ _id: req.params.id }, (err, user) => {
+    User.findOne({ _id: req._id }, (err, user) => {
       if (err) {
         return res.status(404).json({
           err,
@@ -81,17 +80,14 @@ competitionUploadSubmit = async (req, res) => {
                 function (err, results) {
                   if (err) {
                     if (err != null) {
-                      console.log(err);
                       reject(err);
                     }
                   }
-                  console.log(results);
                   resolve(results);
                 }
               );
             } catch (err) {
-              console.log(err);
-              reject("error running python code'");
+              reject(`error running python code ${err}`);
             }
           })
             .then(
@@ -152,8 +148,7 @@ datasetCreateVersion = async (req, res) => {
         cols = req.body.params.cols;
       }
     }
-    // TODO change to _id after token verify
-    User.findOne({ _id: req.params.id }, (err, user) => {
+    User.findOne({ _id: req._id }, (err, user) => {
       if (err) {
         return res.status(404).json({
           err,
@@ -186,17 +181,14 @@ datasetCreateVersion = async (req, res) => {
                 function (err, results) {
                   if (err) {
                     if (err != null) {
-                      console.log(err);
                       reject(err);
                     }
                   }
-                  console.log(results);
                   resolve(results);
                 }
               );
             } catch (err) {
-              console.log(err);
-              reject("error running python code'");
+              reject(`error running python code ${err}`);
             }
           })
             .then(
@@ -250,7 +242,7 @@ getKaggleFile = async (req, res) => {
     return res.status(400).json({ success: false, error: `Bad Request` });
   }
 
-  await User.findOne({ _id: req.params.id }, (err, user) => {
+  await User.findOne({ _id: req._id }, (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
@@ -275,7 +267,6 @@ getKaggleFile = async (req, res) => {
         }
       ).pipe(res);
     } catch (error) {
-      console.log(error);
       return res.status(400).json({ success: false, error: error });
     }
   }).catch((err) => res.status(500).json({ success: false, error: err }));
@@ -286,7 +277,7 @@ getCompColumns = async (req, res) => {
     return res.status(400).json({ success: false, error: `Bad Request` });
   }
 
-  await User.findOne({ _id: req.params.id }, (err, user) => {
+  await User.findOne({ _id: req._id }, (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
@@ -306,7 +297,7 @@ getCompColumns = async (req, res) => {
         },
         function (error, response) {
           if (error) {
-            console.error("error: " + response.statusCode);
+            console.log("error: " + response.statusCode);
           }
         }
       ).on("response", function (response) {
@@ -336,7 +327,6 @@ getCompColumns = async (req, res) => {
         }
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).json({ success: false, error: error });
     }
   }).catch((err) => res.status(500).json({ success: false, error: err }));
@@ -357,7 +347,7 @@ uploadJob = async (req, res) => {
 function uploadJobHelper(fileData, req, res) {
   const body = req.body;
   let newJob = body;
-  newJob.users = [req.params.id];
+  newJob.users = [req._id];
   let job = new Job(newJob);
   job.headers = fileData
     .split("\n")[0]
@@ -372,7 +362,7 @@ function uploadJobHelper(fileData, req, res) {
   job
     .save()
     .then(() => {
-      jobCtrl.addJobToUser(req.params.id, job).then(() => {
+      jobCtrl.addJobToUser(req._id, job).then(() => {
         uploadFileToServer(job._id, fileData, "train.csv")
           .then((s1) => {
             runPhase(
@@ -486,7 +476,7 @@ async function kaggleFileGetter(req, res, callback) {
       error: "You must provide data!",
     });
   }
-  await User.findOne({ _id: req.params.id }, (err, user) => {
+  await User.findOne({ _id: req._id }, (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }

@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 const KaggleDashBoard = (props) => {
   const classes = useStyles();
   let loading = useSelector((state) => state.kaggleReducer.loading);
-  let email = useSelector((state) => state.loginReducer.email);
+  let token = useSelector((state) => state.loginReducer.accessToken);
   let KSuccess = useSelector((state) => state.kaggleReducer.KSuccess);
   let dispatch = useDispatch();
   const [enabled, setEnabled] = useState(false);
@@ -69,7 +69,7 @@ const KaggleDashBoard = (props) => {
 
   const checkAuth = () => {
     dispatch(set_loading(true));
-    KaggleAuthCheck(email).then((auth) => {
+    KaggleAuthCheck(token).then((auth) => {
       setEnabled(auth);
       setChecked(true);
       dispatch(set_loading(false));
