@@ -96,6 +96,9 @@ export default function ControlDashboard() {
           console.log("error");
           alert(response.status);
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 

@@ -8,9 +8,16 @@ import {
   cache_files,
   select_datafile,
   set_loading,
+  setSourceAdditionalInfo,
+  setSubTable,
 } from "../../redux/actions/actions";
 import axios from "axios";
-import { credentials, kaggleBaseUrl, dataType } from "./kaggleApi";
+import {
+  credentials,
+  kaggleBaseUrl,
+  dataType,
+  getDatasetView,
+} from "./kaggleApi";
 import { makeStyles } from "@material-ui/core/styles";
 
 const KaggleListEntry = (props) => {
@@ -42,6 +49,7 @@ const KaggleListEntry = (props) => {
       !selected_source ||
       !(selected_source.index === idx && selected_source.mode === type)
     ) {
+      dispatch(setSubTable(false));
       dispatch(select_source({ index: idx, mode: type }));
       const mid =
         type === dataType ? "/datasets/list/" : "/competitions/data/list/";
@@ -52,15 +60,34 @@ const KaggleListEntry = (props) => {
           .then((res) => {
             if (res.status === 200) {
               dispatch(cache_files({ type: type, data: res.data }));
-              dispatch(set_loading(false));
+              if (type === dataType) {
+                getDatasetView(
+                  auth,
+                  type === dataType ? datasets[idx].ref : competitions[idx].ref
+                )
+                  .then((res) => {
+                    dispatch(setSourceAdditionalInfo(res));
+                  })
+                  .catch(() => {
+                    dispatch(setSourceAdditionalInfo(res));
+                  })
+                  .finally(() => {
+                    dispatch(set_loading(false));
+                  });
+              } else {
+                dispatch(set_loading(false));
+                dispatch(setSourceAdditionalInfo(null));
+              }
             }
           })
           .catch((err) => {
             console.log(kaggleBaseUrl + mid + end);
             console.log(err);
+            dispatch(set_loading(false));
           });
       });
     } else {
+      dispatch(setSubTable(false));
       dispatch(select_source({ index: -1, mode: "" }));
       dispatch(cache_files(null));
       dispatch(set_loading(false));

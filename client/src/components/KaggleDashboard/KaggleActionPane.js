@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import ReactMarkdown from "react-markdown";
 import {
   Paper,
   Button,
@@ -17,25 +18,41 @@ import {
   ButtonGroup,
   Typography,
   DialogActions,
+  Collapse,
+  TableContainer,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
 } from "@material-ui/core";
-import { CloudDownload, AddCircle, CloudUpload } from "@material-ui/icons";
+import {
+  CloudDownload,
+  AddCircle,
+  CloudUpload,
+  ExpandMore,
+  ExpandLess,
+} from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   competitionAuth,
   compType,
-  dataType,
   userJobItems,
   sourceRef,
+  fileDownload,
+  getColumnDownloadMethod,
+  getSubmissions,
 } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { green, red } from "@material-ui/core/colors";
 import {
-  setJobs,
+  setKJobs,
   set_loading,
   set_checked,
   setKaggleSuccess,
+  setSubTable,
 } from "../../redux/actions/actions";
 import KagglePredictDialog from "./KagglePredictDialog";
 
@@ -79,7 +96,10 @@ const KaggleActionPane = (props) => {
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let email = useSelector((state) => state.loginReducer.email);
   let token = useSelector((state) => state.loginReducer.accessToken);
-  let jobs = useSelector((state) => state.kaggleReducer.jobs);
+  let jobs = useSelector((state) => state.kaggleReducer.kjobs);
+  let SET_SRCINFO = useSelector((state) => state.kaggleReducer.SET_SRCINFO);
+  let subTableOpen = useSelector((state) => state.kaggleReducer.subTableOpen);
+  let loading = useSelector((state) => state.kaggleReducer.loading);
   const [jobOpen, setJobOpen] = useState(false);
   const [time, setTime] = useState(5);
   const [nickname, setNickname] = useState("");
@@ -94,8 +114,11 @@ const KaggleActionPane = (props) => {
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
   const [predictCanClose, setPredictCanClose] = useState(true);
-  let dispatch = useDispatch();
+  const [descOpen, setDescOpen] = useState(false);
+  const [subs, setSubs] = useState([]);
+  const [uploadType, setUploadType] = useState("DATA");
 
+  let dispatch = useDispatch();
   const login_token = useSelector((state) => state.loginReducer);
 
   KaggleActionPane.propTypes = {
@@ -108,6 +131,14 @@ const KaggleActionPane = (props) => {
     [classes.buttonFail]: fail,
   });
 
+  useEffect(() => {
+    return () => {
+      setDescOpen(false);
+      dispatch(setSubTable(false));
+      setSubs([]);
+    };
+  }, []);
+
   const fileRef = () => {
     if (!datafile) {
       return null;
@@ -118,34 +149,7 @@ const KaggleActionPane = (props) => {
     }
   };
 
-  const fileDownload = (url, file) => {
-    axios.get("/api/user", { params: { email: email } }).then((user) => {
-      let id = user.data.data.id;
-      axios
-        .get(`/api/kaggle/getKaggleFile/${id}`, {
-          responseType: "arraybuffer",
-          auth: token,
-          params: { url: url },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            let name =
-              res.headers["content-type"] === "application/zip"
-                ? file.name + ".zip"
-                : file.name;
-            const addr = window.URL.createObjectURL(new Blob([res.data]));
-            const link = document.createElement("a");
-            link.href = addr;
-            link.setAttribute("download", name);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(addr);
-          }
-        });
-    });
-  };
-
+  // TODO refactor this into multiple pieces, move some to kaggleapi
   const handleDownload = (download) => {
     let file = fileRef();
     let url = "";
@@ -161,7 +165,7 @@ const KaggleActionPane = (props) => {
                   competitions[+source.index].ref
                 }/${file.name}`;
                 if (download) {
-                  fileDownload(url, file);
+                  fileDownload(url, file, token, email);
                 }
                 resolve(url);
               }
@@ -170,7 +174,7 @@ const KaggleActionPane = (props) => {
         } else {
           url = `/datasets/download/${file.datasetRef}/${file.name}`;
           if (download) {
-            fileDownload(url, file);
+            fileDownload(url, file, token, email);
           }
           resolve(url);
         }
@@ -206,6 +210,7 @@ const KaggleActionPane = (props) => {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const retrainJob = () => {
     setFail(false);
     setSuccess(false);
@@ -264,22 +269,11 @@ const KaggleActionPane = (props) => {
       }
       if (datafile && col.length === 0) {
         // try to get columns via alternate method
-        axios.get("/api/user", { params: { email: email } }).then((user) => {
-          let id = user.data.data.id;
-          handleDownload().then((url) => {
-            axios
-              .get(`/api/kaggle/getCompetitionsColumns/${id}`, {
-                auth: token,
-                params: { url: url },
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  col = res.data.data;
-                  resolve(col);
-                }
-              });
-          });
-        });
+        getColumnDownloadMethod(email, token, handleDownload, col).then(
+          (cols) => {
+            resolve(cols);
+          }
+        );
       } else {
         resolve(col);
       }
@@ -444,6 +438,24 @@ const KaggleActionPane = (props) => {
     console.log(e);
   };
 
+  const jobAssociated = () => {
+    if (jobs) {
+      let job = jobs.find((ele) => ele.props.value === selectJob);
+      if (
+        job &&
+        job.props &&
+        job.props["data-my-value"] &&
+        job.props["data-my-value"].kaggleId &&
+        job.props["data-my-value"].kaggleType
+      ) {
+        return `Source: ${job.props["data-my-value"].kaggleId} (${job.props["data-my-value"].kaggleType})`;
+      } else {
+        return "No associated Kaggle Source";
+      }
+    }
+    return "";
+  };
+
   const offboardToKaggle = () => {
     try {
       let url = competitions[source.index].url;
@@ -452,7 +464,6 @@ const KaggleActionPane = (props) => {
         if (kaggleWindow) kaggleWindow.opener = null;
       }
     } catch (e) {
-      // TODO error
       console.log(e);
     }
   };
@@ -510,7 +521,7 @@ const KaggleActionPane = (props) => {
                     variant="contained"
                     color="primary"
                     type="submit"
-                    disabled={submittingJob}
+                    disabled={submittingJob || loading}
                     className={buttonClassname}
                   >
                     Queue Job
@@ -602,13 +613,17 @@ const KaggleActionPane = (props) => {
               <Grid item xs={6}>
                 <InputLabel>Available Trained Jobs</InputLabel>
                 {!submittingJob && (
-                  <Select
-                    onChange={(e) => handleSelectJob(e.target.value)}
-                    value={selectJob}
-                    required
-                  >
-                    {jobs}
-                  </Select>
+                  <div>
+                    <Select
+                      onChange={(e) => handleSelectJob(e.target.value)}
+                      value={selectJob}
+                      required
+                    >
+                      {jobs}
+                    </Select>
+                    <br />
+                    {selectJob && selectJob !== {} && jobAssociated()}
+                  </div>
                 )}
               </Grid>
               <Grid item xs={6}>
@@ -640,59 +655,151 @@ const KaggleActionPane = (props) => {
         </DialogContent>
       </Dialog>
       <Paper>
-        <h4>Options</h4>
-        {files && (
-          <div>
-            <h5>Source Options:</h5>
-            <ButtonGroup>
-              {files.type === compType && (
-                <Button
-                  variant="contained"
-                  startIcon={<CloudUpload />}
-                  onClick={() => {
-                    competitionAuth(
-                      competitions[+source.index].ref,
-                      email
-                    ).then((entered) => {
-                      if (entered === true) {
-                        dispatch(set_checked([]));
-                        userJobItems(email, login_token).then((entries) => {
-                          dispatch(setJobs(entries));
-                          setSubmitterOpen(true);
-                        });
-                      } else {
-                        setOffboard(true);
-                      }
-                    });
-                  }}
-                >
-                  Submit Prediction
-                </Button>
-              )}
-              {files.type === dataType && (
-                <Button
-                  variant="contained"
-                  startIcon={<CloudUpload />}
-                  onClick={() => {
+        <h2 className="KagglePanelHeader">Available Actions</h2>
+        <Button
+          style={{ width: "100%" }}
+          variant="contained"
+          startIcon={<CloudUpload />}
+          disabled={loading}
+          onClick={() => {
+            dispatch(set_checked([]));
+            dispatch(set_loading(true));
+            userJobItems(email, login_token).then((entries) => {
+              dispatch(setKJobs(entries));
+              setPredictCanClose(true);
+              dispatch(set_loading(false));
+              setUploadType("DATA");
+              setSubmitterOpen(true);
+            });
+          }}
+        >
+          Upload Prediction as new dataset
+        </Button>
+        {files && files.type === compType && (
+          <Button
+            variant="contained"
+            startIcon={<CloudUpload />}
+            style={{ display: "block", width: "100%" }}
+            disabled={loading}
+            onClick={() => {
+              competitionAuth(competitions[+source.index].ref, email).then(
+                (entered) => {
+                  if (entered === true) {
                     dispatch(set_checked([]));
+                    dispatch(set_loading(true));
                     userJobItems(email, login_token).then((entries) => {
-                      dispatch(setJobs(entries));
-                      setPredictCanClose(true);
+                      dispatch(setKJobs(entries));
+                      dispatch(set_loading(false));
+                      setUploadType("COMPETITION");
                       setSubmitterOpen(true);
                     });
-                  }}
-                >
-                  Upload Prediction as new dataset version
-                </Button>
+                  } else {
+                    setOffboard(true);
+                  }
+                }
+              );
+            }}
+          >
+            Submit Prediction
+          </Button>
+        )}
+        {files && files.type === compType && (
+          <p>
+            Unable to determine license for competitions, please abide by the
+            competition rules.
+          </p>
+        )}
+        {source && source.mode === compType && (
+          <div>
+            <Button
+              endIcon={subTableOpen ? <ExpandLess /> : <ExpandMore />}
+              disabled={loading}
+              onClick={() => {
+                if (subTableOpen === false) {
+                  dispatch(set_loading(true));
+                  competitionAuth(competitions[+source.index].ref, email)
+                    .then((entered) => {
+                      if (entered === true) {
+                        getSubmissions(
+                          email,
+                          sourceRef(source, datasets, competitions)
+                        ).then((res) => {
+                          setSubs(res);
+                          dispatch(setSubTable(!subTableOpen));
+                          dispatch(set_loading(false));
+                        });
+                      } else {
+                        dispatch(set_loading(false));
+                        setOffboard(true);
+                      }
+                    })
+                    .catch(() => {
+                      dispatch(set_loading(false));
+                    });
+                } else {
+                  dispatch(setSubTable(false));
+                }
+              }}
+              style={{ display: "block", width: "100%" }}
+            >
+              Previous Submissions
+            </Button>
+            <Collapse in={subTableOpen} timeout="auto" unmountOnExit>
+              {subs.length > 0 && (
+                <TableContainer component={Paper}>
+                  <Table
+                    className={classes.table}
+                    size="small"
+                    style={{ display: "block", width: "100%" }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>fileName</TableCell>
+                        <TableCell>privateScore</TableCell>
+                        <TableCell>publicScore</TableCell>
+                        <TableCell>date</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {subs.map((row) => (
+                        <TableRow key={row.fileName}>
+                          <TableCell component="th" scope="row">
+                            {row.fileName}
+                          </TableCell>
+                          <TableCell>{row.privateScore}</TableCell>
+                          <TableCell>{row.publicScore}</TableCell>
+                          <TableCell>{row.date}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               )}
-            </ButtonGroup>
+              {(!subs || subs.length === 0) && (
+                <p style={{ textAlign: "center" }}>No Previous Submissions</p>
+              )}
+            </Collapse>
           </div>
         )}
+        {SET_SRCINFO && SET_SRCINFO.ownerName && (
+          <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
+        )}
+        {SET_SRCINFO && SET_SRCINFO.licenseName && (
+          <p>License: {SET_SRCINFO.licenseName}</p>
+        )}
+        {SET_SRCINFO && SET_SRCINFO.usabilityRating && (
+          <p>Usability Rating: {SET_SRCINFO.usabilityRating}</p>
+        )}
+
         {datafile && (
           <div>
-            <h5>File Options:</h5>
-            <p>{fileRef().description}</p>
-            <h6>Size: {fileRef().totalBytes} bytes</h6>
+            <p>
+              File Description:{" "}
+              {fileRef().description && fileRef().description.trim() !== ""
+                ? fileRef().description
+                : "(none)"}
+            </p>
+            <h5>File Size: {fileRef().totalBytes} bytes</h5>
             <Tooltip
               title={"Limited to CSV files"}
               placement="bottom"
@@ -721,24 +828,24 @@ const KaggleActionPane = (props) => {
                 >
                   Create Training Job
                 </Button>
-                <Button
+                {/* <Button
                   startIcon={<AddCircle />}
                   onClick={() => {
                     userJobItems(email, login_token).then((entries) =>
-                      dispatch(setJobs(entries))
+                      dispatch(setKJobs(entries))
                     );
                     retrainJob();
                   }}
                   disabled={true}
                 >
                   Retrain Existing Job
-                </Button>
+                </Button> */}
                 <Button
                   variant="contained"
                   startIcon={<CloudUpload />}
                   onClick={() => {
                     userJobItems(email, login_token).then((entries) => {
-                      dispatch(setJobs(entries));
+                      dispatch(setKJobs(entries));
                       createPredict();
                     });
                   }}
@@ -748,6 +855,20 @@ const KaggleActionPane = (props) => {
                 </Button>
               </ButtonGroup>
             </Tooltip>
+          </div>
+        )}
+        {SET_SRCINFO && SET_SRCINFO.description && (
+          <div>
+            <Button
+              endIcon={descOpen ? <ExpandLess /> : <ExpandMore />}
+              onClick={() => setDescOpen(!descOpen)}
+              style={{ display: "block", width: "100%" }}
+            >
+              Dataset Description
+            </Button>
+            <Collapse in={descOpen} timeout="auto" unmountOnExit>
+              <ReactMarkdown>{SET_SRCINFO.description}</ReactMarkdown>
+            </Collapse>
           </div>
         )}
       </Paper>
@@ -760,7 +881,7 @@ const KaggleActionPane = (props) => {
             <Grid item xs={12}>
               <Typography variant="body2" color="textSecondary" component="p">
                 Unfortunately, due to Kaggle’s policies, you must read and
-                accept the competition rules to access these files.
+                accept the competition rules to access this resource.
               </Typography>
             </Grid>
           </Grid>
@@ -792,6 +913,7 @@ const KaggleActionPane = (props) => {
           setOpen={setSubmitterOpen}
           setPredictCanClose={setPredictCanClose}
           setTab={props.setTab}
+          uploadType={uploadType}
         />
       </Dialog>
     </div>

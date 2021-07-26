@@ -7,6 +7,7 @@ import { NavigateNext } from "@material-ui/icons";
 
 const KaggleDataEntry = (props) => {
   let selected_data = useSelector((state) => state.kaggleReducer.dataFile);
+  let loading = useSelector((state) => state.kaggleReducer.loading);
   let dispatch = useDispatch();
   KaggleDataEntry.propTypes = {
     id: PropTypes.number.isRequired,
@@ -48,6 +49,7 @@ const KaggleDataEntry = (props) => {
   return (
     <ListItem
       button
+      disabled={loading}
       onClick={() => handleSelect()}
       selected={
         selected_data &&

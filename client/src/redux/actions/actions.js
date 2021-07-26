@@ -130,9 +130,30 @@ export const setJobs = (s) => {
   };
 };
 
+export const setKJobs = (s) => {
+  return {
+    type: "SET_KJOBS",
+    payload: s,
+  };
+};
+
 export const setKaggleSuccess = (s) => {
   return {
     type: "SET_KSUCCESS",
+    payload: s,
+  };
+};
+
+export const setSourceAdditionalInfo = (s) => {
+  return {
+    type: "SET_SRCINFO",
+    payload: s,
+  };
+};
+
+export const setSubTable = (s) => {
+  return {
+    type: "SET_SUBTABLEOPEN",
     payload: s,
   };
 };

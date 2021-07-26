@@ -16,10 +16,20 @@ const {
 } = require("./generic-ctrl");
 
 competitionUploadSubmit = async (req, res) => {
-  if (!req.params.ref) {
+  // return res.status(400).json({ success: false, message: "you need a kaggle ref to submit!" });
+  if (
+    !req.params.ref ||
+    !req.body ||
+    !req.body.params.title ||
+    !req.body.params.cols
+  ) {
     return res
       .status(400)
       .json({ success: false, message: "you need a kaggle ref to submit!" });
+  }
+  let title = req.body.params.title.replace(/[^a-z0-9]/gi, "");
+  if (title.length > 50) {
+    title = title.substring(50);
   }
   Job.findOne({ _id: req.params.jid }, (err, job) => {
     if (err) {
@@ -28,9 +38,11 @@ competitionUploadSubmit = async (req, res) => {
         message: "Job not found!",
       });
     }
-    let path = `./util/${req.params.name}`;
+    // let path = `./util/${req.params.name}`;
+    let folder = fs.mkdtempSync("./util/");
+    let path = `${folder}/${req.params.name}`;
     let cols = [];
-    let message = "Generated with Ensemble Squared: A Meta AutoML System"; // TODO
+    let message = "Generated with Ensemble Squared: A Meta AutoML System";
     if (req.body.params.cols) {
       try {
         cols = JSON.parse(req.body.params.cols);
@@ -49,6 +61,10 @@ competitionUploadSubmit = async (req, res) => {
       getPredFileText(job._id, req.params.name, path, cols)
         // eslint-disable-next-line no-unused-vars
         .then((s1) => {
+          // rename file and update path according to title
+          let newPath = folder + "/" + title;
+          fs.renameSync(path, newPath);
+          path = newPath;
           let options = {
             args: [path, message, req.params.ref],
             env: {
@@ -92,7 +108,7 @@ competitionUploadSubmit = async (req, res) => {
             })
             .finally(() => {
               try {
-                fs.unlinkSync(path);
+                fs.rmSync(folder, { recursive: true });
               } catch (e) {
                 console.log(e);
               }
@@ -115,8 +131,10 @@ datasetCreateVersion = async (req, res) => {
     return res.status(400).json({ success: false });
   }
   // alphanumeric only, 6-50 chars long
-  let title = req.body.params.title.replace(/[^a-z0-9]/gi, "") + "-prediction";
-  // TODO check title is between 6-50 characters long,
+  let title = req.body.params.title.replace(/[^a-z0-9]/gi, "");
+  if (title.length > 50) {
+    title = title.substring(50);
+  }
   Job.findOne({ _id: req.params.jid }, (err, job) => {
     if (err) {
       return res.status(404).json({
@@ -145,7 +163,6 @@ datasetCreateVersion = async (req, res) => {
       getPredFileText(job._id, req.params.name, path, cols)
         // eslint-disable-next-line no-unused-vars
         .then((s1) => {
-          // TODO write config json
           let config = {
             title: title,
             id: `${user.kusername}/${title}`,

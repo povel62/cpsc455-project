@@ -1,5 +1,8 @@
-#  Project Description
-## This project is designed to support Blackbox ML users that will allow a fluid user experience and quick and easy access to the machine learning systems. Our goal is to provide easy access to world-class predictive automated machine learning systems to the masses. We aim to support both general and advanced users equally in using the system to solve their inference problems. Our stretch goal is to allow integration and use with Kaggle to making using the system even easier.
+#High-Level Project Description
+### AutoML is a web application designed to help users interact with PLAI's Ensemble Squared automatic machine learning system. Our application focuses on making the system convenient and user-friendly by guiding the user through all the nessesary steps to make predictions of tabular data, even if they are not experts in ML. We include a third party integration with Kaggle to allow users to access even more data to explore and use with the system for competitions.  
+
+##  Project goals
+### This project is designed to support Blackbox ML users that will allow a fluid user experience and quick and easy access to the machine learning systems. Our goal is to provide easy access to world-class predictive automated machine learning systems to the masses. We aim to support both general and advanced users equally in using the system to solve their inference problems. Our stretch goal is to allow integration and use with Kaggle to making using the system even easier.
 
 
 #  Project Task Requirements
