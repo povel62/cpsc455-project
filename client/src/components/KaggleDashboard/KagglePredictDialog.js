@@ -104,9 +104,10 @@ const KagglePredictDialog = (props) => {
     setOpen: PropTypes.func.isRequired,
     setPredictCanClose: PropTypes.func.isRequired,
     setTab: PropTypes.func.isRequired,
+    uploadType: PropTypes.string.isRequired,
   };
 
-  let { open, setOpen, setPredictCanClose, setTab } = props;
+  let { open, setOpen, setPredictCanClose, setTab, uploadType } = props;
   let classes = useStyles();
 
   const submitBtn = clsx({
@@ -480,7 +481,7 @@ const KagglePredictDialog = (props) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        {(source && source.mode === "DATA" && (
+        {(uploadType && uploadType === "DATA" && (
           <Tooltip
             title={errorMessage}
             placement="top"
@@ -517,7 +518,7 @@ const KagglePredictDialog = (props) => {
             </ButtonGroup>
           </Tooltip>
         )) ||
-          (source && source.mode === "COMPETITION" && (
+          (uploadType && uploadType === "COMPETITION" && (
             <Tooltip
               title={errorMessage}
               placement="top"

@@ -116,6 +116,7 @@ const KaggleActionPane = (props) => {
   const [predictCanClose, setPredictCanClose] = useState(true);
   const [descOpen, setDescOpen] = useState(false);
   const [subs, setSubs] = useState([]);
+  const [uploadType, setUploadType] = useState("DATA");
 
   let dispatch = useDispatch();
   const login_token = useSelector((state) => state.loginReducer);
@@ -667,6 +668,7 @@ const KaggleActionPane = (props) => {
               dispatch(setKJobs(entries));
               setPredictCanClose(true);
               dispatch(set_loading(false));
+              setUploadType("DATA");
               setSubmitterOpen(true);
             });
           }}
@@ -688,6 +690,7 @@ const KaggleActionPane = (props) => {
                     userJobItems(email, login_token).then((entries) => {
                       dispatch(setKJobs(entries));
                       dispatch(set_loading(false));
+                      setUploadType("COMPETITION");
                       setSubmitterOpen(true);
                     });
                   } else {
@@ -910,6 +913,7 @@ const KaggleActionPane = (props) => {
           setOpen={setSubmitterOpen}
           setPredictCanClose={setPredictCanClose}
           setTab={props.setTab}
+          uploadType={uploadType}
         />
       </Dialog>
     </div>
