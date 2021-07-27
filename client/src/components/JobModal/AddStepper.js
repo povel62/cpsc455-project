@@ -9,6 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
 import UploadButtons from "../Upload_button/Upload_button";
+import { CircularProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 const computeTimes = [
@@ -57,6 +58,8 @@ function AddStepper() {
 
   const [target_col, setTarget] = useState("");
   const [data, setData] = useState(null);
+
+  const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
     response: "",
@@ -170,6 +173,7 @@ function AddStepper() {
 
   const handleFinish = async () => {
     console.log(data);
+    setLoading(true);
 
     const formData = new FormData();
 
@@ -188,9 +192,11 @@ function AddStepper() {
     });
 
     if (response.status === 201 || response.status === 200) {
-      alert(response.status);
+      console.log("submitted new job");
+      setLoading(false);
     } else {
       alert("Something went wrong");
+      setLoading(false);
     }
   };
 
@@ -212,9 +218,12 @@ function AddStepper() {
       <div>
         {activeStep === steps.length ? (
           <div>
-            <Typography className={classes.instructions}>
-              Job Submitted!
-            </Typography>
+            {loading && <CircularProgress size={34} />}
+            {!loading && (
+              <Typography className={classes.instructions}>
+                Job Submitted!
+              </Typography>
+            )}
           </div>
         ) : (
           <div>
