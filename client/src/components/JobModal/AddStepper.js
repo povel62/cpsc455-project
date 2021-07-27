@@ -165,6 +165,7 @@ function AddStepper() {
   const steps = getSteps();
 
   const handleNext = () => {
+    setLoading(true);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
       handleFinish();
@@ -173,8 +174,6 @@ function AddStepper() {
 
   const handleFinish = async () => {
     console.log(data);
-    setLoading(true);
-
     const formData = new FormData();
 
     // Update the formData object
@@ -238,17 +237,19 @@ function AddStepper() {
               >
                 Back
               </Button>
-              {values.jobName === "" ? (
+              {values.jobName === "" && (
                 <Button disabled variant="contained" color="primary">
                   Next
                 </Button>
-              ) : (
+              )}
+              {values.jobName !== "" && (
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleNext}
                 >
-                  {activeStep === steps.length - 1 ? "Submit" : "Next"}
+                  {activeStep === steps.length - 1 && "Submit"}
+                  {activeStep !== steps.length - 1 && "Next"}
                 </Button>
               )}
             </div>
