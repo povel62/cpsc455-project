@@ -345,12 +345,11 @@ const KagglePredictDialog = (props) => {
                       return;
                     }
                     console.log(uploadName);
-                    if (source && source.mode) {
-                      if (source.mode === "COMPETITION") {
-                        handleSubmitToComp();
-                      } else if (source.mode === "DATA") {
-                        handleNewDataset();
-                      }
+
+                    if (uploadType && uploadType === "COMPETITION") {
+                      handleSubmitToComp();
+                    } else if (uploadType && uploadType === "DATA") {
+                      handleNewDataset();
                     }
                   }}
                 >
