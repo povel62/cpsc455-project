@@ -116,7 +116,15 @@ const Row = ({ row, refreshJobs }) => {
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          <ProgressBar status={row.status} />
+          {row.status == "TRAINING" && (
+            <ProgressBar status="TRAINING" progressColor="primary" />
+          )}
+          {row.status == "TRAINING_COMPLETED" && (
+            <ProgressBar
+              status="TRAINING_COMPLETED"
+              progressColor="secondary"
+            />
+          )}
         </TableCell>
       </TableRow>
       <TableRow>
