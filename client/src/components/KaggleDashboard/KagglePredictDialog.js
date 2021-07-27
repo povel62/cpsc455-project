@@ -63,7 +63,7 @@ const KagglePredictDialog = (props) => {
   let jobs = useSelector((state) => state.kaggleReducer.kjobs);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
-  let email = useSelector((state) => state.loginReducer.email);
+  let token = useSelector((state) => state.loginReducer.accessToken);
   const [load, setLoad] = useState(false);
   const [preds, setPreds] = useState([]);
   const [pred, setPred] = useState("");
@@ -148,7 +148,7 @@ const KagglePredictDialog = (props) => {
   };
 
   const handlePred = (choice) => {
-    getJobPreds(choice)
+    getJobPreds(choice, token)
       .then((res) => {
         let entries = res.map((ele, i) => {
           let name;
@@ -172,7 +172,7 @@ const KagglePredictDialog = (props) => {
   };
 
   const handleColumns = (job) => {
-    getPredCol(job)
+    getPredCol(job, token)
       .then((cols) => {
         setColumns(cols);
       })
@@ -211,7 +211,12 @@ const KagglePredictDialog = (props) => {
     setSubmitting(true);
     setPredictCanClose(false);
     axios
-      .get(`/api/job/${job.id}/pred/${pred}`, { params: { cols: cols } })
+      .get(`/api/job/${job.id}/pred/${pred}`, {
+        params: { cols: cols },
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((res) => {
         if (res.status === 200) {
           let name = pred;
@@ -243,31 +248,27 @@ const KagglePredictDialog = (props) => {
     resetErrors();
     setSubmitting(true);
     setPredictCanClose(false);
-    // TODO change to JWT
     axios
-      .get("/api/user", { params: { email: email } })
-      .then((user) => {
-        let id = user.data.data.id;
-        axios
-          .post(
-            `/api/kaggle/${id}/${job.id}/competitions/${ref}/submit/${pred}`,
-            {
-              params: { cols: checkedCols, title: uploadName },
-            }
-          )
-          .then((res) => {
-            if (res.status === 201) {
-              submitSuccess();
-              if (open) {
-                setTimeout(() => setOpen(false), 500);
-              }
-            } else {
-              submitError("Upload failed, are you using a unique name?");
-            }
-          })
-          .catch(() => {
-            submitError("Upload failed, are you using a unique name?");
-          });
+      .post(
+        `/api/kaggle/${job.id}/competitions/${ref}/submit/${pred}`,
+        {
+          params: { cols: checkedCols, title: uploadName },
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.status === 201) {
+          submitSuccess();
+          if (open) {
+            setTimeout(() => setOpen(false), 500);
+          }
+        } else {
+          submitError("Upload failed, are you using a unique name?");
+        }
       })
       .catch(() => {
         submitError("Upload failed, are you using a unique name?");
@@ -282,28 +283,27 @@ const KagglePredictDialog = (props) => {
     try {
       setSubmitting(true);
       setPredictCanClose(false);
-      // TODO change to JWT
       axios
-        .get("/api/user", { params: { email: email } })
-        .then((user) => {
-          let id = user.data.data.id;
-          axios
-            .post(`/api/kaggle/${id}/${job.id}/datasets/version/new/${pred}`, {
-              params: { cols: checkedCols, title: uploadName },
-            })
-            .then((res) => {
-              if (res.status === 201) {
-                submitSuccess();
-                if (open) {
-                  setTimeout(() => setOpen(false), 500);
-                }
-              } else {
-                submitError("Upload failed, are you using a unique name?");
-              }
-            })
-            .catch(() => {
-              submitError("Upload failed, are you using a unique name?");
-            });
+        .post(
+          `/api/kaggle/${job.id}/datasets/version/new/${pred}`,
+          {
+            params: { cols: checkedCols, title: uploadName },
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 201) {
+            submitSuccess();
+            if (open) {
+              setTimeout(() => setOpen(false), 500);
+            }
+          } else {
+            submitError("Upload failed, are you using a unique name?");
+          }
         })
         .catch(() => {
           submitError("Upload failed, are you using a unique name?");
@@ -345,12 +345,11 @@ const KagglePredictDialog = (props) => {
                       return;
                     }
                     console.log(uploadName);
-                    if (source && source.mode) {
-                      if (source.mode === "COMPETITION") {
-                        handleSubmitToComp();
-                      } else if (source.mode === "DATA") {
-                        handleNewDataset();
-                      }
+
+                    if (uploadType && uploadType === "COMPETITION") {
+                      handleSubmitToComp();
+                    } else if (uploadType && uploadType === "DATA") {
+                      handleNewDataset();
                     }
                   }}
                 >

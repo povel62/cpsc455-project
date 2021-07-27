@@ -168,7 +168,7 @@ deleteUser = async (req, res) => {
 };
 
 getUserById = async (req, res) => {
-  await User.findOne({ _id: req.params.id }, (err, user) => {
+  await User.findOne({ _id: req._id }, (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }

@@ -5,19 +5,17 @@ export const dataType = "DATA";
 export const compType = "COMPETITION";
 export const kaggleBaseUrl = "https://www.kaggle.com/api/v1";
 
-export const credentials = (email) => {
-  // TODO reject to unauthorized instead of blank
-  if (!email) {
-    return new Promise((resolve) => {
-      resolve({
-        username: "",
-        password: "",
-      });
-    });
-  }
+export const credentials = (token) => {
   return new Promise((resolve) => {
+    if (!token) {
+      resolve({ username: "", password: "" });
+    }
     axios
-      .get("/api/user", { params: { email: email } })
+      .get("/api/myUser", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((res) => {
         if (res.status === 200) {
           if (!res.data.data.kusername || !res.data.data.kapi) {
@@ -39,9 +37,9 @@ export const credentials = (email) => {
   });
 };
 
-export const competitionAuth = (ref, email) => {
+export const competitionAuth = (ref, token) => {
   return new Promise((resolve) => {
-    credentials(email).then((auth) => {
+    credentials(token).then((auth) => {
       axios
         .get(kaggleBaseUrl + `/competitions/submissions/list/${ref}`, {
           auth: auth,
@@ -60,9 +58,9 @@ export const competitionAuth = (ref, email) => {
   });
 };
 
-export const KaggleAuthCheck = (email) => {
+export const KaggleAuthCheck = (token) => {
   return new Promise((resolve) => {
-    credentials(email).then((auth) => {
+    credentials(token).then((auth) => {
       axios
         .get(kaggleBaseUrl + `/competitions/list`, { auth: auth })
         .then((res) => {
@@ -79,51 +77,48 @@ export const KaggleAuthCheck = (email) => {
   });
 };
 
-export const userJobItems = (email, login_token) => {
+export const userJobItems = (token) => {
   return new Promise((resolve) => {
-    axios.get("/api/user", { params: { email: email } }).then((user) => {
-      console.log(user);
-      axios
-        .get(`/api/user/jobs`, {
-          headers: {
-            Authorization: "Bearer " + login_token.accessToken,
-          },
-        })
-        .then((data) => {
-          if (data.status === 200) {
-            let jobData = data.data.data;
-            if (jobData) {
-              let accepted = jobData.filter((ele) =>
-                acceptableJobStatus(ele.status)
-              );
-              if (accepted.length === 0) {
-                resolve([]);
-              }
-              let elements = accepted.map((job, i) => {
-                return (
-                  <MenuItem
-                    value={job.id}
-                    key={i}
-                    data-my-value={{
-                      title: job.name,
-                      kaggleType: job.kaggleType,
-                      kaggleId: job.kaggleId,
-                    }}
-                  >
-                    {job.name}
-                  </MenuItem>
-                );
-              });
-              resolve(elements);
-            } else {
+    axios
+      .get(`/api/user/jobs`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((data) => {
+        if (data.status === 200) {
+          let jobData = data.data.data;
+          if (jobData) {
+            let accepted = jobData.filter((ele) =>
+              acceptableJobStatus(ele.status)
+            );
+            if (accepted.length === 0) {
               resolve([]);
             }
+            let elements = accepted.map((job, i) => {
+              return (
+                <MenuItem
+                  value={job.id}
+                  key={i}
+                  data-my-value={{
+                    title: job.name,
+                    kaggleType: job.kaggleType,
+                    kaggleId: job.kaggleId,
+                  }}
+                >
+                  {job.name}
+                </MenuItem>
+              );
+            });
+            resolve(elements);
+          } else {
+            resolve([]);
           }
-        })
-        .catch(() => {
-          resolve([]);
-        });
-    });
+        }
+      })
+      .catch(() => {
+        resolve([]);
+      });
   });
 };
 
@@ -137,10 +132,14 @@ export const sourceRef = (source, datasets, competitions) => {
   }
 };
 
-export const getJobPreds = (job) => {
+export const getJobPreds = (job, token) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`/api/job/${job}/preds`)
+      .get(`/api/job/${job}/preds`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((res) => {
         if (res.status === 200) {
           resolve(res.data.fileNames);
@@ -152,12 +151,20 @@ export const getJobPreds = (job) => {
   });
 };
 
-export const getPred = (job, file) => {
+export const getPred = (job, file, token) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`/api/job/${job}/pred/${file}`, {
-        responseType: "arraybuffer",
-      })
+      .get(
+        `/api/job/${job}/pred/${file}`,
+        {
+          responseType: "arraybuffer",
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           resolve(res);
@@ -169,10 +176,14 @@ export const getPred = (job, file) => {
   });
 };
 
-export const getPredCol = (job) => {
+export const getPredCol = (job, token) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`/api/job/${job}`)
+      .get(`/api/job/${job}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((res) => {
         if (res.status === 200) {
           resolve(res.data.data.headers);
@@ -195,58 +206,60 @@ export function acceptableJobStatus(status) {
   }
 }
 
-export const fileDownload = (url, file, token, email) => {
-  axios.get("/api/user", { params: { email: email } }).then((user) => {
-    let id = user.data.data.id;
-    axios
-      .get(`/api/kaggle/getKaggleFile/${id}`, {
-        responseType: "arraybuffer",
-        auth: token,
-        params: { url: url },
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          let name =
-            res.headers["content-type"] === "application/zip"
-              ? file.name + ".zip"
-              : file.name;
-          const addr = window.URL.createObjectURL(new Blob([res.data]));
-          const link = document.createElement("a");
-          link.href = addr;
-          link.setAttribute("download", name);
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          window.URL.revokeObjectURL(addr);
-        }
-      });
-  });
+export const fileDownload = (url, file, token) => {
+  axios
+    .get(`/api/kaggle/getKaggleFile`, {
+      responseType: "arraybuffer",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      params: { url: url },
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        let name =
+          res.headers["content-type"] === "application/zip"
+            ? file.name + ".zip"
+            : file.name;
+        const addr = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = addr;
+        link.setAttribute("download", name);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(addr);
+      }
+    });
 };
 
-export const getColumnDownloadMethod = (email, token, handleDownload, col) => {
+export const getColumnDownloadMethod = (token, handleDownload, col) => {
   return new Promise((resolve) => {
-    axios.get("/api/user", { params: { email: email } }).then((user) => {
-      let id = user.data.data.id;
-      handleDownload().then((url) => {
-        axios
-          .get(`/api/kaggle/getCompetitionsColumns/${id}`, {
-            auth: token,
-            params: { url: url },
-          })
-          .then((res) => {
-            if (res.status === 200) {
-              col = res.data.data;
-              resolve(col);
-            }
-          });
-      });
+    handleDownload().then((url) => {
+      axios
+        .get(`/api/kaggle/getCompetitionsColumns`, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+          params: { url: url },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            col = res.data.data;
+            resolve(col);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          resolve([]);
+        });
     });
   });
 };
 
-export const getSubmissions = async (email, ref) => {
+export const getSubmissions = async (token, ref) => {
   return new Promise((resolve, reject) => {
-    credentials(email)
+    credentials(token)
       .then(async (auth) => {
         let i = 1;
         let subs = [];

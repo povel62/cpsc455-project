@@ -21,7 +21,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 
 const KaggleListEntry = (props) => {
-  let email = useSelector((state) => state.loginReducer.email);
+  let token = useSelector((state) => state.loginReducer.accessToken);
   let selected_source = useSelector((state) => state.kaggleReducer.source);
   let datasets = useSelector((state) => state.kaggleReducer.datasets);
   let competitions = useSelector((state) => state.kaggleReducer.competitions);
@@ -54,7 +54,7 @@ const KaggleListEntry = (props) => {
       const mid =
         type === dataType ? "/datasets/list/" : "/competitions/data/list/";
       const end = type === dataType ? datasets[idx].ref : competitions[idx].ref;
-      credentials(email).then((auth) => {
+      credentials(token).then((auth) => {
         axios
           .get(kaggleBaseUrl + mid + end, { auth: auth })
           .then((res) => {
