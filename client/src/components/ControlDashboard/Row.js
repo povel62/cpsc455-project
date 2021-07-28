@@ -19,6 +19,7 @@ import ShareModal from "../ShareModal/ShareModal";
 import { useSelector } from "react-redux";
 import ErrorModal from "../ErrorModal";
 import PredictModal from "../PredictModal/PredictModal";
+import { FaKaggle } from "react-icons/fa";
 
 const useRowStyles = makeStyles({
   root: {
@@ -68,6 +69,9 @@ const Row = ({ row, refreshJobs }) => {
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
+          <div style={{ float: "right" }}>
+            {row.KaggleID && <FaKaggle color="blue" />}
+          </div>
         </TableCell>
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
