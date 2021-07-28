@@ -12,14 +12,13 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
 import ProgressBar from "./ProgressBar";
 import ShareModal from "../ShareModal/ShareModal";
 import { useSelector } from "react-redux";
 import ErrorModal from "../ErrorModal";
+import PredictModal from "../PredictModal/PredictModal";
 
 const useRowStyles = makeStyles({
   root: {
@@ -31,8 +30,6 @@ const useRowStyles = makeStyles({
 
 const Row = ({ row, refreshJobs }) => {
   const login_token = useSelector((state) => state.loginReducer);
-
-  const predictEvent = () => alert("predict");
 
   const deleteJobEvent = async () => {
     const response = await fetch("api/job/" + row.id, {
@@ -76,15 +73,7 @@ const Row = ({ row, refreshJobs }) => {
         <TableCell align="center">{row.jobType}</TableCell>
         <TableCell align="center">
           <Tooltip title="predit job" aria-label="click to start predicting">
-            <Button
-              variant="contained"
-              // color="secondary"
-              component="span"
-              onClick={predictEvent}
-              endIcon={<DonutLargeIcon />}
-            >
-              Predict
-            </Button>
+            <PredictModal refreshJobs={() => refreshJobs()} jobId={row.id} />
           </Tooltip>
         </TableCell>
         <TableCell align="center">

@@ -182,9 +182,21 @@ uploadJob = async (req, res) => {
 };
 
 uploadTestFile = async (req, res) => {
+  // let token = req.headers.authorization.split(" ")[1];
+  // const decoded = jwt.verify(token, secret);
+  // var userId = decoded._id;
   const body = req.body;
 
+  if (!body) {
+    console.log("error 1 no body");
+    return res.status(400).json({
+      success: false,
+      error: "You must provide a body with test file",
+    });
+  }
+
   if (!req.files) {
+    console.log("error 2 no file");
     return res.status(400).json({
       success: false,
       message: "No file uploaded",
@@ -196,8 +208,12 @@ uploadTestFile = async (req, res) => {
     .split(",")
     .map((x) => x.replace("\r", ""));
 
+  console.log(" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111 ");
+  console.log(req.params.id);
+
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
+      console.log("job not found");
       return res.status(404).json({
         err,
         message: "Job not found!",
@@ -223,6 +239,7 @@ uploadTestFile = async (req, res) => {
         .map((x) => x.replace("\r", ""));
     }
     if (headers.length !== job.headers.length) {
+      console.log("error 3 header");
       return res.status(400).json({
         success: false,
         message: "Job headers count is different from test file headers count!",

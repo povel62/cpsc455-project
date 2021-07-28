@@ -1,11 +1,8 @@
 import React from "react";
-import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -19,16 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function UploadButtons(props) {
-  const [values, setValues] = useState({
-    response: "",
-    post: "",
-    responseToPost: "",
-    target_col: "",
-  });
-
-  const [columns, setColumns] = useState([]);
-
+function PredictUploadButton(props) {
   // process CSV data
   const processData = (dataString) => {
     const dataStringLines = dataString.split(/\r\n|\n/);
@@ -60,15 +48,6 @@ function UploadButtons(props) {
         }
       }
     }
-
-    // prepare columns list from headers
-    const columns = headers.map((c) => ({
-      name: c,
-      selector: c,
-    }));
-
-    //setData(list);
-    setColumns(columns);
   };
 
   // handle file upload
@@ -115,40 +94,13 @@ function UploadButtons(props) {
           Upload File
         </Button>
       </label>
-      <p>
-        {columns.length != 0 ? (
-          <TextField
-            id="target_col"
-            select
-            label="Select target column"
-            value={values.target_col}
-            onChange={(e) => {
-              console.log("value changed to " + e.target.value);
-              setValues({
-                ...values,
-                target_col: e.target.value,
-              });
-              props.changeTarget(e.target.value);
-            }}
-            helperText="Please select target column"
-          >
-            {columns.map((option) => (
-              <MenuItem key={option.selector} value={option.selector}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        ) : (
-          ""
-        )}
-      </p>
+      {}
     </div>
   );
 }
 
-UploadButtons.PropTypes = {
+PredictUploadButton.PropTypes = {
   changeData: PropTypes.func,
-  changeTarget: PropTypes.func,
 };
 
-export default UploadButtons;
+export default PredictUploadButton;
