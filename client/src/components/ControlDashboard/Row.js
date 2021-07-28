@@ -73,7 +73,11 @@ const Row = ({ row, refreshJobs }) => {
         <TableCell align="center">{row.jobType}</TableCell>
         <TableCell align="center">
           <Tooltip title="predit job" aria-label="click to start predicting">
-            <PredictModal refreshJobs={() => refreshJobs()} jobId={row.id} />
+            <PredictModal
+              refreshJobs={() => refreshJobs()}
+              jobId={row.id}
+              showPredict={row.status == "TRAINING_COMPLETED"}
+            />
           </Tooltip>
         </TableCell>
         <TableCell align="center">

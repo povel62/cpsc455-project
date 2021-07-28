@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PredictModal({ refreshJobs, jobId }) {
+export default function PredictModal({ refreshJobs, jobId, showPredict }) {
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
@@ -42,6 +42,7 @@ export default function PredictModal({ refreshJobs, jobId }) {
 
   const handleClose = () => {
     setOpen(false);
+    setTestData(null);
     refreshJobs();
   };
 
@@ -100,19 +101,21 @@ export default function PredictModal({ refreshJobs, jobId }) {
 
   return (
     <div>
-      <Tooltip
-        title="Submit testfile"
-        aria-label="Submit test file for prediction"
-      >
-        <Button
-          variant="contained"
-          component="span"
-          onClick={handleOpen}
-          endIcon={<DonutLargeIcon />}
+      {showPredict && (
+        <Tooltip
+          title="Submit testfile"
+          aria-label="Submit test file for prediction"
         >
-          Predict
-        </Button>
-      </Tooltip>
+          <Button
+            variant="contained"
+            component="span"
+            onClick={handleOpen}
+            endIcon={<DonutLargeIcon />}
+          >
+            Predict
+          </Button>
+        </Tooltip>
+      )}
       <Modal
         open={open}
         aria-labelledby="modal-title"
