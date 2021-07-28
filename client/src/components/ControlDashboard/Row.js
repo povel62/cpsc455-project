@@ -120,6 +120,7 @@ const Row = ({ row, refreshJobs }) => {
             <ProgressBar
               status="TRAINING_COMPLETED"
               progressColor="secondary"
+              start={50}
             />
           )}
           {row.status == "PREDICTING" && (
@@ -133,6 +134,7 @@ const Row = ({ row, refreshJobs }) => {
             <ProgressBar
               status="PREDICTING_COMPLETED"
               progressColor="secondary"
+              start={100}
             />
           )}
         </TableCell>
