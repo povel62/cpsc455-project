@@ -12,14 +12,14 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import Tooltip from "@material-ui/core/Tooltip";
 import ProgressBar from "./ProgressBar";
 import ShareModal from "../ShareModal/ShareModal";
 import { useSelector } from "react-redux";
 import ErrorModal from "../ErrorModal";
+import PredictModal from "../PredictModal/PredictModal";
+import { FaKaggle } from "react-icons/fa";
 
 const useRowStyles = makeStyles({
   root: {
@@ -31,8 +31,6 @@ const useRowStyles = makeStyles({
 
 const Row = ({ row, refreshJobs }) => {
   const login_token = useSelector((state) => state.loginReducer);
-
-  const predictEvent = () => alert("predict");
 
   const deleteJobEvent = async () => {
     const response = await fetch("api/job/" + row.id, {
@@ -71,20 +69,19 @@ const Row = ({ row, refreshJobs }) => {
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
+          <div style={{ float: "right" }}>
+            {row.KaggleID && <FaKaggle color="blue" />}
+          </div>
         </TableCell>
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
         <TableCell align="center">
           <Tooltip title="predit job" aria-label="click to start predicting">
-            <Button
-              variant="contained"
-              // color="secondary"
-              component="span"
-              onClick={predictEvent}
-              endIcon={<DonutLargeIcon />}
-            >
-              Predict
-            </Button>
+            <PredictModal
+              refreshJobs={() => refreshJobs()}
+              jobId={row.id}
+              showPredict={row.status == "TRAINING_COMPLETED"}
+            />
           </Tooltip>
         </TableCell>
         <TableCell align="center">
@@ -116,7 +113,30 @@ const Row = ({ row, refreshJobs }) => {
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          <ProgressBar status={row.status} />
+          {row.status == "TRAINING" && (
+            <ProgressBar status="TRAINING" progressColor="primary" start={0} />
+          )}
+          {row.status == "TRAINING_COMPLETED" && (
+            <ProgressBar
+              status="TRAINING_COMPLETED"
+              progressColor="secondary"
+              start={50}
+            />
+          )}
+          {row.status == "PREDICTING" && (
+            <ProgressBar
+              status="PREDICTING"
+              progressColor="secondary"
+              start={50}
+            />
+          )}
+          {row.status == "PREDICTING_COMPLETED" && (
+            <ProgressBar
+              status="PREDICTING_COMPLETED"
+              progressColor="secondary"
+              start={100}
+            />
+          )}
         </TableCell>
       </TableRow>
       <TableRow>

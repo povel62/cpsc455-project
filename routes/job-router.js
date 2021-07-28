@@ -12,7 +12,7 @@ router.patch("/job/:id/status/:statusName", JobCtrl.updateJobStatus); // TODO AU
 router.put("/job/:id", JobCtrl.updateJob); // TODO AUTH?
 router.delete("/job/:id", GenericCtrl.verifyToken, JobCtrl.deleteJob);
 router.get("/job/:id", JobCtrl.getJobById); // TODO AUTH?
-// router.post("/job/:id/upload", JobCtrl.uploadTestFile);
+router.post("/job/:id/upload", GenericCtrl.verifyToken, JobCtrl.uploadTestFile);
 // router.get("/jobs", JobCtrl.getJobs);
 router.post(
   "/job/addUsers/:id",

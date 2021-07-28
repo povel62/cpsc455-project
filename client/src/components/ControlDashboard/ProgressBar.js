@@ -8,10 +8,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ProgressBar({ status }) {
+export default function ProgressBar({ status, progressColor, start }) {
   const classes = useStyles();
-  const [progress, setProgress] = useState(0);
-  const [progressColor, setProgressColor] = useState("primary");
+  const [progress, setProgress] = useState(start);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -19,14 +18,19 @@ export default function ProgressBar({ status }) {
         if (status == "TRAINING" && oldProgress >= 40) {
           return 0;
         }
-        if (status == "TRAINING_COMPLETED") {
-          setProgressColor("secondary");
+        if (status == "PREDICTING" && oldProgress >= 80) {
           return 50;
+        }
+        if (status == "TRAINING_COMPLETED") {
+          return 50;
+        }
+        if (status == "PREDICTING_COMPLETED") {
+          return 100;
         }
         const diff = Math.random();
         return Math.min(oldProgress + diff, 100);
       });
-    }, 3000);
+    }, 2000);
 
     return () => {
       clearInterval(timer);

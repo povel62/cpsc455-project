@@ -39,14 +39,14 @@ const createData = (
   jobDate,
   t_col,
   computeTime,
-  alertText
+  kaggleID
 ) => {
   return {
     id,
     name,
     status,
     jobType,
-    alertText,
+    kaggleID,
     extra: [{ date: jobDate, t_col: t_col, computeTime: computeTime }],
   };
 };
@@ -73,7 +73,7 @@ export default function ControlDashboard() {
         entry.createdAt,
         entry.targetColumnName,
         entry.durationLimit,
-        "hello"
+        entry.kaggleID
       )
     );
   }

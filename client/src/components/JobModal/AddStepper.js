@@ -9,6 +9,7 @@ import TextField from "@material-ui/core/TextField";
 import { useSelector } from "react-redux";
 import MenuItem from "@material-ui/core/MenuItem";
 import UploadButtons from "../Upload_button/Upload_button";
+import { CircularProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 const computeTimes = [
@@ -57,6 +58,8 @@ function AddStepper() {
 
   const [target_col, setTarget] = useState("");
   const [data, setData] = useState(null);
+
+  const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
     response: "",
@@ -162,6 +165,7 @@ function AddStepper() {
   const steps = getSteps();
 
   const handleNext = () => {
+    setLoading(true);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
       handleFinish();
@@ -170,7 +174,6 @@ function AddStepper() {
 
   const handleFinish = async () => {
     console.log(data);
-
     const formData = new FormData();
 
     // Update the formData object
@@ -188,9 +191,11 @@ function AddStepper() {
     });
 
     if (response.status === 201 || response.status === 200) {
-      alert(response.status);
+      console.log("submitted new job");
+      setLoading(false);
     } else {
       alert("Something went wrong");
+      setLoading(false);
     }
   };
 
@@ -212,9 +217,12 @@ function AddStepper() {
       <div>
         {activeStep === steps.length ? (
           <div>
-            <Typography className={classes.instructions}>
-              Job Submitted!
-            </Typography>
+            {loading && <CircularProgress size={34} />}
+            {!loading && (
+              <Typography className={classes.instructions}>
+                Job Submitted!
+              </Typography>
+            )}
           </div>
         ) : (
           <div>
@@ -229,17 +237,19 @@ function AddStepper() {
               >
                 Back
               </Button>
-              {values.jobName === "" ? (
+              {values.jobName === "" && (
                 <Button disabled variant="contained" color="primary">
                   Next
                 </Button>
-              ) : (
+              )}
+              {values.jobName !== "" && (
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleNext}
                 >
-                  {activeStep === steps.length - 1 ? "Submit" : "Next"}
+                  {activeStep === steps.length - 1 && "Submit"}
+                  {activeStep !== steps.length - 1 && "Next"}
                 </Button>
               )}
             </div>
