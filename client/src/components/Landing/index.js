@@ -70,7 +70,7 @@ export default function Landing() {
                   className="containerTab"
                   value={selectedTab}
                   onChange={handleChange2}
-                  centred
+                  centered
                 >
                   <Tab label="Sign In" />
                   <Tab label="Sign Up" />

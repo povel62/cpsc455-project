@@ -5,6 +5,7 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import PredictUploadButton from "./PredictUploadButton";
 import { useSelector } from "react-redux";
 
@@ -20,8 +21,8 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: "70vw",
-    height: "70vh",
+    width: "60vw",
+    height: "50vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -29,11 +30,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PredictModal({ refreshJobs, jobId, showPredict }) {
+export default function PredictModal({
+  refreshJobs,
+  jobId,
+  showPredict,
+  showDownload,
+}) {
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
+
+  const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
   const handleOpen = () => {
@@ -64,27 +72,33 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
 
     if (response.status === 201 || response.status === 200) {
       console.log("submitted prediction testfile");
+      setModalText("Test file submitted for prediction");
     } else {
-      alert("Something went wrong while submitting prediction file");
+      setModalText("Something went wrong while submitting prediction file");
     }
+  };
+
+  const handleDlPredict = () => {
+    alert("download");
   };
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <Tooltip title="close" aria-label="close">
+      <Tooltip title="close window" aria-label="close window">
         <FaTimesCircle
           size="1.5em"
-          title="close"
           onClick={handleClose}
           style={{ cursor: "pointer" }}
         />
       </Tooltip>
-      <h2 id="modal-title">Submit Prediction file</h2>
+      <h2 id="modal-title">Submit Prediction Test file</h2>
+      <br />
       <PredictUploadButton
         changeData={(fData) => setTestData(fData)}
       ></PredictUploadButton>
       <br />
-      {testData && "Test file uploaded"}
+      <br />
+      {testData && modalText}
       <br />
       <br />
       {testData && (
@@ -101,6 +115,21 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
 
   return (
     <div>
+      {showDownload && (
+        <Tooltip
+          title="Download prediction file"
+          aria-label="Download prediction file"
+        >
+          <Button
+            variant="contained"
+            component="span"
+            onClick={handleDlPredict}
+            endIcon={<CloudDownloadIcon />}
+          >
+            Prediction
+          </Button>
+        </Tooltip>
+      )}
       {showPredict && (
         <Tooltip
           title="Submit testfile"

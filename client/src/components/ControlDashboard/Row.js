@@ -57,7 +57,7 @@ const Row = ({ row, refreshJobs }) => {
 
   return (
     <React.Fragment>
-      <TableRow className={classes.root} hover="true">
+      <TableRow className={classes.root} hover={true}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -81,6 +81,7 @@ const Row = ({ row, refreshJobs }) => {
               refreshJobs={() => refreshJobs()}
               jobId={row.id}
               showPredict={row.status == "TRAINING_COMPLETED"}
+              showDownload={row.status == "PREDICTING_COMPLETED"}
             />
           </Tooltip>
         </TableCell>
@@ -178,13 +179,13 @@ Row.propTypes = {
     name: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     jobType: PropTypes.string.isRequired,
-    alertText: PropTypes.string.isRequired,
+    kaggleID: PropTypes.string,
 
     extra: PropTypes.arrayOf(
       PropTypes.shape({
         date: PropTypes.string.isRequired,
         t_col: PropTypes.string.isRequired,
-        computeTime: PropTypes.string.isRequired,
+        computeTime: PropTypes.number.isRequired,
       })
     ).isRequired,
   }).isRequired,

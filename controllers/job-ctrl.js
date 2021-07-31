@@ -99,9 +99,10 @@ createJob = async (req, res) => {
 
 uploadJob = async (req, res) => {
   // console.log("request received");
-  let token = req.headers.authorization.split(" ")[1];
-  const decoded = jwt.verify(token, secret);
-  var userId = decoded._id;
+  // let token = req.headers.authorization.split(" ")[1];
+  // const decoded = jwt.verify(token, secret);
+  // var userId = decoded._id;
+  var userId = req._id;
   // console.log("user id here");
   console.log(userId);
 
@@ -561,9 +562,10 @@ updateJobStatus = async (req, res) => {
 
 deleteJob = async (req, res) => {
   console.log("request received");
-  let token = req.headers.authorization.split(" ")[1];
-  const decoded = jwt.verify(token, secret);
-  var userId = decoded._id;
+  // let token = req.headers.authorization.split(" ")[1];
+  // const decoded = jwt.verify(token, secret);
+  // var userId = decoded._id;
+  var userId = req._id;
   console.log("user id here");
   console.log(userId);
 
@@ -659,9 +661,10 @@ getJobs = async (req, res) => {
 getUserJobs = async (req, res) => {
   // console.log("get request received");
   // console.log("request received");
-  let token = req.headers.authorization.split(" ")[1];
-  const decoded = jwt.verify(token, secret);
-  var userId = decoded._id;
+  // let token = req.headers.authorization.split(" ")[1];
+  // const decoded = jwt.verify(token, secret);
+  // var userId = decoded._id;
+  var userId = req._id;
   // console.log("user id here");
   // console.log(userId);
 

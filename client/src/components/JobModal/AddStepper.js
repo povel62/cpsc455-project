@@ -260,7 +260,7 @@ function AddStepper() {
   );
 }
 
-AddStepper.PropTypes = {
+AddStepper.propTypes = {
   changeTarget: PropTypes.func,
   changeData: PropTypes.func,
 };

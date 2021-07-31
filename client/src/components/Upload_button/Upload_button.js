@@ -115,7 +115,7 @@ function UploadButtons(props) {
           Upload File
         </Button>
       </label>
-      <p>
+      <div>
         {columns.length != 0 ? (
           <TextField
             id="target_col"
@@ -141,7 +141,7 @@ function UploadButtons(props) {
         ) : (
           ""
         )}
-      </p>
+      </div>
     </div>
   );
 }

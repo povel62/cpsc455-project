@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: "70vw",
-    height: "70vh",
+    height: "80vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -45,10 +45,9 @@ export default function JobModal({ refreshJobs }) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <Tooltip title="close" aria-label="close">
+      <Tooltip title="close window" aria-label="close window">
         <FaTimesCircle
           size="1.5em"
-          title="close"
           onClick={handleClose}
           style={{ cursor: "pointer" }}
         />
@@ -66,7 +65,7 @@ export default function JobModal({ refreshJobs }) {
           color="primary"
           aria-label="add a new job"
           onClick={handleOpen}
-          size="large"
+          size="medium"
         >
           <AddBoxIcon />
         </IconButton>

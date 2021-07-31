@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: "90vw",
-    height: "90vh",
+    height: "85vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -139,10 +139,9 @@ export default function ErrorModal(props) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <Tooltip title="close" aria-label="close">
+      <Tooltip title="close window" aria-label="close window">
         <FaTimesCircle
           size="1.5em"
-          title="close"
           onClick={handleClose}
           style={{ cursor: "pointer" }}
         />
@@ -233,7 +232,7 @@ export default function ErrorModal(props) {
           color="primary"
           aria-label="Check job logs"
           onClick={handleOpen}
-          size="large"
+          size="medium"
         >
           <ErrorOutlinedIcon />
         </IconButton>
