@@ -64,16 +64,28 @@ export default function ControlDashboard() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const login_token = useSelector((state) => state.loginReducer);
 
+  // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  // const emptyRows = rowsPerPage - filled_rows;
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    // filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    // emptyRows = rowsPerPage - filled_rows;
+    // console.log("empty:" + emptyRows);
+    // console.log("filled length:" + filled_rows);
+    // console.log("page:" + page);
+    // console.log("rows pp:" + rowsPerPage);
   };
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+    // filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    // emptyRows = rowsPerPage - filled_rows;
+    // console.log("empty:" + emptyRows);
+    // console.log("filled length:" + filled_rows);
+    // console.log("page:" + page);
+    // console.log("rows pp:" + rowsPerPage);
   };
-
-  console.log("jobs here");
-  console.log(login_token.jobs);
 
   if (login_token.jobs) {
     rows = login_token.jobs.map((entry) =>
@@ -162,6 +174,11 @@ export default function ControlDashboard() {
                   .map((row, index) => (
                     <Row key={index} row={row} refreshJobs={() => loadJobs()} />
                   ))}
+                {/* {emptyRows > 0 && (
+                  <TableRow style={{ height: 55 * emptyRows }}>
+                    <TableCell> {emptyRows} </TableCell>
+                  </TableRow>
+                )} */}
               </TableBody>
             </Table>
           </TableContainer>
@@ -171,8 +188,8 @@ export default function ControlDashboard() {
             count={rows.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         </Paper>
       </div>
