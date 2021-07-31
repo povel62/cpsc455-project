@@ -81,6 +81,7 @@ const Row = ({ row, refreshJobs }) => {
               refreshJobs={() => refreshJobs()}
               jobId={row.id}
               showPredict={row.status == "TRAINING_COMPLETED"}
+              showDownload={row.status == "PREDICTING_COMPLETED"}
             />
           </Tooltip>
         </TableCell>

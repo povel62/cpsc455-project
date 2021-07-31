@@ -5,6 +5,7 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import PredictUploadButton from "./PredictUploadButton";
 import { useSelector } from "react-redux";
 
@@ -20,8 +21,8 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: "70vw",
-    height: "70vh",
+    width: "60vw",
+    height: "50vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -29,7 +30,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PredictModal({ refreshJobs, jobId, showPredict }) {
+export default function PredictModal({
+  refreshJobs,
+  jobId,
+  showPredict,
+  showDownload,
+}) {
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
@@ -72,6 +78,10 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
     }
   };
 
+  const handleDlPredict = () => {
+    alert("download");
+  };
+
   const body = (
     <div style={modalStyle} className={classes.paper}>
       <Tooltip title="close window" aria-label="close window">
@@ -81,10 +91,12 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
           style={{ cursor: "pointer" }}
         />
       </Tooltip>
-      <h2 id="modal-title">Submit Prediction file</h2>
+      <h2 id="modal-title">Submit Prediction Test file</h2>
+      <br />
       <PredictUploadButton
         changeData={(fData) => setTestData(fData)}
       ></PredictUploadButton>
+      <br />
       <br />
       {testData && modalText}
       <br />
@@ -103,6 +115,21 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
 
   return (
     <div>
+      {showDownload && (
+        <Tooltip
+          title="Download prediction file"
+          aria-label="Download prediction file"
+        >
+          <Button
+            variant="contained"
+            component="span"
+            onClick={handleDlPredict}
+            endIcon={<CloudDownloadIcon />}
+          >
+            Prediction
+          </Button>
+        </Tooltip>
+      )}
       {showPredict && (
         <Tooltip
           title="Submit testfile"
