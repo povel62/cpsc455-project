@@ -233,7 +233,7 @@ export default function ErrorModal(props) {
           color="primary"
           aria-label="Check job logs"
           onClick={handleOpen}
-          size="large"
+          size="medium"
         >
           <ErrorOutlinedIcon />
         </IconButton>

@@ -66,7 +66,7 @@ export default function JobModal({ refreshJobs }) {
           color="primary"
           aria-label="add a new job"
           onClick={handleOpen}
-          size="large"
+          size="medium"
         >
           <AddBoxIcon />
         </IconButton>

@@ -131,7 +131,7 @@ export default function ControlDashboard() {
                   <TableCell align="center">
                     <Tooltip title="Refresh" aria-label="Refresh">
                       <IconButton
-                        size="large"
+                        size="medium"
                         color="primary"
                         aria-label="Refresh jobs"
                         onClick={() => loadJobs()}

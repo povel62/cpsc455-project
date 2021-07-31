@@ -99,7 +99,7 @@ function PredictUploadButton(props) {
   );
 }
 
-PredictUploadButton.PropTypes = {
+PredictUploadButton.propTypes = {
   changeData: PropTypes.func,
 };
 

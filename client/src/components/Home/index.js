@@ -39,7 +39,6 @@ const Home = (props) => {
           >
             <Fab
               variant="extended"
-              color="red"
               aria-label="add"
               fullWidth
               onClick={() => {
