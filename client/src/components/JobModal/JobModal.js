@@ -45,10 +45,9 @@ export default function JobModal({ refreshJobs }) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <Tooltip title="close" aria-label="close">
+      <Tooltip title="close window" aria-label="close window">
         <FaTimesCircle
           size="1.5em"
-          title="close"
           onClick={handleClose}
           style={{ cursor: "pointer" }}
         />

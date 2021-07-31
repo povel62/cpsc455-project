@@ -34,6 +34,8 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
+
+  const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
   const handleOpen = () => {
@@ -64,17 +66,17 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
 
     if (response.status === 201 || response.status === 200) {
       console.log("submitted prediction testfile");
+      setModalText("Test file submitted for prediction");
     } else {
-      alert("Something went wrong while submitting prediction file");
+      setModalText("Something went wrong while submitting prediction file");
     }
   };
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <Tooltip title="close" aria-label="close">
+      <Tooltip title="close window" aria-label="close window">
         <FaTimesCircle
           size="1.5em"
-          title="close"
           onClick={handleClose}
           style={{ cursor: "pointer" }}
         />
@@ -84,7 +86,7 @@ export default function PredictModal({ refreshJobs, jobId, showPredict }) {
         changeData={(fData) => setTestData(fData)}
       ></PredictUploadButton>
       <br />
-      {testData && "Test file uploaded"}
+      {testData && modalText}
       <br />
       <br />
       {testData && (
