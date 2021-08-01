@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import { FaTimesCircle } from "react-icons/fa";
@@ -46,12 +46,6 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
-  const [fileName, setFileName] = useState("");
-
-  const [fileList, setFileList] = useState([]);
-
-  const [handleFile, setHandle] = useState(false);
-
   const handleOpen = () => {
     setOpen(true);
   };
@@ -61,10 +55,6 @@ export default function PredictModal({
     setTestData(null);
     refreshJobs();
   };
-
-  useEffect(() => {
-    handleDlPredict();
-  }, [handleFile]);
 
   const handlePredictSubmit = async () => {
     console.log(testData);
@@ -110,6 +100,7 @@ export default function PredictModal({
   };
 
   const handleFileNames = async () => {
+    let fileList = [];
     await getFileNames(jobId)
       .then((res) => {
         let entries = res.map((ele, i) => {
@@ -127,23 +118,21 @@ export default function PredictModal({
         });
         console.log("success");
         console.log(entries);
-        setFileList(entries);
-        setHandle(true);
+        fileList = entries;
       })
       .catch(() => {
         console.log("fail");
-        setFileList([]);
+        fileList = [];
       });
+    return fileList;
   };
 
   const handleDlPredict = async () => {
-    await handleFileNames();
+    let fileList = await handleFileNames();
 
     console.log(fileList);
     if (fileList && fileList.length >= 1) {
-      console.log("list here");
-      console.log(fileList);
-      setFileName(fileList[0].props.value);
+      let fileName = fileList[0].props.value;
       axios
         .get("/api/job/" + jobId + "/pred/" + fileName, {
           headers: {
@@ -207,19 +196,36 @@ export default function PredictModal({
   return (
     <div>
       {showDownload && (
-        <Tooltip
-          title="Download prediction file"
-          aria-label="Download prediction file"
-        >
-          <Button
-            variant="contained"
-            component="span"
-            onClick={handleDlPredict}
-            endIcon={<CloudDownloadIcon />}
+        <div>
+          <Tooltip
+            title="Download latest prediction file"
+            aria-label="Download latest prediction file"
           >
-            Prediction
-          </Button>
-        </Tooltip>
+            <Button
+              variant="contained"
+              component="span"
+              onClick={handleDlPredict}
+              endIcon={<CloudDownloadIcon />}
+            >
+              Latest Prediction
+            </Button>
+          </Tooltip>
+          <br />
+          <br />
+          <Tooltip
+            title="Submit new testfile"
+            aria-label="Submit new test file for prediction"
+          >
+            <Button
+              variant="contained"
+              component="span"
+              onClick={handleOpen}
+              endIcon={<DonutLargeIcon />}
+            >
+              Submit New Test
+            </Button>
+          </Tooltip>
+        </div>
       )}
       {showPredict && (
         <Tooltip
