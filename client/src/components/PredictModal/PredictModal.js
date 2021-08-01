@@ -125,7 +125,6 @@ export default function PredictModal({
             </MenuItem>
           );
         });
-        //setLoad(false);
         console.log("success");
         console.log(entries);
         //setFileList({ fileList: entries }, () => console.log(fileList));
