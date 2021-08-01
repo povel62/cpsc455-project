@@ -147,7 +147,6 @@ const KaggleActionPane = (props) => {
     }
   };
 
-  // TODO refactor this into multiple pieces, move some to kaggleapi
   const handleDownload = (download) => {
     let file = fileRef();
     let url = "";
@@ -208,6 +207,7 @@ const KaggleActionPane = (props) => {
     }
   };
 
+  // Not used yet but could be in the future if retraining jobs with new params is possible
   // eslint-disable-next-line no-unused-vars
   const retrainJob = () => {
     setFail(false);
@@ -266,7 +266,7 @@ const KaggleActionPane = (props) => {
         });
       }
       if (datafile && col.length === 0) {
-        // try to get columns via alternate method
+        // try to get columns via (slower) alternate method
         getColumnDownloadMethod(token, handleDownload, col).then((cols) => {
           resolve(cols);
         });
@@ -303,8 +303,7 @@ const KaggleActionPane = (props) => {
         return (
           <FormControl>
             <InputLabel>Target Column</InputLabel>
-            <Select // controlled select is broken when it shouldn't be
-              // value={() => target || ""}
+            <Select
               defaultValue={() => {
                 if (options && options.length >= 1) {
                   return options[0].props.value;
@@ -427,6 +426,7 @@ const KaggleActionPane = (props) => {
       });
   };
 
+  // unimplimented, pending custom model params
   const handleRetrain = (e) => {
     console.log(e);
   };
@@ -821,7 +821,7 @@ const KaggleActionPane = (props) => {
                 >
                   Create Training Job
                 </Button>
-                {/* <Button
+                <Button
                   startIcon={<AddCircle />}
                   onClick={() => {
                     userJobItems(token).then((entries) =>
@@ -832,7 +832,7 @@ const KaggleActionPane = (props) => {
                   disabled={true}
                 >
                   Retrain Existing Job
-                </Button> */}
+                </Button>
                 <Button
                   variant="contained"
                   startIcon={<CloudUpload />}

@@ -405,7 +405,7 @@ const KagglePredictDialog = (props) => {
                   variant="outlined"
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "new-password",
                   }}
                 />
               )}
@@ -509,7 +509,6 @@ const KagglePredictDialog = (props) => {
                   />
                 )}
               </Button>
-              {/* <Button disabled>Add to existing dataset (not ready)</Button> */}
               <Button onClick={handleDl} className={downloadBtn}>
                 {" "}
                 Download{" "}

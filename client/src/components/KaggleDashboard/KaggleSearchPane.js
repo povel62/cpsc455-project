@@ -190,7 +190,6 @@ const KaggleSearchPane = () => {
                 </Select>
               </Grid>
             </Grid>
-
             {showCompetitions ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
           <Collapse in={showCompetitions}>
@@ -220,7 +219,6 @@ const KaggleSearchPane = () => {
                 </Select>
               </Grid>
             </Grid>
-
             {showDatasets ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
           <Collapse in={showDatasets}>
