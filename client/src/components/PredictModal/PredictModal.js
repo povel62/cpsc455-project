@@ -127,7 +127,6 @@ export default function PredictModal({
         });
         console.log("success");
         console.log(entries);
-        //setFileList({ fileList: entries }, () => console.log(fileList));
         setFileList(entries);
         setHandle(true);
       })
