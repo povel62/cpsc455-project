@@ -161,7 +161,6 @@ export default function PredictModal({
             link.click();
             link.remove();
             window.URL.revokeObjectURL(addr);
-            // setSubmitting(false);
             // setPredictCanClose(true);
           } else {
             setModalText("Download failed");
