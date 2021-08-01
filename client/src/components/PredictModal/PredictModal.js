@@ -46,12 +46,6 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
-  //const [fileName, setFileName] = useState("");
-
-  //const [fileList, setFileList] = useState([]);
-
-  // const [handleFile, setHandle] = useState(false);
-
   const handleOpen = () => {
     setOpen(true);
   };
