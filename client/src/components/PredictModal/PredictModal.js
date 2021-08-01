@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import { FaTimesCircle } from "react-icons/fa";
@@ -46,11 +46,11 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
-  const [fileName, setFileName] = useState("");
+  //const [fileName, setFileName] = useState("");
 
-  const [fileList, setFileList] = useState([]);
+  //const [fileList, setFileList] = useState([]);
 
-  const [handleFile, setHandle] = useState(false);
+  // const [handleFile, setHandle] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -62,9 +62,9 @@ export default function PredictModal({
     refreshJobs();
   };
 
-  useEffect(() => {
-    handleDlPredict();
-  }, [handleFile]);
+  // useEffect(() => {
+  //   handleDlPredict();
+  // }, [handleFile]);
 
   const handlePredictSubmit = async () => {
     console.log(testData);
@@ -110,6 +110,7 @@ export default function PredictModal({
   };
 
   const handleFileNames = async () => {
+    let fileList = [];
     await getFileNames(jobId)
       .then((res) => {
         let entries = res.map((ele, i) => {
@@ -127,23 +128,25 @@ export default function PredictModal({
         });
         console.log("success");
         console.log(entries);
-        setFileList(entries);
-        setHandle(true);
+        //setFileList(entries);
+        fileList = entries;
+        //setHandle(true);
       })
       .catch(() => {
         console.log("fail");
-        setFileList([]);
+        fileList = [];
       });
+    return fileList;
   };
 
   const handleDlPredict = async () => {
-    await handleFileNames();
+    let fileList = await handleFileNames();
 
     console.log(fileList);
     if (fileList && fileList.length >= 1) {
-      console.log("list here");
-      console.log(fileList);
-      setFileName(fileList[0].props.value);
+      //console.log("list here");
+      //console.log(fileList);
+      let fileName = fileList[0].props.value;
       axios
         .get("/api/job/" + jobId + "/pred/" + fileName, {
           headers: {
