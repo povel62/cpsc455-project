@@ -118,9 +118,7 @@ export default function PredictModal({
         });
         console.log("success");
         console.log(entries);
-        //setFileList(entries);
         fileList = entries;
-        //setHandle(true);
       })
       .catch(() => {
         console.log("fail");
@@ -134,8 +132,6 @@ export default function PredictModal({
 
     console.log(fileList);
     if (fileList && fileList.length >= 1) {
-      //console.log("list here");
-      //console.log(fileList);
       let fileName = fileList[0].props.value;
       axios
         .get("/api/job/" + jobId + "/pred/" + fileName, {
