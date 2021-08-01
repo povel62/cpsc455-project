@@ -44,6 +44,8 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
+  const [fileName, setFileName] = useState("");
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -78,7 +80,7 @@ export default function PredictModal({
     }
   };
 
-  const handleDlPredict = () => {
+  const handleDlPredict = async () => {
     alert("download");
   };
 
