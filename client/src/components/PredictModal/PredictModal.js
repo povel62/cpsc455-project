@@ -56,10 +56,6 @@ export default function PredictModal({
     refreshJobs();
   };
 
-  // useEffect(() => {
-  //   handleDlPredict();
-  // }, [handleFile]);
-
   const handlePredictSubmit = async () => {
     console.log(testData);
     console.log(jobId);
