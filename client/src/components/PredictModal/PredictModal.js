@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import { FaTimesCircle } from "react-icons/fa";
@@ -8,6 +8,8 @@ import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import PredictUploadButton from "./PredictUploadButton";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { MenuItem } from "@material-ui/core";
 
 function getModalStyle() {
   const top = 5;
@@ -44,6 +46,12 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
+  const [fileName, setFileName] = useState("");
+
+  const [fileList, setFileList] = useState([]);
+
+  const [handleFile, setHandle] = useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -53,6 +61,10 @@ export default function PredictModal({
     setTestData(null);
     refreshJobs();
   };
+
+  useEffect(() => {
+    handleDlPredict();
+  }, [handleFile]);
 
   const handlePredictSubmit = async () => {
     console.log(testData);
@@ -78,8 +90,87 @@ export default function PredictModal({
     }
   };
 
-  const handleDlPredict = () => {
-    alert("download");
+  const getFileNames = (job) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`/api/job/${job}/preds`, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            resolve(res.data.fileNames);
+          } else {
+            resolve([]);
+          }
+        })
+        .catch(() => reject([]));
+    });
+  };
+
+  const handleFileNames = async () => {
+    await getFileNames(jobId)
+      .then((res) => {
+        let entries = res.map((ele, i) => {
+          let name;
+          try {
+            name = ele.slice(26, -4);
+          } catch {
+            name = ele;
+          }
+          return (
+            <MenuItem value={ele} key={i}>
+              {name}
+            </MenuItem>
+          );
+        });
+        console.log("success");
+        console.log(entries);
+        setFileList(entries);
+        setHandle(true);
+      })
+      .catch(() => {
+        console.log("fail");
+        setFileList([]);
+      });
+  };
+
+  const handleDlPredict = async () => {
+    await handleFileNames();
+
+    console.log(fileList);
+    if (fileList && fileList.length >= 1) {
+      console.log("list here");
+      console.log(fileList);
+      setFileName(fileList[0].props.value);
+      axios
+        .get("/api/job/" + jobId + "/pred/" + fileName, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            let name = fileName;
+            const addr = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement("a");
+            link.href = addr;
+            link.setAttribute("download", name);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(addr);
+          } else {
+            setModalText("Download failed");
+          }
+        })
+        .catch(() => {
+          setModalText("Download failed");
+        });
+    } else {
+      console.log("file list empty");
+    }
   };
 
   const body = (
