@@ -142,6 +142,8 @@ export default function ControlDashboard() {
                   <TableCell>
                     <strong>Job Name</strong>
                   </TableCell>
+
+                  <TableCell />
                   <TableCell align="center">
                     <strong>Status</strong>
                   </TableCell>

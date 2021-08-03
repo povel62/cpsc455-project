@@ -19,7 +19,8 @@ import ShareModal from "../ShareModal/ShareModal";
 import { useSelector } from "react-redux";
 import ErrorModal from "../ErrorModal";
 import PredictModal from "../PredictModal/PredictModal";
-import { FaKaggle } from "react-icons/fa";
+import { InlineIcon } from "@iconify/react";
+import kaggleIcon from "@iconify-icons/simple-icons/kaggle";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -111,9 +112,11 @@ const Row = ({ row, refreshJobs }) => {
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
-          <div style={{ float: "right" }}>
-            {row.KaggleID && <FaKaggle color="blue" />}
-          </div>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {row.iskaggle && (
+            <InlineIcon icon={kaggleIcon} color="skyblue" height="3em" />
+          )}
         </TableCell>
         <TableCell align="center">{row.status}</TableCell>
         <TableCell align="center">{row.jobType}</TableCell>
