@@ -67,6 +67,9 @@ export default function ControlDashboard() {
   // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   // const emptyRows = rowsPerPage - filled_rows;
 
+  // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  // const emptyRows = rowsPerPage - filled_rows;
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     // filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
