@@ -12,9 +12,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import JobModal from "../JobModal/JobModal";
 import { useSelector, useDispatch } from "react-redux";
 import { setJobs } from "../../redux/actions/actions";
-import Tooltip from "@material-ui/core/Tooltip";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import IconButton from "@material-ui/core/IconButton";
 import TablePagination from "@material-ui/core/TablePagination";
 
 const useStyles = makeStyles((theme) => ({
@@ -151,23 +148,12 @@ export default function ControlDashboard() {
                   <TableCell align="center">
                     <strong>Type</strong>
                   </TableCell>
+                  <TableCell />
+                  <TableCell />
                   <TableCell align="center">
                     {/* JobModal contains add job button */}
                     <JobModal refreshJobs={() => loadJobs()} />
                   </TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="Refresh" aria-label="Refresh">
-                      <IconButton
-                        size="medium"
-                        color="primary"
-                        aria-label="Refresh jobs"
-                        onClick={() => loadJobs()}
-                      >
-                        <RefreshIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>

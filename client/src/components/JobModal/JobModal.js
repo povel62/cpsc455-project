@@ -5,7 +5,7 @@ import AddStepper from "./AddStepper";
 import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import IconButton from "@material-ui/core/IconButton";
+import { Button } from "@material-ui/core";
 //import { DropzoneArea } from "material-ui-dropzone";
 
 function getModalStyle() {
@@ -61,14 +61,16 @@ export default function JobModal({ refreshJobs }) {
   return (
     <div>
       <Tooltip title="Add a job" aria-label="add a job">
-        <IconButton
+        <Button
+          variant="contained"
           color="primary"
           aria-label="add a new job"
+          component="span"
           onClick={handleOpen}
-          size="medium"
+          endIcon={<AddBoxIcon />}
         >
-          <AddBoxIcon />
-        </IconButton>
+          Add Job
+        </Button>
       </Tooltip>
       <Modal
         open={open}
