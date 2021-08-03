@@ -6,6 +6,12 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { Button, TextField } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { useSelector } from "react-redux";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function getModalStyle() {
   const top = 5;
@@ -29,6 +35,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ShareModal({ jobID }) {
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   const [values, setValues] = useState({
     response: "",
     post: "",
@@ -47,12 +66,25 @@ export default function ShareModal({ jobID }) {
   };
 
   const handleClose = () => {
+    setValues({
+      response: "",
+      post: "",
+      responseToPost: "",
+      user: "",
+    });
     setOpen(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(values.user);
+    if (values.user == "") {
+      setSnackBarContent({
+        content: "Please enter e-mail",
+        severity: "error",
+      });
+      return;
+    }
     const response = await fetch("api/job/addUsers/" + jobID, {
       method: "POST",
       headers: {
@@ -64,9 +96,23 @@ export default function ShareModal({ jobID }) {
 
     if (response.status === 201 || response.status === 200) {
       console.log(response);
-      alert(response.status);
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Share successful",
+        severity: "success",
+      });
+      setValues({
+        response: "",
+        post: "",
+        responseToPost: "",
+        user: "",
+      });
     } else {
-      alert("Something went wrong");
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Something went wrong. Please try again",
+        severity: "error",
+      });
     }
   };
 
@@ -109,6 +155,19 @@ export default function ShareModal({ jobID }) {
 
   return (
     <div>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
       <Tooltip title="Add a user" aria-label="add a user">
         <Button
           variant="contained"

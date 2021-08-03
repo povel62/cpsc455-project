@@ -27,7 +27,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { loginUser, signupUser } from "../../api/UserService";
 import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
-import SkyBackground from "../SkyBackground";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -150,7 +149,6 @@ export default function Signin(props) {
 
   return (
     <>
-      <SkyBackground />
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={snackBarContent.severity}>
           {snackBarContent.content}

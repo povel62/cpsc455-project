@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
@@ -21,6 +21,13 @@ import ErrorModal from "../ErrorModal";
 import PredictModal from "../PredictModal/PredictModal";
 import { FaKaggle } from "react-icons/fa";
 
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const useRowStyles = makeStyles({
   root: {
     "& > *": {
@@ -30,6 +37,19 @@ const useRowStyles = makeStyles({
 });
 
 const Row = ({ row, refreshJobs }) => {
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   const login_token = useSelector((state) => state.loginReducer);
 
   const deleteJobEvent = async () => {
@@ -40,10 +60,19 @@ const Row = ({ row, refreshJobs }) => {
       },
     });
     if (response.status === 201 || response.status === 200) {
-      alert(response.status);
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Job Deleted successfully.",
+        severity: "success",
+      });
     } else {
       console.log(response.data);
-      alert(response.status);
+
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Could not delete. Try again.",
+        severity: "error",
+      });
     }
 
     refreshJobs();
@@ -57,6 +86,19 @@ const Row = ({ row, refreshJobs }) => {
 
   return (
     <React.Fragment>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
       <TableRow className={classes.root} hover={true}>
         <TableCell>
           <IconButton
@@ -179,7 +221,7 @@ Row.propTypes = {
     name: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     jobType: PropTypes.string.isRequired,
-    kaggleID: PropTypes.string,
+    iskaggle: PropTypes.string.isRequired,
 
     extra: PropTypes.arrayOf(
       PropTypes.shape({

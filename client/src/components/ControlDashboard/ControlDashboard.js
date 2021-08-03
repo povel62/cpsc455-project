@@ -12,9 +12,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import JobModal from "../JobModal/JobModal";
 import { useSelector, useDispatch } from "react-redux";
 import { setJobs } from "../../redux/actions/actions";
-import Tooltip from "@material-ui/core/Tooltip";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import IconButton from "@material-ui/core/IconButton";
 import TablePagination from "@material-ui/core/TablePagination";
 
 const useStyles = makeStyles((theme) => ({
@@ -40,14 +37,14 @@ const createData = (
   jobDate,
   t_col,
   computeTime,
-  kaggleID
+  iskaggle
 ) => {
   return {
     id,
     name,
     status,
     jobType,
-    kaggleID,
+    iskaggle,
     extra: [{ date: jobDate, t_col: t_col, computeTime: computeTime }],
   };
 };
@@ -63,6 +60,9 @@ export default function ControlDashboard() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const login_token = useSelector((state) => state.loginReducer);
+
+  // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  // const emptyRows = rowsPerPage - filled_rows;
 
   // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   // const emptyRows = rowsPerPage - filled_rows;
@@ -97,7 +97,7 @@ export default function ControlDashboard() {
         entry.createdAt,
         entry.targetColumnName,
         entry.durationLimit,
-        entry.kaggleID
+        entry.kaggleSrc
       )
     );
   }
@@ -148,23 +148,12 @@ export default function ControlDashboard() {
                   <TableCell align="center">
                     <strong>Type</strong>
                   </TableCell>
+                  <TableCell />
+                  <TableCell />
                   <TableCell align="center">
                     {/* JobModal contains add job button */}
                     <JobModal refreshJobs={() => loadJobs()} />
                   </TableCell>
-                  <TableCell align="center">
-                    <Tooltip title="Refresh" aria-label="Refresh">
-                      <IconButton
-                        size="medium"
-                        color="primary"
-                        aria-label="Refresh jobs"
-                        onClick={() => loadJobs()}
-                      >
-                        <RefreshIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>

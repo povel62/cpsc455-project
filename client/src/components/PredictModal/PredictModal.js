@@ -10,6 +10,12 @@ import PredictUploadButton from "./PredictUploadButton";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { MenuItem } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function getModalStyle() {
   const top = 5;
@@ -46,6 +52,19 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -60,6 +79,14 @@ export default function PredictModal({
     console.log(testData);
     console.log(jobId);
     const formData = new FormData();
+    if (testData == null) {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Please upload prediction testfile",
+        severity: "error",
+      });
+      return;
+    }
 
     // Update the formData object
     formData.append("file", testData);
@@ -74,8 +101,18 @@ export default function PredictModal({
 
     if (response.status === 201 || response.status === 200) {
       console.log("submitted prediction testfile");
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "submitted prediction testfile",
+        severity: "success",
+      });
       setModalText("Test file submitted for prediction");
     } else {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Something went wrong. Please try again",
+        severity: "error",
+      });
       setModalText("Something went wrong while submitting prediction file");
     }
   };
@@ -150,12 +187,27 @@ export default function PredictModal({
             link.click();
             link.remove();
             window.URL.revokeObjectURL(addr);
+            setOpenSnackBar(true);
+            setSnackBarContent({
+              content: "Downloading file...",
+              severity: "info",
+            });
           } else {
             setModalText("Download failed");
+            setOpenSnackBar(true);
+            setSnackBarContent({
+              content: "Something went wrong. Please try again",
+              severity: "error",
+            });
           }
         })
         .catch(() => {
           setModalText("Download failed");
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "Something went wrong. Please try again",
+            severity: "error",
+          });
         });
     } else {
       console.log("file list empty");
@@ -181,20 +233,27 @@ export default function PredictModal({
       {testData && modalText}
       <br />
       <br />
-      {testData && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handlePredictSubmit}
-        >
-          Submit
-        </Button>
-      )}
+      <Button variant="contained" color="primary" onClick={handlePredictSubmit}>
+        Submit
+      </Button>
     </div>
   );
 
   return (
     <div>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
       {showDownload && (
         <div>
           <Tooltip
