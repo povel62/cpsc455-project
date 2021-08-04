@@ -143,12 +143,16 @@ function UploadButtons(props) {
             </TextField>
             <br />
             <br />
-            <DataTable
-              pagination
-              highlightOnHover
-              columns={columns}
-              data={data}
-            />
+            <div height="50px">
+              <DataTable
+                pagination
+                highlightOnHover
+                columns={columns}
+                data={data}
+                scrollX
+                scrollY
+              />
+            </div>
           </div>
         ) : (
           ""
