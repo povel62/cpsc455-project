@@ -136,6 +136,7 @@ export default function ControlDashboard() {
     };
   }, []);
 
+  loadJobs();
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
