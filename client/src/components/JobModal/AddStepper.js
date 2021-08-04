@@ -140,7 +140,7 @@ function AddStepper() {
       case 1:
         return (
           <div>
-            <p> Upload your Dataset</p>
+            {/* <p> Upload your Dataset</p> */}
             <UploadButtons
               changeTarget={(t_col) => setTarget(t_col)}
               changeData={(fData) => setData(fData)}
@@ -304,7 +304,13 @@ function AddStepper() {
             <Typography className={classes.instructions}>
               {getStepContent(activeStep)}
             </Typography>
-            <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+              }}
+            >
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}

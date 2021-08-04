@@ -107,19 +107,21 @@ function UploadButtons(props) {
         type="file"
         onChange={(e) => handleFileUpload(e)}
       />
-      <label htmlFor="contained-button-file">
-        <Button
-          variant="contained"
-          color="primary"
-          component="span"
-          startIcon={<CloudUploadIcon />}
-        >
-          Upload File
-        </Button>
-      </label>
-      <div>
-        {columns.length != 0 ? (
-          <div>
+      <div style={{ display: "flex", justifyContent: "space-around" }}>
+        <div>
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload Training Dataset
+            </Button>
+          </label>
+        </div>
+        <div>
+          {columns.length != 0 ? (
             <TextField
               id="target_col"
               select
@@ -134,6 +136,7 @@ function UploadButtons(props) {
                 props.changeTarget(e.target.value);
               }}
               helperText="Please select target column"
+              //style={{ float: "right" }}
             >
               {columns.map((option) => (
                 <MenuItem key={option.selector} value={option.selector}>
@@ -141,23 +144,21 @@ function UploadButtons(props) {
                 </MenuItem>
               ))}
             </TextField>
-            <br />
-            <br />
-            <div height="50px">
-              <DataTable
-                pagination
-                highlightOnHover
-                columns={columns}
-                data={data}
-                scrollX
-                scrollY
-              />
-            </div>
-          </div>
-        ) : (
-          ""
-        )}
+          ) : (
+            ""
+          )}
+        </div>
       </div>
+      <DataTable
+        pagination
+        paginationPerPage={5}
+        paginationRowsPerPageOptions={[5]}
+        highlightOnHover
+        columns={columns}
+        data={data}
+        scrollX
+        scrollY
+      />
     </div>
   );
 }

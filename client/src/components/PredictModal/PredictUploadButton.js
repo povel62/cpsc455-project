@@ -4,6 +4,8 @@ import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import PropTypes from "prop-types";
+import DataTable from "react-data-table-component";
+import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,6 +19,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PredictUploadButton(props) {
+  const [columns, setColumns] = useState([]);
+  const [data, setData] = useState([]);
   // process CSV data
   const processData = (dataString) => {
     const dataStringLines = dataString.split(/\r\n|\n/);
@@ -48,6 +52,15 @@ function PredictUploadButton(props) {
         }
       }
     }
+
+    // prepare columns list from headers
+    const columns = headers.map((c) => ({
+      name: c,
+      selector: c,
+    }));
+
+    setData(list);
+    setColumns(columns);
   };
 
   // handle file upload
@@ -95,6 +108,16 @@ function PredictUploadButton(props) {
         </Button>
       </label>
       {}
+      <DataTable
+        pagination
+        paginationPerPage={5}
+        paginationRowsPerPageOptions={[5]}
+        highlightOnHover
+        columns={columns}
+        data={data}
+        scrollX
+        scrollY
+      />
     </div>
   );
 }
