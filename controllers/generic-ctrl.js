@@ -42,6 +42,9 @@ uploadFileToServer = async (id, fileData, fileName) => {
 
       let options = {
         args: [path, id, fileName],
+        env: {
+          ...process.env,
+        },
       };
 
       PythonShell.run(
@@ -85,6 +88,9 @@ runPhase = async (
       jobName,
       callbackUrl,
     ],
+    env: {
+      ...process.env,
+    },
   };
   return new Promise((resolve, reject) => {
     try {
@@ -109,6 +115,9 @@ runPhase = async (
 getPredFileNames = (id) => {
   let options = {
     args: [id],
+    env: {
+      ...process.env,
+    },
   };
 
   return new Promise((resolve, reject) => {
@@ -134,6 +143,9 @@ getPredFileNames = (id) => {
 getPredFileText = (id, name, path, cols) => {
   let options = {
     args: [path, id, name, JSON.stringify({ columns: cols })],
+    env: {
+      ...process.env,
+    },
   };
 
   return new Promise((resolve, reject) => {
@@ -162,6 +174,9 @@ getPredFileText = (id, name, path, cols) => {
 getPredErrorOutputFileText = (id, path, fileName) => {
   let options = {
     args: [path, id, fileName],
+    env: {
+      ...process.env,
+    },
   };
 
   return new Promise((resolve, reject) => {
