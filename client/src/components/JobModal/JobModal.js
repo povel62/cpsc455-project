@@ -20,8 +20,8 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: "70vw",
-    height: "80vh",
+    width: "80vw",
+    height: "90vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -53,7 +53,6 @@ export default function JobModal({ refreshJobs }) {
         />
       </Tooltip>
       <h2 id="modal-title">Add ML Job</h2>
-      <p id="modal-description">Add job by following the steps</p>
       <AddStepper />
     </div>
   );

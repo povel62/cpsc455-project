@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: "60vw",
-    height: "50vh",
+    height: "70vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -225,15 +225,23 @@ export default function PredictModal({
       </Tooltip>
       <h2 id="modal-title">Submit Prediction Test file</h2>
       <br />
-      <PredictUploadButton
-        changeData={(fData) => setTestData(fData)}
-      ></PredictUploadButton>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <PredictUploadButton
+          changeData={(fData) => setTestData(fData)}
+        ></PredictUploadButton>
+      </div>
+      <br />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {testData && modalText}
+      </div>
       <br />
       <br />
-      {testData && modalText}
-      <br />
-      <br />
-      <Button variant="contained" color="primary" onClick={handlePredictSubmit}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handlePredictSubmit}
+        style={{ float: "right" }}
+      >
         Submit
       </Button>
     </div>
