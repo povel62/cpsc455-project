@@ -31,15 +31,17 @@
 
 .KagglePanelAction{
   /* margin-top: 2vh; */
+  max-width: 33.33333333vw;
   height: fit-content;
   max-height: 85vh;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .KagglePanel{
   margin-top: 2vh;
   max-height: 85vh;
+  max-width: 33.33333333vw;
   height: fit-content;
   overflow: auto;
 }

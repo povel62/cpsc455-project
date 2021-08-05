@@ -32,6 +32,7 @@ import {
   CloudUpload,
   ExpandMore,
   ExpandLess,
+  Launch,
 } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -39,6 +40,7 @@ import {
   compType,
   userJobItems,
   sourceRef,
+  fullSource,
   fileDownload,
   getColumnDownloadMethod,
   getSubmissions,
@@ -89,7 +91,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const KaggleActionPane = (props) => {
+const KaggleActionPane = () => {
   const classes = useStyles();
   let files = useSelector((state) => state.kaggleReducer.files);
   let datafile = useSelector((state) => state.kaggleReducer.dataFile);
@@ -361,10 +363,6 @@ const KaggleActionPane = (props) => {
             setSuccess(true);
             setJobOpen(false);
             dispatch(setKaggleSuccess(true));
-            setTimeout(() => {
-              props.setTab(0);
-              dispatch(setKaggleSuccess(false));
-            }, 2000);
           } else {
             setFail(true);
           }
@@ -405,11 +403,9 @@ const KaggleActionPane = (props) => {
               setSuccess(true);
               setPredictOpen(false);
               dispatch(setKaggleSuccess(true));
-              setTimeout(() => {
-                dispatch(setKaggleSuccess(false));
-                props.setTab(0);
-                setSubmittingJob(false);
-              }, 2000);
+              // setTimeout(() => {
+              //   setSubmittingJob(false);
+              // }, 20);
             } else {
               setFail(true);
               setSubmittingJob(false);
@@ -601,7 +597,11 @@ const KaggleActionPane = (props) => {
       >
         <DialogTitle>Submit Test File for Automatic Classification</DialogTitle>
         <DialogContent>
-          <form onSubmit={(e) => handlePredict(e)}>
+          <form
+            onSubmit={(e) => {
+              handlePredict(e);
+            }}
+          >
             <Grid container spacing={3}>
               <Grid item xs={6}>
                 <InputLabel>Available Trained Jobs</InputLabel>
@@ -649,53 +649,80 @@ const KaggleActionPane = (props) => {
       </Dialog>
       <Paper className="KagglePanel">
         <h2 className="KagglePanelHeader">Available Actions</h2>
-        <Button
-          style={{ width: "100%" }}
-          variant="contained"
-          startIcon={<CloudUpload />}
-          disabled={loading}
-          onClick={() => {
-            dispatch(set_checked([]));
-            dispatch(set_loading(true));
-            userJobItems(token).then((entries) => {
-              dispatch(setKJobs(entries));
-              setPredictCanClose(true);
-              dispatch(set_loading(false));
-              setUploadType("DATA");
-              setSubmitterOpen(true);
-            });
-          }}
-        >
-          Upload Prediction as new dataset
-        </Button>
-        {files && files.type === compType && (
+        <ButtonGroup style={{ width: "100%" }}>
           <Button
+            style={{ width: `${(1 / 3) * 100}%` }}
             variant="contained"
             startIcon={<CloudUpload />}
-            style={{ display: "block", width: "100%" }}
             disabled={loading}
             onClick={() => {
-              competitionAuth(competitions[+source.index].ref, token).then(
-                (entered) => {
-                  if (entered === true) {
-                    dispatch(set_checked([]));
-                    dispatch(set_loading(true));
-                    userJobItems(token).then((entries) => {
-                      dispatch(setKJobs(entries));
-                      dispatch(set_loading(false));
-                      setUploadType("COMPETITION");
-                      setSubmitterOpen(true);
-                    });
-                  } else {
-                    setOffboard(true);
-                  }
-                }
-              );
+              dispatch(set_checked([]));
+              dispatch(set_loading(true));
+              userJobItems(token).then((entries) => {
+                dispatch(setKJobs(entries));
+                setPredictCanClose(true);
+                dispatch(set_loading(false));
+                setUploadType("DATA");
+                setSubmitterOpen(true);
+              });
             }}
           >
-            Submit Prediction
+            Upload Prediction as new dataset
           </Button>
-        )}
+          {source && (source.mode === dataType || source.mode == compType) && (
+            <Button
+              style={{ width: `${(1 / 3) * 100}%` }}
+              variant="contained"
+              startIcon={<Launch />}
+              disabled={loading}
+              onClick={() => {
+                try {
+                  let url = fullSource(source, datasets, competitions).url;
+                  if (url) {
+                    const kaggleWindow = window.open(
+                      url,
+                      "_blank",
+                      "noopener,noreferrer"
+                    );
+                    if (kaggleWindow) kaggleWindow.opener = null;
+                  }
+                } catch (e) {
+                  console.log(e);
+                }
+              }}
+            >
+              Open on Kaggle
+            </Button>
+          )}
+          {files && files.type === compType && (
+            <Button
+              variant="contained"
+              startIcon={<CloudUpload />}
+              style={{ width: `${(1 / 3) * 100}%` }}
+              disabled={loading}
+              onClick={() => {
+                competitionAuth(competitions[+source.index].ref, token).then(
+                  (entered) => {
+                    if (entered === true) {
+                      dispatch(set_checked([]));
+                      dispatch(set_loading(true));
+                      userJobItems(token).then((entries) => {
+                        dispatch(setKJobs(entries));
+                        dispatch(set_loading(false));
+                        setUploadType("COMPETITION");
+                        setSubmitterOpen(true);
+                      });
+                    } else {
+                      setOffboard(true);
+                    }
+                  }
+                );
+              }}
+            >
+              Submit Prediction
+            </Button>
+          )}
+        </ButtonGroup>
         {files && files.type === compType && (
           <p>
             Unable to determine license for competitions, please abide by the
@@ -823,7 +850,10 @@ const KaggleActionPane = (props) => {
                 </Button>
                 <Button
                   startIcon={<AddCircle />}
-                  onClick={() => createJob()}
+                  onClick={() => {
+                    setSubmittingJob(false);
+                    createJob();
+                  }}
                   disabled={!datafile.accepted}
                 >
                   Create Training Job
@@ -844,6 +874,7 @@ const KaggleActionPane = (props) => {
                   variant="contained"
                   startIcon={<CloudUpload />}
                   onClick={() => {
+                    setSubmittingJob(false);
                     userJobItems(token).then((entries) => {
                       dispatch(setKJobs(entries));
                       createPredict();
@@ -915,7 +946,6 @@ const KaggleActionPane = (props) => {
           open={submitterOpen}
           setOpen={setSubmitterOpen}
           setPredictCanClose={setPredictCanClose}
-          setTab={props.setTab}
           uploadType={uploadType}
         />
       </Dialog>

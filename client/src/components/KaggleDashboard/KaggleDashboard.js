@@ -149,6 +149,31 @@ const KaggleDashBoard = (props) => {
               >
                 You will now be redirected to the dashboard
               </Typography>
+              <CardActions>
+                <ButtonGroup
+                  size="small"
+                  color="primary"
+                  aria-label="small contained button group"
+                  fullWidth={true}
+                  variant="contained"
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(setKaggleSuccess(false));
+                    }}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      props.setTab(0);
+                      dispatch(setKaggleSuccess(false));
+                    }}
+                  >
+                    Job Dashboard
+                  </Button>
+                </ButtonGroup>
+              </CardActions>
             </Card>
           </Grid>
         </Grid>

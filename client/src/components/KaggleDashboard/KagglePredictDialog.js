@@ -98,11 +98,10 @@ const KagglePredictDialog = (props) => {
     open: PropTypes.number.isRequired,
     setOpen: PropTypes.func.isRequired,
     setPredictCanClose: PropTypes.func.isRequired,
-    setTab: PropTypes.func.isRequired,
     uploadType: PropTypes.string.isRequired,
   };
 
-  let { open, setOpen, setPredictCanClose, setTab, uploadType } = props;
+  let { open, setOpen, setPredictCanClose, uploadType } = props;
   let classes = useStyles();
 
   const submitBtn = clsx({
@@ -131,10 +130,6 @@ const KagglePredictDialog = (props) => {
     setOpen(false);
     dispatch(setKaggleSuccess(true));
     setErrorMessage("");
-    setTimeout(() => {
-      setTab(0);
-      dispatch(setKaggleSuccess(false));
-    }, 2000);
   };
 
   const resetErrors = () => {

@@ -119,7 +119,6 @@ competitionUploadSubmit = async (req, res) => {
   });
 };
 
-// TODO refactor common functions out of dataset and comp pred uploader
 datasetCreateVersion = async (req, res) => {
   // config api: https://github.com/Kaggle/kaggle-api/wiki/Dataset-Metadata
   if (!req.body || !req.body.params.title || !req.body.params.cols) {
@@ -229,10 +228,6 @@ validateKaggleJob = async (req, res, next) => {
 };
 
 createKagglePrediction = async (req, res) => {
-  // TODO check job status, lookup job and check these:
-  // jobCtrl.JobStatus.PREDICTING
-  // jobCtrl.JobStatus.PREDICTING_COMPLETED
-  // jobCtrl.JobStatus.TRAINING_COMPLETED
   await kaggleFileGetter(req, res, uploadTestFile);
 };
 

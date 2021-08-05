@@ -81,7 +81,6 @@ const KaggleListEntry = (props) => {
             }
           })
           .catch((err) => {
-            console.log(kaggleBaseUrl + mid + end);
             console.log(err);
             dispatch(set_loading(false));
           });
