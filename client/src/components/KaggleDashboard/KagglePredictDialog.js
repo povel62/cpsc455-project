@@ -385,11 +385,9 @@ const KagglePredictDialog = (props) => {
               getOptionLabel={(option) => option.title}
               autoHighlight
               fullWidth
-              // getOptionSelected={(option, value) => {
-              //   console.log(option);
-              //   console.log(value);
-              //   return option.title === value.title;
-              // }}
+              getOptionSelected={(option, value) =>
+                option.title === value.title
+              }
               loading={load}
               disabled={load || submitting}
               onChange={(e, val) => handleJobChange(e, val)}

@@ -403,9 +403,6 @@ const KaggleActionPane = () => {
               setSuccess(true);
               setPredictOpen(false);
               dispatch(setKaggleSuccess(true));
-              // setTimeout(() => {
-              //   setSubmittingJob(false);
-              // }, 20);
             } else {
               setFail(true);
               setSubmittingJob(false);

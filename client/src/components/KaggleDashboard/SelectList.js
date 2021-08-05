@@ -24,7 +24,7 @@ export default function CheckboxList(props) {
     cols: PropTypes.array.isRequired,
     checked: PropTypes.array.isRequired,
     setChecked: PropTypes.func.isRequired,
-    submitting: PropTypes.func.isRequired,
+    submitting: PropTypes.bool.isRequired,
   };
   const { cols, checked, setChecked, submitting } = props;
 
