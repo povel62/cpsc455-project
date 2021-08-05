@@ -42,6 +42,7 @@ import {
   fileDownload,
   getColumnDownloadMethod,
   getSubmissions,
+  dataType,
 } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
@@ -55,6 +56,7 @@ import {
   setSubTable,
 } from "../../redux/actions/actions";
 import KagglePredictDialog from "./KagglePredictDialog";
+import "./KaggleDashboard.css";
 
 const useStyles = makeStyles(() => ({
   buttonProgress: {
@@ -113,7 +115,6 @@ const KaggleActionPane = (props) => {
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
   const [predictCanClose, setPredictCanClose] = useState(true);
-  const [descOpen, setDescOpen] = useState(false);
   const [subs, setSubs] = useState([]);
   const [uploadType, setUploadType] = useState("DATA");
 
@@ -131,7 +132,6 @@ const KaggleActionPane = (props) => {
 
   useEffect(() => {
     return () => {
-      setDescOpen(false);
       dispatch(setSubTable(false));
       setSubs([]);
     };
@@ -466,7 +466,7 @@ const KaggleActionPane = (props) => {
   };
 
   return (
-    <div className="KagglePanel">
+    <div>
       <Dialog
         open={jobOpen}
         onClose={() => {
@@ -647,7 +647,7 @@ const KaggleActionPane = (props) => {
           <br />
         </DialogContent>
       </Dialog>
-      <Paper>
+      <Paper className="KagglePanel">
         <h2 className="KagglePanelHeader">Available Actions</h2>
         <Button
           style={{ width: "100%" }}
@@ -774,15 +774,22 @@ const KaggleActionPane = (props) => {
             </Collapse>
           </div>
         )}
-        {SET_SRCINFO && SET_SRCINFO.ownerName && (
-          <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
-        )}
-        {SET_SRCINFO && SET_SRCINFO.licenseName && (
-          <p>License: {SET_SRCINFO.licenseName}</p>
-        )}
-        {SET_SRCINFO && SET_SRCINFO.usabilityRating && (
-          <p>Usability Rating: {SET_SRCINFO.usabilityRating}</p>
-        )}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.ownerName && (
+            <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
+          )}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.licenseName && <p>License: {SET_SRCINFO.licenseName}</p>}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.usabilityRating && (
+            <p>Usability Rating: {SET_SRCINFO.usabilityRating}</p>
+          )}
 
         {datafile && (
           <div>
@@ -850,20 +857,23 @@ const KaggleActionPane = (props) => {
             </Tooltip>
           </div>
         )}
-        {SET_SRCINFO && SET_SRCINFO.description && (
-          <div>
-            <Button
-              endIcon={descOpen ? <ExpandLess /> : <ExpandMore />}
-              onClick={() => setDescOpen(!descOpen)}
-              style={{ display: "block", width: "100%" }}
-            >
-              Dataset Description
-            </Button>
-            <Collapse in={descOpen} timeout="auto" unmountOnExit>
-              <ReactMarkdown>{SET_SRCINFO.description}</ReactMarkdown>
-            </Collapse>
-          </div>
-        )}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.description && (
+            <div>
+              <Button
+                endIcon={subTableOpen ? <ExpandLess /> : <ExpandMore />}
+                onClick={() => dispatch(setSubTable(!subTableOpen))}
+                style={{ display: "block", width: "100%" }}
+              >
+                Dataset Description
+              </Button>
+              <Collapse in={subTableOpen} timeout="auto" unmountOnExit>
+                <ReactMarkdown>{SET_SRCINFO.description}</ReactMarkdown>
+              </Collapse>
+            </div>
+          )}
       </Paper>
       <Dialog open={offboard} onClose={() => setOffboard(false)}>
         <DialogTitle gutterBottom variant="h5" component="h2">

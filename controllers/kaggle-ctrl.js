@@ -16,7 +16,6 @@ const {
 } = require("./generic-ctrl");
 
 competitionUploadSubmit = async (req, res) => {
-  // return res.status(400).json({ success: false, message: "you need a kaggle ref to submit!" });
   if (
     !req.params.ref ||
     !req.body ||

@@ -47,11 +47,6 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       backgroundColor: red[700],
     },
-    submitSpinner: {
-      // TODO make this centered!
-      left: "80%",
-      right: "20%",
-    },
     popperStyle: {
       zIndex: 9999,
     },
@@ -365,7 +360,13 @@ const KagglePredictDialog = (props) => {
                       setUploadName(str);
                     }}
                   ></TextField>
-                  <Button type="submit" endIcon={<Send />} />
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    endIcon={<Send />}
+                  >
+                    {submitting && <CircularProgress size={18} />}
+                  </Button>
                 </form>
               </Paper>
             </Fade>
@@ -502,12 +503,6 @@ const KagglePredictDialog = (props) => {
                 className={submitBtn}
               >
                 Create new private dataset
-                {submitting && (
-                  <CircularProgress
-                    size={18}
-                    className={classes.submitSpinner}
-                  />
-                )}
               </Button>
               <Button onClick={handleDl} className={downloadBtn}>
                 {" "}
@@ -538,12 +533,6 @@ const KagglePredictDialog = (props) => {
                   className={submitBtn}
                 >
                   Submit to Competition
-                  {submitting && (
-                    <CircularProgress
-                      size={18}
-                      className={classes.submitSpinner}
-                    />
-                  )}
                 </Button>
                 <Button onClick={handleDl} className={downloadBtn}>
                   {" "}
