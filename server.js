@@ -8,6 +8,7 @@ const app = express();
 let cors = require("cors");
 const port = process.env.PORT || 5000;
 const fileUpload = require("express-fileupload");
+const dotenv = require("dotenv");
 
 const uri =
   "mongodb+srv://Admin:RI2JBvI7gof0ODkH@cluster0.kdzl2.mongodb.net/dev?retryWrites=true&w=majority";
@@ -36,6 +37,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.methodOverride());
 // app.use(express.multipart());
+
+dotenv.config();
 
 // API calls
 app.get("/api/hello", (req, res) => {
