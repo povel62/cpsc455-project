@@ -26,12 +26,14 @@ import {
   TableRow,
   TableBody,
 } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import {
   CloudDownload,
   AddCircle,
   CloudUpload,
   ExpandMore,
   ExpandLess,
+  Launch,
 } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -39,9 +41,11 @@ import {
   compType,
   userJobItems,
   sourceRef,
+  fullSource,
   fileDownload,
   getColumnDownloadMethod,
   getSubmissions,
+  dataType,
 } from "./kaggleApi";
 import axios from "axios";
 import clsx from "clsx";
@@ -55,6 +59,7 @@ import {
   setSubTable,
 } from "../../redux/actions/actions";
 import KagglePredictDialog from "./KagglePredictDialog";
+import "./KaggleDashboard.css";
 
 const useStyles = makeStyles(() => ({
   buttonProgress: {
@@ -87,7 +92,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const KaggleActionPane = (props) => {
+const KaggleActionPane = () => {
   const classes = useStyles();
   let files = useSelector((state) => state.kaggleReducer.files);
   let datafile = useSelector((state) => state.kaggleReducer.dataFile);
@@ -113,7 +118,6 @@ const KaggleActionPane = (props) => {
   const [retrainOpen, setRetrainOpen] = useState(false);
   const [submitterOpen, setSubmitterOpen] = useState(false);
   const [predictCanClose, setPredictCanClose] = useState(true);
-  const [descOpen, setDescOpen] = useState(false);
   const [subs, setSubs] = useState([]);
   const [uploadType, setUploadType] = useState("DATA");
 
@@ -131,7 +135,6 @@ const KaggleActionPane = (props) => {
 
   useEffect(() => {
     return () => {
-      setDescOpen(false);
       dispatch(setSubTable(false));
       setSubs([]);
     };
@@ -147,7 +150,6 @@ const KaggleActionPane = (props) => {
     }
   };
 
-  // TODO refactor this into multiple pieces, move some to kaggleapi
   const handleDownload = (download) => {
     let file = fileRef();
     let url = "";
@@ -208,6 +210,7 @@ const KaggleActionPane = (props) => {
     }
   };
 
+  // Not used yet but could be in the future if retraining jobs with new params is possible
   // eslint-disable-next-line no-unused-vars
   const retrainJob = () => {
     setFail(false);
@@ -245,13 +248,16 @@ const KaggleActionPane = (props) => {
       competitionAuth(competitions[+source.index].ref, token).then(
         (entered) => {
           if (entered === true) {
+            dispatch(set_loading(false));
             setPredictOpen(true);
           } else {
             setOffboard(true);
+            dispatch(set_loading(false));
           }
         }
       );
     } else {
+      dispatch(set_loading(false));
       setPredictOpen(true);
     }
   };
@@ -266,7 +272,7 @@ const KaggleActionPane = (props) => {
         });
       }
       if (datafile && col.length === 0) {
-        // try to get columns via alternate method
+        // try to get columns via (slower) alternate method
         getColumnDownloadMethod(token, handleDownload, col).then((cols) => {
           resolve(cols);
         });
@@ -303,8 +309,7 @@ const KaggleActionPane = (props) => {
         return (
           <FormControl>
             <InputLabel>Target Column</InputLabel>
-            <Select // controlled select is broken when it shouldn't be
-              // value={() => target || ""}
+            <Select
               defaultValue={() => {
                 if (options && options.length >= 1) {
                   return options[0].props.value;
@@ -362,10 +367,6 @@ const KaggleActionPane = (props) => {
             setSuccess(true);
             setJobOpen(false);
             dispatch(setKaggleSuccess(true));
-            setTimeout(() => {
-              props.setTab(0);
-              dispatch(setKaggleSuccess(false));
-            }, 2000);
           } else {
             setFail(true);
           }
@@ -406,11 +407,6 @@ const KaggleActionPane = (props) => {
               setSuccess(true);
               setPredictOpen(false);
               dispatch(setKaggleSuccess(true));
-              setTimeout(() => {
-                dispatch(setKaggleSuccess(false));
-                props.setTab(0);
-                setSubmittingJob(false);
-              }, 2000);
             } else {
               setFail(true);
               setSubmittingJob(false);
@@ -427,6 +423,7 @@ const KaggleActionPane = (props) => {
       });
   };
 
+  // unimplimented, pending custom model params
   const handleRetrain = (e) => {
     console.log(e);
   };
@@ -466,7 +463,7 @@ const KaggleActionPane = (props) => {
   };
 
   return (
-    <div className="KagglePanel">
+    <div>
       <Dialog
         open={jobOpen}
         onClose={() => {
@@ -601,19 +598,50 @@ const KaggleActionPane = (props) => {
       >
         <DialogTitle>Submit Test File for Automatic Classification</DialogTitle>
         <DialogContent>
-          <form onSubmit={(e) => handlePredict(e)}>
+          <form
+            onSubmit={(e) => {
+              handlePredict(e);
+            }}
+          >
             <Grid container spacing={3}>
               <Grid item xs={6}>
-                <InputLabel>Available Trained Jobs</InputLabel>
                 {!submittingJob && (
                   <div>
-                    <Select
-                      onChange={(e) => handleSelectJob(e.target.value)}
-                      value={selectJob}
-                      required
-                    >
-                      {jobs}
-                    </Select>
+                    {jobs && (
+                      <Autocomplete
+                        required
+                        defaultValue={null}
+                        options={jobs.map((e) => {
+                          return {
+                            title: e.props["data-my-value"].title,
+                            value: e.props.value,
+                          };
+                        })}
+                        getOptionLabel={(option) => option.title}
+                        autoHighlight
+                        fullWidth
+                        getOptionSelected={(option, value) =>
+                          option.value === value.value
+                        }
+                        disabled={submittingJob}
+                        onChange={(e, value) => {
+                          handleSelectJob(value.value);
+                        }}
+                        disableClearable
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Select a Job"
+                            variant="outlined"
+                            required
+                            inputProps={{
+                              ...params.inputProps,
+                              autoComplete: "new-password",
+                            }}
+                          />
+                        )}
+                      ></Autocomplete>
+                    )}
                     <br />
                     {selectJob && selectJob !== {} && jobAssociated()}
                   </div>
@@ -647,55 +675,82 @@ const KaggleActionPane = (props) => {
           <br />
         </DialogContent>
       </Dialog>
-      <Paper>
+      <Paper className="KagglePanel">
         <h2 className="KagglePanelHeader">Available Actions</h2>
-        <Button
-          style={{ width: "100%" }}
-          variant="contained"
-          startIcon={<CloudUpload />}
-          disabled={loading}
-          onClick={() => {
-            dispatch(set_checked([]));
-            dispatch(set_loading(true));
-            userJobItems(token).then((entries) => {
-              dispatch(setKJobs(entries));
-              setPredictCanClose(true);
-              dispatch(set_loading(false));
-              setUploadType("DATA");
-              setSubmitterOpen(true);
-            });
-          }}
-        >
-          Upload Prediction as new dataset
-        </Button>
-        {files && files.type === compType && (
+        <ButtonGroup style={{ width: "100%" }}>
           <Button
+            style={{ width: `${(1 / 3) * 100}%` }}
             variant="contained"
             startIcon={<CloudUpload />}
-            style={{ display: "block", width: "100%" }}
             disabled={loading}
             onClick={() => {
-              competitionAuth(competitions[+source.index].ref, token).then(
-                (entered) => {
-                  if (entered === true) {
-                    dispatch(set_checked([]));
-                    dispatch(set_loading(true));
-                    userJobItems(token).then((entries) => {
-                      dispatch(setKJobs(entries));
-                      dispatch(set_loading(false));
-                      setUploadType("COMPETITION");
-                      setSubmitterOpen(true);
-                    });
-                  } else {
-                    setOffboard(true);
-                  }
-                }
-              );
+              dispatch(set_checked([]));
+              dispatch(set_loading(true));
+              userJobItems(token).then((entries) => {
+                dispatch(setKJobs(entries));
+                setPredictCanClose(true);
+                dispatch(set_loading(false));
+                setUploadType("DATA");
+                setSubmitterOpen(true);
+              });
             }}
           >
-            Submit Prediction
+            Upload Prediction as new dataset
           </Button>
-        )}
+          {source && (source.mode === dataType || source.mode === compType) && (
+            <Button
+              style={{ width: `${(1 / 3) * 100}%` }}
+              variant="contained"
+              startIcon={<Launch />}
+              disabled={loading}
+              onClick={() => {
+                try {
+                  let url = fullSource(source, datasets, competitions).url;
+                  if (url) {
+                    const kaggleWindow = window.open(
+                      url,
+                      "_blank",
+                      "noopener,noreferrer"
+                    );
+                    if (kaggleWindow) kaggleWindow.opener = null;
+                  }
+                } catch (e) {
+                  console.log(e);
+                }
+              }}
+            >
+              Open on Kaggle
+            </Button>
+          )}
+          {files && files.type === compType && (
+            <Button
+              variant="contained"
+              startIcon={<CloudUpload />}
+              style={{ width: `${(1 / 3) * 100}%` }}
+              disabled={loading}
+              onClick={() => {
+                competitionAuth(competitions[+source.index].ref, token).then(
+                  (entered) => {
+                    if (entered === true) {
+                      dispatch(set_checked([]));
+                      dispatch(set_loading(true));
+                      userJobItems(token).then((entries) => {
+                        dispatch(setKJobs(entries));
+                        dispatch(set_loading(false));
+                        setUploadType("COMPETITION");
+                        setSubmitterOpen(true);
+                      });
+                    } else {
+                      setOffboard(true);
+                    }
+                  }
+                );
+              }}
+            >
+              Submit Prediction
+            </Button>
+          )}
+        </ButtonGroup>
         {files && files.type === compType && (
           <p>
             Unable to determine license for competitions, please abide by the
@@ -774,15 +829,22 @@ const KaggleActionPane = (props) => {
             </Collapse>
           </div>
         )}
-        {SET_SRCINFO && SET_SRCINFO.ownerName && (
-          <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
-        )}
-        {SET_SRCINFO && SET_SRCINFO.licenseName && (
-          <p>License: {SET_SRCINFO.licenseName}</p>
-        )}
-        {SET_SRCINFO && SET_SRCINFO.usabilityRating && (
-          <p>Usability Rating: {SET_SRCINFO.usabilityRating}</p>
-        )}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.ownerName && (
+            <p>Dataset Owner: {SET_SRCINFO.ownerName}</p>
+          )}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.licenseName && <p>License: {SET_SRCINFO.licenseName}</p>}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.usabilityRating && (
+            <p>Usability Rating: {SET_SRCINFO.usabilityRating}</p>
+          )}
 
         {datafile && (
           <div>
@@ -816,12 +878,15 @@ const KaggleActionPane = (props) => {
                 </Button>
                 <Button
                   startIcon={<AddCircle />}
-                  onClick={() => createJob()}
+                  onClick={() => {
+                    setSubmittingJob(false);
+                    createJob();
+                  }}
                   disabled={!datafile.accepted}
                 >
                   Create Training Job
                 </Button>
-                {/* <Button
+                <Button
                   startIcon={<AddCircle />}
                   onClick={() => {
                     userJobItems(token).then((entries) =>
@@ -832,11 +897,13 @@ const KaggleActionPane = (props) => {
                   disabled={true}
                 >
                   Retrain Existing Job
-                </Button> */}
+                </Button>
                 <Button
                   variant="contained"
                   startIcon={<CloudUpload />}
                   onClick={() => {
+                    setSubmittingJob(false);
+                    dispatch(set_loading(true));
                     userJobItems(token).then((entries) => {
                       dispatch(setKJobs(entries));
                       createPredict();
@@ -850,23 +917,26 @@ const KaggleActionPane = (props) => {
             </Tooltip>
           </div>
         )}
-        {SET_SRCINFO && SET_SRCINFO.description && (
-          <div>
-            <Button
-              endIcon={descOpen ? <ExpandLess /> : <ExpandMore />}
-              onClick={() => setDescOpen(!descOpen)}
-              style={{ display: "block", width: "100%" }}
-            >
-              Dataset Description
-            </Button>
-            <Collapse in={descOpen} timeout="auto" unmountOnExit>
-              <ReactMarkdown>{SET_SRCINFO.description}</ReactMarkdown>
-            </Collapse>
-          </div>
-        )}
+        {source &&
+          source.mode === dataType &&
+          SET_SRCINFO &&
+          SET_SRCINFO.description && (
+            <div>
+              <Button
+                endIcon={subTableOpen ? <ExpandLess /> : <ExpandMore />}
+                onClick={() => dispatch(setSubTable(!subTableOpen))}
+                style={{ display: "block", width: "100%" }}
+              >
+                Dataset Description
+              </Button>
+              <Collapse in={subTableOpen} timeout="auto" unmountOnExit>
+                <ReactMarkdown>{SET_SRCINFO.description}</ReactMarkdown>
+              </Collapse>
+            </div>
+          )}
       </Paper>
       <Dialog open={offboard} onClose={() => setOffboard(false)}>
-        <DialogTitle gutterBottom variant="h5" component="h2">
+        <DialogTitle variant="h5" component="h2">
           You must accept the competition rules
         </DialogTitle>
         <DialogContent>
@@ -905,7 +975,6 @@ const KaggleActionPane = (props) => {
           open={submitterOpen}
           setOpen={setSubmitterOpen}
           setPredictCanClose={setPredictCanClose}
-          setTab={props.setTab}
           uploadType={uploadType}
         />
       </Dialog>

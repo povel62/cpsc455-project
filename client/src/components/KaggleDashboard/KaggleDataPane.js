@@ -25,11 +25,9 @@ const KaggleDataPane = () => {
   }
 
   return (
-    <Paper>
-      <div className="KagglePanel">
-        <h2 className="KagglePanelHeader">Supported Data Files</h2>
-        {Formatted}
-      </div>
+    <Paper className="KagglePanel">
+      <h2 className="KagglePanelHeader">Supported Data Files</h2>
+      {Formatted}
     </Paper>
   );
 };
@@ -81,7 +79,7 @@ const traverseTree = (ele, type, deselect) => {
     return (
       <TreeItem
         key={ele.idx}
-        nodeId={ele.idx}
+        nodeId={ele.idx.toString()}
         label={ele.text}
         icon={<NavigateNext />}
         onClick={() => deselect()}

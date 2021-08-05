@@ -149,6 +149,31 @@ const KaggleDashBoard = (props) => {
               >
                 You will now be redirected to the dashboard
               </Typography>
+              <CardActions>
+                <ButtonGroup
+                  size="small"
+                  color="primary"
+                  aria-label="small contained button group"
+                  fullWidth={true}
+                  variant="contained"
+                >
+                  <Button
+                    onClick={() => {
+                      dispatch(setKaggleSuccess(false));
+                    }}
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      props.setTab(0);
+                      dispatch(setKaggleSuccess(false));
+                    }}
+                  >
+                    Job Dashboard
+                  </Button>
+                </ButtonGroup>
+              </CardActions>
             </Card>
           </Grid>
         </Grid>
@@ -184,7 +209,7 @@ const KaggleDashBoard = (props) => {
               <Card className={classes.root}>
                 <CardActionArea>
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
+                    <Typography variant="h5" component="h2">
                       Kaggle api key required
                     </Typography>
                     <Typography
@@ -204,16 +229,26 @@ const KaggleDashBoard = (props) => {
                     size="small"
                     color="primary"
                     variant="contained"
-                    style={{ maxWidth: "100%" }}
+                    style={{ maxWidth: "100%", height: "6rem" }}
                   >
                     <Button
+                      style={{
+                        width: `${(1 / 3) * 100}%`,
+                        maxHeight: "100%",
+                        fontSize: "0.7rem",
+                      }}
                       onClick={() => {
                         props.setTab(99);
                       }}
                     >
-                      <p>Add Kaggle Credentials</p>
+                      Add Kaggle Credentials
                     </Button>
                     <Button
+                      style={{
+                        width: `${(1 / 3) * 100}%`,
+                        maxHeight: "100%",
+                        fontSize: "0.7rem",
+                      }}
                       onClick={() => {
                         try {
                           const kaggleWindow = window.open(
@@ -230,6 +265,11 @@ const KaggleDashBoard = (props) => {
                       <p>Kaggle Sign Up</p>
                     </Button>
                     <Button
+                      style={{
+                        width: `${(1 / 3) * 100}%`,
+                        maxHeight: "100%",
+                        fontSize: "0.7rem",
+                      }}
                       onClick={() => {
                         checkAuth();
                       }}

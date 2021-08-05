@@ -123,12 +123,20 @@ export const userJobItems = (token) => {
 };
 
 export const sourceRef = (source, datasets, competitions) => {
+  try {
+    return fullSource(source, datasets, competitions).ref;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const fullSource = (source, datasets, competitions) => {
   if (!source) {
     return null;
   } else if (source.mode === "COMPETITION") {
-    return competitions[source.index].ref;
+    return competitions[source.index];
   } else {
-    return datasets[source.index].ref;
+    return datasets[source.index];
   }
 };
 

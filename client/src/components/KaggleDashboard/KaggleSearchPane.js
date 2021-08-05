@@ -160,76 +160,72 @@ const KaggleSearchPane = () => {
   }
 
   return (
-    <Paper>
-      <div className="KagglePanel">
-        <h2 className="KagglePanelHeader">
-          Kaggle competition and dataset sources
-        </h2>
-        <List className="KaggleList" aria-labelledby="nested-list-subheader">
-          <KaggleSearchForm GetKaggle={GetKaggle} />
-          <ListItem
-            button
-            onClick={handleCompetitionClick}
-            className="nestedItem"
-          >
-            <Grid container>
-              <Grid item xs={8}>
-                Competitions{" "}
-              </Grid>
-              <Grid item xs={4}>
-                <Select
-                  labelId="competition-select-label"
-                  id="competition_filter"
-                  value={userFilter ? userFilter.compFilter : "general"}
-                  onChange={(e) => handleKaggleCompSelect(e)}
-                  disabled={loading}
-                >
-                  <MenuItem value={"general"}>General</MenuItem>
-                  <MenuItem value={"inClass"}>In Class</MenuItem>
-                  <MenuItem value={"entered"}>Entered</MenuItem>
-                </Select>
-              </Grid>
+    <Paper className="KagglePanel">
+      <h2 className="KagglePanelHeader">
+        Kaggle competition and dataset sources
+      </h2>
+      <List className="KaggleList" aria-labelledby="nested-list-subheader">
+        <KaggleSearchForm GetKaggle={GetKaggle} />
+        <ListItem
+          button
+          onClick={handleCompetitionClick}
+          className="nestedItem"
+        >
+          <Grid container>
+            <Grid item xs={8}>
+              Competitions{" "}
             </Grid>
-
-            {showCompetitions ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={showCompetitions}>
-            <div className="competitionList">
-              <List>{competitionEntries}</List>
-            </div>
-          </Collapse>
-          <Divider />
-          <ListItem button onClick={handleDatasetClick}>
-            <Grid container>
-              <Grid item xs={8}>
-                Personal Datasets
-              </Grid>
-              <Grid item xs={4}>
-                <Select
-                  labelId="dataset-select-label"
-                  id="dataset_filter"
-                  value={userFilter ? userFilter.dataFilter : "public"}
-                  onChange={handleKaggleDataSelect}
-                  disabled={loading}
-                >
-                  <MenuItem value={"public"}>Public</MenuItem>
-                  <MenuItem value={"my"}>Personal</MenuItem>
-                  <MenuItem value={"myPrivate"}>Private</MenuItem>
-                  <MenuItem value={"upvoted"}>Upvoted</MenuItem>
-                  <MenuItem value={"user"}>User</MenuItem>
-                </Select>
-              </Grid>
+            <Grid item xs={4}>
+              <Select
+                labelId="competition-select-label"
+                id="competition_filter"
+                value={userFilter ? userFilter.compFilter : "general"}
+                onChange={(e) => handleKaggleCompSelect(e)}
+                disabled={loading}
+              >
+                <MenuItem value={"general"}>General</MenuItem>
+                <MenuItem value={"inClass"}>In Class</MenuItem>
+                <MenuItem value={"entered"}>Entered</MenuItem>
+              </Select>
             </Grid>
-
-            {showDatasets ? <ExpandLess /> : <ExpandMore />}
-          </ListItem>
-          <Collapse in={showDatasets}>
-            <div className="datasetList">
-              <List>{datasetEntries}</List>
-            </div>
-          </Collapse>
-        </List>
-      </div>
+          </Grid>
+          {showCompetitions ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+        <Collapse in={showCompetitions}>
+          <div className="competitionList">
+            <List>{competitionEntries}</List>
+          </div>
+        </Collapse>
+        <Divider />
+        <ListItem button onClick={handleDatasetClick}>
+          <Grid container>
+            <Grid item xs={8}>
+              Personal Datasets
+            </Grid>
+            <Grid item xs={4}>
+              <Select
+                labelId="dataset-select-label"
+                id="dataset_filter"
+                value={userFilter ? userFilter.dataFilter : "public"}
+                onChange={handleKaggleDataSelect}
+                disabled={loading}
+              >
+                <MenuItem value={"public"}>Public</MenuItem>
+                <MenuItem value={"my"}>Personal</MenuItem>
+                <MenuItem value={"myPrivate"}>Private</MenuItem>
+                <MenuItem value={"upvoted"}>Upvoted</MenuItem>
+                <MenuItem value={"user"}>User</MenuItem>
+              </Select>
+            </Grid>
+          </Grid>
+          {showDatasets ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+        <Collapse in={showDatasets}>
+          <div className="datasetList">
+            <List>{datasetEntries}</List>
+          </div>
+        </Collapse>
+      </List>
     </Paper>
   );
 };

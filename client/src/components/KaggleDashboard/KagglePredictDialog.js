@@ -47,11 +47,6 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       backgroundColor: red[700],
     },
-    submitSpinner: {
-      // TODO make this centered!
-      left: "80%",
-      right: "20%",
-    },
     popperStyle: {
       zIndex: 9999,
     },
@@ -100,14 +95,13 @@ const KagglePredictDialog = (props) => {
   }, []);
 
   KagglePredictDialog.propTypes = {
-    open: PropTypes.number.isRequired,
+    open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
     setPredictCanClose: PropTypes.func.isRequired,
-    setTab: PropTypes.func.isRequired,
     uploadType: PropTypes.string.isRequired,
   };
 
-  let { open, setOpen, setPredictCanClose, setTab, uploadType } = props;
+  let { open, setOpen, setPredictCanClose, uploadType } = props;
   let classes = useStyles();
 
   const submitBtn = clsx({
@@ -136,10 +130,6 @@ const KagglePredictDialog = (props) => {
     setOpen(false);
     dispatch(setKaggleSuccess(true));
     setErrorMessage("");
-    setTimeout(() => {
-      setTab(0);
-      dispatch(setKaggleSuccess(false));
-    }, 2000);
   };
 
   const resetErrors = () => {
@@ -365,7 +355,13 @@ const KagglePredictDialog = (props) => {
                       setUploadName(str);
                     }}
                   ></TextField>
-                  <Button type="submit" endIcon={<Send />} />
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    endIcon={<Send />}
+                  >
+                    {submitting && <CircularProgress size={18} />}
+                  </Button>
                 </form>
               </Paper>
             </Fade>
@@ -389,11 +385,9 @@ const KagglePredictDialog = (props) => {
               getOptionLabel={(option) => option.title}
               autoHighlight
               fullWidth
-              // getOptionSelected={(option, value) => {
-              //   console.log(option);
-              //   console.log(value);
-              //   return option.title === value.title;
-              // }}
+              getOptionSelected={(option, value) =>
+                option.title === value.title
+              }
               loading={load}
               disabled={load || submitting}
               onChange={(e, val) => handleJobChange(e, val)}
@@ -405,7 +399,7 @@ const KagglePredictDialog = (props) => {
                   variant="outlined"
                   inputProps={{
                     ...params.inputProps,
-                    autoComplete: "new-password", // disable autocomplete and autofill
+                    autoComplete: "new-password",
                   }}
                 />
               )}
@@ -502,14 +496,7 @@ const KagglePredictDialog = (props) => {
                 className={submitBtn}
               >
                 Create new private dataset
-                {submitting && (
-                  <CircularProgress
-                    size={18}
-                    className={classes.submitSpinner}
-                  />
-                )}
               </Button>
-              {/* <Button disabled>Add to existing dataset (not ready)</Button> */}
               <Button onClick={handleDl} className={downloadBtn}>
                 {" "}
                 Download{" "}
@@ -539,12 +526,6 @@ const KagglePredictDialog = (props) => {
                   className={submitBtn}
                 >
                   Submit to Competition
-                  {submitting && (
-                    <CircularProgress
-                      size={18}
-                      className={classes.submitSpinner}
-                    />
-                  )}
                 </Button>
                 <Button onClick={handleDl} className={downloadBtn}>
                   {" "}

@@ -113,7 +113,6 @@ export default function ControlDashboard() {
         if (response.status === 201 || response.status === 200) {
           let jobData = response.data.data;
           if (jobData) {
-            console.log("success get jobs");
             dispatch(setJobs(jobData));
           }
         } else {
