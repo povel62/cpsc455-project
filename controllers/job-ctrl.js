@@ -22,6 +22,9 @@ const { secret } = require("../util/security");
 tryTest = async () => {
   let options = {
     args: ["ls"],
+    env: {
+      ...process.env,
+    },
   };
 
   PythonShell.run("./util/run_test.py", options, function (err, results1) {

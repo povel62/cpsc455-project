@@ -58,7 +58,7 @@ def run_borg_command(command: str):
     try:
         ssh1 = paramiko.SSHClient()
         ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh1.connect('remote.cs.ubc.ca', username='blkbx-ml', password='1qaz2wsx')
+        ssh1.connect('remote.cs.ubc.ca', username=os.environ.get('SSH_USER'), password=os.environ.get('SSH_PASSWORD'))
         # ssh1.connect('remote.cs.ubc.ca', username='tonyjos', password='Ubcplusplus8*')
 
         vmtransport = ssh1.get_transport()
@@ -68,7 +68,7 @@ def run_borg_command(command: str):
 
         ssh2 = paramiko.SSHClient()
         ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh2.connect('borg', username='blkbx-ml', password='1qaz2wsx', sock=vmchannel)
+        ssh2.connect('borg', username=os.environ.get('SSH_USER'), password=os.environ.get('SSH_PASSWORD'), sock=vmchannel)
         # ssh2.connect('borg', username='tonyjos', password='Ubcplusplus8*', sock=vmchannel)
 
         stdin, stdout, stderr = ssh2.exec_command(command)
@@ -91,7 +91,7 @@ def run_ubc_command(command: str):
     try:
         ssh1 = paramiko.SSHClient()
         ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh1.connect('remote.cs.ubc.ca', username='blkbx-ml', password='1qaz2wsx')
+        ssh1.connect('remote.cs.ubc.ca', username=os.environ.get('SSH_USER'), password=os.environ.get('SSH_PASSWORD'))
         vmtransport = ssh1.get_transport()
         dest_addr = ('borg', 22) #edited#
         local_addr = (socket.gethostbyname(socket.gethostname()), 22) #edited#
@@ -99,7 +99,7 @@ def run_ubc_command(command: str):
 
         ssh2 = paramiko.SSHClient()
         ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh2.connect('borg', username='blkbx-ml', password='1qaz2wsx', sock=vmchannel)
+        ssh2.connect('borg', username=os.environ.get('SSH_USER'), password=os.environ.get('SSH_PASSWORD'), sock=vmchannel)
 
 
         stdin, stdout, stderr = ssh2.exec_command("cd /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets \n " + command)
