@@ -12,6 +12,12 @@ import UploadButtons from "../Upload_button/Upload_button";
 import { CircularProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
 
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const computeTimes = [
   {
     value: 5,
@@ -53,6 +59,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function AddStepper() {
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [message, setMessage] = useState("Job Submitted!");
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
 
@@ -120,7 +140,7 @@ function AddStepper() {
       case 1:
         return (
           <div>
-            <p> Upload your Dataset</p>
+            {/* <p> Upload your Dataset</p> */}
             <UploadButtons
               changeTarget={(t_col) => setTarget(t_col)}
               changeData={(fData) => setData(fData)}
@@ -166,9 +186,31 @@ function AddStepper() {
 
   const handleNext = () => {
     setLoading(true);
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    if (activeStep === steps.length - 1) {
+
+    if (values.jobName === "") {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Please enter a name for this job",
+        severity: "error",
+      });
+    } else if (activeStep === steps.length - 2 && data == null) {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Please upload Training data",
+        severity: "error",
+      });
+    } else if (activeStep === steps.length - 2 && target_col == "") {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Please select Target column",
+        severity: "error",
+      });
+    } else if (activeStep === steps.length - 1) {
+      setOpenSnackBar(false);
       handleFinish();
+    } else {
+      setOpenSnackBar(false);
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
 
@@ -192,21 +234,54 @@ function AddStepper() {
 
     if (response.status === 201 || response.status === 200) {
       console.log("submitted new job");
+
+      setOpenSnackBar(true);
+      setMessage("Job Submitted!");
+      setSnackBarContent({
+        content: "Submitted new job for TRAINING",
+        severity: "success",
+      });
       setLoading(false);
+      setValues({
+        response: "",
+        post: "",
+        responseToPost: "",
+        jobName: "",
+        jobTime: 5,
+        guest: login_token.isGuest,
+      });
     } else {
-      alert("Something went wrong");
+      setOpenSnackBar(true);
+      setMessage("Could not Submit Job");
+      setSnackBarContent({
+        content: "Something went wrong. Please try again",
+        severity: "error",
+      });
       setLoading(false);
     }
+    setData(null);
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     console.log(target_col);
-    console.log(data);
   };
 
   return (
     <div className={classes.root}>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={1500}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -220,7 +295,7 @@ function AddStepper() {
             {loading && <CircularProgress size={34} />}
             {!loading && (
               <Typography className={classes.instructions}>
-                Job Submitted!
+                <h1>{message}</h1>
               </Typography>
             )}
           </div>
@@ -229,7 +304,13 @@ function AddStepper() {
             <Typography className={classes.instructions}>
               {getStepContent(activeStep)}
             </Typography>
-            <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+              }}
+            >
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}
@@ -237,21 +318,10 @@ function AddStepper() {
               >
                 Back
               </Button>
-              {values.jobName === "" && (
-                <Button disabled variant="contained" color="primary">
-                  Next
-                </Button>
-              )}
-              {values.jobName !== "" && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                >
-                  {activeStep === steps.length - 1 && "Submit"}
-                  {activeStep !== steps.length - 1 && "Next"}
-                </Button>
-              )}
+              <Button variant="contained" color="primary" onClick={handleNext}>
+                {activeStep === steps.length - 1 && "Submit"}
+                {activeStep !== steps.length - 1 && "Next"}
+              </Button>
             </div>
           </div>
         )}

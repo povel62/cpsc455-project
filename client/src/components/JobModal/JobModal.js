@@ -5,7 +5,7 @@ import AddStepper from "./AddStepper";
 import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import IconButton from "@material-ui/core/IconButton";
+import { Button } from "@material-ui/core";
 //import { DropzoneArea } from "material-ui-dropzone";
 
 function getModalStyle() {
@@ -20,8 +20,8 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
-    width: "70vw",
-    height: "80vh",
+    width: "80vw",
+    height: "90vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -53,7 +53,6 @@ export default function JobModal({ refreshJobs }) {
         />
       </Tooltip>
       <h2 id="modal-title">Add ML Job</h2>
-      <p id="modal-description">Add job by following the steps</p>
       <AddStepper />
     </div>
   );
@@ -61,14 +60,16 @@ export default function JobModal({ refreshJobs }) {
   return (
     <div>
       <Tooltip title="Add a job" aria-label="add a job">
-        <IconButton
+        <Button
+          variant="contained"
           color="primary"
           aria-label="add a new job"
+          component="span"
           onClick={handleOpen}
-          size="medium"
+          endIcon={<AddBoxIcon />}
         >
-          <AddBoxIcon />
-        </IconButton>
+          Add Job
+        </Button>
       </Tooltip>
       <Modal
         open={open}

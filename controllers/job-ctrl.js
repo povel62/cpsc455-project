@@ -22,6 +22,9 @@ const { secret } = require("../util/security");
 tryTest = async () => {
   let options = {
     args: ["ls"],
+    env: {
+      ...process.env,
+    },
   };
 
   PythonShell.run("./util/run_test.py", options, function (err, results1) {
@@ -300,11 +303,16 @@ getPreds = async (req, res) => {
           });
         }
       } catch (err) {
+        console.log("cant retrieve");
         return res.status(404).json({
           error: err,
           message: "Cannot retreive files!",
         });
       }
+
+      console.log("file name here");
+      console.log(fileNames);
+
       return res.status(200).json({
         success: true,
         id: job._id,
@@ -361,6 +369,7 @@ getFileText = async (req, res) => {
 getPredFile = async (req, res) => {
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
+      console.log("job not found");
       return res.status(404).json({
         err,
         message: "Job not found!",
@@ -402,6 +411,7 @@ getPredFile = async (req, res) => {
         }
       })
       .catch((error) => {
+        console.log("file not found");
         return res.status(404).json({
           error,
           message: "Cannot find file!",

@@ -8,6 +8,14 @@ import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import PredictUploadButton from "./PredictUploadButton";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { MenuItem } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function getModalStyle() {
   const top = 5;
@@ -22,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: "60vw",
-    height: "50vh",
+    height: "70vh",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -44,6 +52,19 @@ export default function PredictModal({
   const [modalText, setModalText] = useState("Test file uploaded");
   const [testData, setTestData] = useState(null);
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -58,6 +79,14 @@ export default function PredictModal({
     console.log(testData);
     console.log(jobId);
     const formData = new FormData();
+    if (testData == null) {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Please upload prediction testfile",
+        severity: "error",
+      });
+      return;
+    }
 
     // Update the formData object
     formData.append("file", testData);
@@ -72,14 +101,117 @@ export default function PredictModal({
 
     if (response.status === 201 || response.status === 200) {
       console.log("submitted prediction testfile");
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "submitted prediction testfile",
+        severity: "success",
+      });
       setModalText("Test file submitted for prediction");
     } else {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Something went wrong. Please try again",
+        severity: "error",
+      });
       setModalText("Something went wrong while submitting prediction file");
     }
   };
 
-  const handleDlPredict = () => {
-    alert("download");
+  const getFileNames = (job) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`/api/job/${job}/preds`, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            resolve(res.data.fileNames);
+          } else {
+            resolve([]);
+          }
+        })
+        .catch(() => reject([]));
+    });
+  };
+
+  const handleFileNames = async () => {
+    let fileList = [];
+    await getFileNames(jobId)
+      .then((res) => {
+        let entries = res.map((ele, i) => {
+          let name;
+          try {
+            name = ele.slice(26, -4);
+          } catch {
+            name = ele;
+          }
+          return (
+            <MenuItem value={ele} key={i}>
+              {name}
+            </MenuItem>
+          );
+        });
+        console.log("success");
+        console.log(entries);
+        fileList = entries;
+      })
+      .catch(() => {
+        console.log("fail");
+        fileList = [];
+      });
+    return fileList;
+  };
+
+  const handleDlPredict = async () => {
+    let fileList = await handleFileNames();
+
+    console.log(fileList);
+    if (fileList && fileList.length >= 1) {
+      let fileName = fileList[0].props.value;
+      axios
+        .get("/api/job/" + jobId + "/pred/" + fileName, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            let name = fileName;
+            const addr = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement("a");
+            link.href = addr;
+            link.setAttribute("download", name);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(addr);
+            setOpenSnackBar(true);
+            setSnackBarContent({
+              content: "Downloading file...",
+              severity: "info",
+            });
+          } else {
+            setModalText("Download failed");
+            setOpenSnackBar(true);
+            setSnackBarContent({
+              content: "Something went wrong. Please try again",
+              severity: "error",
+            });
+          }
+        })
+        .catch(() => {
+          setModalText("Download failed");
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "Something went wrong. Please try again",
+            severity: "error",
+          });
+        });
+    } else {
+      console.log("file list empty");
+    }
   };
 
   const body = (
@@ -93,42 +225,74 @@ export default function PredictModal({
       </Tooltip>
       <h2 id="modal-title">Submit Prediction Test file</h2>
       <br />
-      <PredictUploadButton
-        changeData={(fData) => setTestData(fData)}
-      ></PredictUploadButton>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <PredictUploadButton
+          changeData={(fData) => setTestData(fData)}
+        ></PredictUploadButton>
+      </div>
+      <br />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {testData && modalText}
+      </div>
       <br />
       <br />
-      {testData && modalText}
-      <br />
-      <br />
-      {testData && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handlePredictSubmit}
-        >
-          Submit
-        </Button>
-      )}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handlePredictSubmit}
+        style={{ float: "right" }}
+      >
+        Submit
+      </Button>
     </div>
   );
 
   return (
     <div>
-      {showDownload && (
-        <Tooltip
-          title="Download prediction file"
-          aria-label="Download prediction file"
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
         >
-          <Button
-            variant="contained"
-            component="span"
-            onClick={handleDlPredict}
-            endIcon={<CloudDownloadIcon />}
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
+      {showDownload && (
+        <div>
+          <Tooltip
+            title="Download latest prediction file"
+            aria-label="Download latest prediction file"
           >
-            Prediction
-          </Button>
-        </Tooltip>
+            <Button
+              variant="contained"
+              component="span"
+              onClick={handleDlPredict}
+              endIcon={<CloudDownloadIcon />}
+            >
+              Latest Prediction
+            </Button>
+          </Tooltip>
+          <br />
+          <br />
+          <Tooltip
+            title="Submit new testfile"
+            aria-label="Submit new test file for prediction"
+          >
+            <Button
+              variant="contained"
+              component="span"
+              onClick={handleOpen}
+              endIcon={<DonutLargeIcon />}
+            >
+              Submit New Test
+            </Button>
+          </Tooltip>
+        </div>
       )}
       {showPredict && (
         <Tooltip

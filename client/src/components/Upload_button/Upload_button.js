@@ -7,6 +7,7 @@ import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import PropTypes from "prop-types";
+import DataTable from "react-data-table-component";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +29,7 @@ function UploadButtons(props) {
   });
 
   const [columns, setColumns] = useState([]);
+  const [data, setData] = useState([]);
 
   // process CSV data
   const processData = (dataString) => {
@@ -67,7 +69,7 @@ function UploadButtons(props) {
       selector: c,
     }));
 
-    //setData(list);
+    setData(list);
     setColumns(columns);
   };
 
@@ -105,43 +107,58 @@ function UploadButtons(props) {
         type="file"
         onChange={(e) => handleFileUpload(e)}
       />
-      <label htmlFor="contained-button-file">
-        <Button
-          variant="contained"
-          color="primary"
-          component="span"
-          startIcon={<CloudUploadIcon />}
-        >
-          Upload File
-        </Button>
-      </label>
-      <div>
-        {columns.length != 0 ? (
-          <TextField
-            id="target_col"
-            select
-            label="Select target column"
-            value={values.target_col}
-            onChange={(e) => {
-              console.log("value changed to " + e.target.value);
-              setValues({
-                ...values,
-                target_col: e.target.value,
-              });
-              props.changeTarget(e.target.value);
-            }}
-            helperText="Please select target column"
-          >
-            {columns.map((option) => (
-              <MenuItem key={option.selector} value={option.selector}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        ) : (
-          ""
-        )}
+      <div style={{ display: "flex", justifyContent: "space-around" }}>
+        <div>
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload Training Dataset
+            </Button>
+          </label>
+        </div>
+        <div>
+          {columns.length != 0 ? (
+            <TextField
+              id="target_col"
+              select
+              label="Select target column"
+              value={values.target_col}
+              onChange={(e) => {
+                console.log("value changed to " + e.target.value);
+                setValues({
+                  ...values,
+                  target_col: e.target.value,
+                });
+                props.changeTarget(e.target.value);
+              }}
+              helperText="Please select target column"
+              //style={{ float: "right" }}
+            >
+              {columns.map((option) => (
+                <MenuItem key={option.selector} value={option.selector}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            ""
+          )}
+        </div>
       </div>
+      <DataTable
+        pagination
+        paginationPerPage={5}
+        paginationRowsPerPageOptions={[5]}
+        highlightOnHover
+        columns={columns}
+        data={data}
+        scrollX
+        scrollY
+      />
     </div>
   );
 }
