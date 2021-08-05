@@ -248,13 +248,16 @@ const KaggleActionPane = () => {
       competitionAuth(competitions[+source.index].ref, token).then(
         (entered) => {
           if (entered === true) {
+            dispatch(set_loading(false));
             setPredictOpen(true);
           } else {
             setOffboard(true);
+            dispatch(set_loading(false));
           }
         }
       );
     } else {
+      dispatch(set_loading(false));
       setPredictOpen(true);
     }
   };
@@ -604,39 +607,41 @@ const KaggleActionPane = () => {
               <Grid item xs={6}>
                 {!submittingJob && (
                   <div>
-                    <Autocomplete
-                      required
-                      defaultValue={null}
-                      options={jobs.map((e) => {
-                        return {
-                          title: e.props["data-my-value"].title,
-                          value: e.props.value,
-                        };
-                      })}
-                      getOptionLabel={(option) => option.title}
-                      autoHighlight
-                      fullWidth
-                      getOptionSelected={(option, value) =>
-                        option.value === value.value
-                      }
-                      disabled={submittingJob}
-                      onChange={(e, value) => {
-                        handleSelectJob(value.value);
-                      }}
-                      disableClearable
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Select a Job"
-                          variant="outlined"
-                          required
-                          inputProps={{
-                            ...params.inputProps,
-                            autoComplete: "new-password",
-                          }}
-                        />
-                      )}
-                    ></Autocomplete>
+                    {jobs && (
+                      <Autocomplete
+                        required
+                        defaultValue={null}
+                        options={jobs.map((e) => {
+                          return {
+                            title: e.props["data-my-value"].title,
+                            value: e.props.value,
+                          };
+                        })}
+                        getOptionLabel={(option) => option.title}
+                        autoHighlight
+                        fullWidth
+                        getOptionSelected={(option, value) =>
+                          option.value === value.value
+                        }
+                        disabled={submittingJob}
+                        onChange={(e, value) => {
+                          handleSelectJob(value.value);
+                        }}
+                        disableClearable
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Select a Job"
+                            variant="outlined"
+                            required
+                            inputProps={{
+                              ...params.inputProps,
+                              autoComplete: "new-password",
+                            }}
+                          />
+                        )}
+                      ></Autocomplete>
+                    )}
                     <br />
                     {selectJob && selectJob !== {} && jobAssociated()}
                   </div>
@@ -692,7 +697,7 @@ const KaggleActionPane = () => {
           >
             Upload Prediction as new dataset
           </Button>
-          {source && (source.mode === dataType || source.mode == compType) && (
+          {source && (source.mode === dataType || source.mode === compType) && (
             <Button
               style={{ width: `${(1 / 3) * 100}%` }}
               variant="contained"
@@ -898,6 +903,7 @@ const KaggleActionPane = () => {
                   startIcon={<CloudUpload />}
                   onClick={() => {
                     setSubmittingJob(false);
+                    dispatch(set_loading(true));
                     userJobItems(token).then((entries) => {
                       dispatch(setKJobs(entries));
                       createPredict();
