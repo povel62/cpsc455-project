@@ -209,7 +209,7 @@ const KaggleDashBoard = (props) => {
               <Card className={classes.root}>
                 <CardActionArea>
                   <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
+                    <Typography variant="h5" component="h2">
                       Kaggle api key required
                     </Typography>
                     <Typography

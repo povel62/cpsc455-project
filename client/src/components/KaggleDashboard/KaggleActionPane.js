@@ -26,6 +26,7 @@ import {
   TableRow,
   TableBody,
 } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import {
   CloudDownload,
   AddCircle,
@@ -601,16 +602,41 @@ const KaggleActionPane = () => {
           >
             <Grid container spacing={3}>
               <Grid item xs={6}>
-                <InputLabel>Available Trained Jobs</InputLabel>
                 {!submittingJob && (
                   <div>
-                    <Select
-                      onChange={(e) => handleSelectJob(e.target.value)}
-                      value={selectJob}
+                    <Autocomplete
                       required
-                    >
-                      {jobs}
-                    </Select>
+                      defaultValue={null}
+                      options={jobs.map((e) => {
+                        return {
+                          title: e.props["data-my-value"].title,
+                          value: e.props.value,
+                        };
+                      })}
+                      getOptionLabel={(option) => option.title}
+                      autoHighlight
+                      fullWidth
+                      getOptionSelected={(option, value) =>
+                        option.value === value.value
+                      }
+                      disabled={submittingJob}
+                      onChange={(e, value) => {
+                        handleSelectJob(value.value);
+                      }}
+                      disableClearable
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select a Job"
+                          variant="outlined"
+                          required
+                          inputProps={{
+                            ...params.inputProps,
+                            autoComplete: "new-password",
+                          }}
+                        />
+                      )}
+                    ></Autocomplete>
                     <br />
                     {selectJob && selectJob !== {} && jobAssociated()}
                   </div>
@@ -904,7 +930,7 @@ const KaggleActionPane = () => {
           )}
       </Paper>
       <Dialog open={offboard} onClose={() => setOffboard(false)}>
-        <DialogTitle gutterBottom variant="h5" component="h2">
+        <DialogTitle variant="h5" component="h2">
           You must accept the competition rules
         </DialogTitle>
         <DialogContent>

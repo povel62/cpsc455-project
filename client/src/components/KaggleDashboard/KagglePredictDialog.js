@@ -95,7 +95,7 @@ const KagglePredictDialog = (props) => {
   }, []);
 
   KagglePredictDialog.propTypes = {
-    open: PropTypes.number.isRequired,
+    open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
     setPredictCanClose: PropTypes.func.isRequired,
     uploadType: PropTypes.string.isRequired,

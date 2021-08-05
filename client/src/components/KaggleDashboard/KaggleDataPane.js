@@ -79,7 +79,7 @@ const traverseTree = (ele, type, deselect) => {
     return (
       <TreeItem
         key={ele.idx}
-        nodeId={ele.idx}
+        nodeId={ele.idx.toString()}
         label={ele.text}
         icon={<NavigateNext />}
         onClick={() => deselect()}
