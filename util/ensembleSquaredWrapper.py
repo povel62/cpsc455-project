@@ -59,7 +59,6 @@ def run_borg_command(command: str):
         ssh1 = paramiko.SSHClient()
         ssh1.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh1.connect('remote.cs.ubc.ca', username=os.environ.get('SSH_USER'), password=os.environ.get('SSH_PASSWORD'))
-        # ssh1.connect('remote.cs.ubc.ca', username='tonyjos', password='Ubcplusplus8*')
 
         vmtransport = ssh1.get_transport()
         dest_addr = ('borg', 22)
@@ -69,7 +68,6 @@ def run_borg_command(command: str):
         ssh2 = paramiko.SSHClient()
         ssh2.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh2.connect('borg', username=os.environ.get('SSH_USER'), password=os.environ.get('SSH_PASSWORD'), sock=vmchannel)
-        # ssh2.connect('borg', username='tonyjos', password='Ubcplusplus8*', sock=vmchannel)
 
         stdin, stdout, stderr = ssh2.exec_command(command)
 
