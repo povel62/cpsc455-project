@@ -13,6 +13,7 @@ const {
   uploadFileToServer,
   runPhase,
   getPredFileText,
+  checkJobUsers,
 } = require("./generic-ctrl");
 
 competitionUploadSubmit = async (req, res) => {
@@ -37,7 +38,9 @@ competitionUploadSubmit = async (req, res) => {
         message: "Job not found!",
       });
     }
-    // let path = `./util/${req.params.name}`;
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
     let folder = fs.mkdtempSync("./util/");
     let path = `${folder}/${req.params.name}`;
     let cols = [];
@@ -78,9 +81,7 @@ competitionUploadSubmit = async (req, res) => {
                 options,
                 function (err, results) {
                   if (err) {
-                    if (err != null) {
-                      reject(err);
-                    }
+                    reject(err);
                   }
                   resolve(results);
                 }
@@ -136,6 +137,9 @@ datasetCreateVersion = async (req, res) => {
         message: "Job not found!",
       });
     }
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
     let folder = fs.mkdtempSync("./util/");
     let path = `${folder}/${req.params.name}`;
     let cols = [];
@@ -178,9 +182,7 @@ datasetCreateVersion = async (req, res) => {
                 options,
                 function (err, results) {
                   if (err) {
-                    if (err != null) {
-                      reject(err);
-                    }
+                    reject(err);
                   }
                   resolve(results);
                 }
@@ -401,6 +403,9 @@ function uploadTestFile(tmpFileData, req, res) {
         message: "Job not found!",
       });
     }
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
     let fileData = "";
     if (headers.includes(job.targetColumnName)) {
       fileData = tmpFileData;
@@ -513,7 +518,7 @@ async function kaggleFileGetter(req, res, callback) {
           });
         } else if (
           response.statusCode === 200 &&
-          response.headers["content-type"] !== "application/zip" // TODO change to more strict type
+          response.headers["content-type"] !== "application/zip"
         ) {
           response
             .on("data", function (d) {

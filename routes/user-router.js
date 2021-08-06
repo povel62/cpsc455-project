@@ -8,9 +8,7 @@ const router = express.Router();
 router.post("/user", UserCtrl.createUser);
 router.delete("/user/:id", GenericCtrl.verifyToken, UserCtrl.deleteUser);
 router.get("/myUser", GenericCtrl.verifyToken, UserCtrl.getUserById);
-// router.get("/user", UserCtrl.getUserByEmail); // TODO remove and use myUser
 router.post("/user/login", UserCtrl.login);
-// router.get("/users", UserCtrl.getUsers); // TODO remove for production?
 router.put("/user/update", GenericCtrl.verifyToken, UserCtrl.update);
 
 module.exports = router;
