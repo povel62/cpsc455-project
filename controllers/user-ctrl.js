@@ -7,6 +7,12 @@ const { secret } = require("../util/security");
 const validator = require("email-validator");
 const { sendTemplateEmail } = require("./send-email");
 
+//setup stripe in the backend
+
+const stripe = require("stripe")(
+  "sk_test_51HqZQ2EDyDRTboqUudQ3Cjw5VqmSV5dW0GYWth8LVvD9rfeWIrYSVeH4VeWxixgyrHAFKAmAeHdOEXerAyEwb5aM00QJOPb5sm"
+);
+
 createUser = async (req, res) => {
   const body = req.body;
   if (!validator.validate(body.email)) {
@@ -264,6 +270,33 @@ login = async (req, res) => {
     return res.status(400).json({ success: false, error: err });
   });
 };
+
+makePayment = async (req, res) => {
+  console.log("stripe-routes.js 9 | route reached", req.body);
+  let { amount, id } = req.body;
+  console.log("stripe-routes.js 10 | amount and id", amount, id);
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: "USD",
+      description: "AutoML premium subscription",
+      payment_method: id,
+      confirm: true,
+    });
+    console.log("stripe-routes.js 19 | payment", payment);
+    res.json({
+      message: "Payment Successful",
+      success: true,
+    });
+  } catch (error) {
+    console.log("stripe-routes.js 17 | error", error);
+    res.json({
+      message: "Payment Failed",
+      success: false,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   deleteUser,
@@ -272,4 +305,5 @@ module.exports = {
   getUserByEmail,
   login,
   update,
+  makePayment,
 };

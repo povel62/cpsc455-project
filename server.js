@@ -41,6 +41,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 dotenv.config();
 
+// const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
+
 // API calls
 app.get("/api/hello", (req, res) => {
   res.send({ express: "Hello From Express" });

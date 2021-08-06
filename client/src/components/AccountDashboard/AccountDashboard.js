@@ -25,6 +25,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 
+import StripeContainer from "../PaymentGateway/StripeContainer";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -340,6 +342,10 @@ export default function AccountDashboard() {
                 </div>
               )}
             </form>
+
+            <br />
+            <br />
+            <StripeContainer />
           </Paper>
         </div>
         <Box mt={5}></Box>
