@@ -2,10 +2,10 @@ const User = require("../models/user-model");
 const jwt = require("jsonwebtoken");
 const { secret } = require("../util/security");
 const fs = require("fs");
-const { Readable } = require("stream");
+// const { Readable } = require("stream");
 let { PythonShell } = require("python-shell");
-const { CSV_FILES, SESSIONS, HOSTNAME } = require("../GlobalConstants");
-const crypto = require("crypto");
+// const { CSV_FILES, SESSIONS, HOSTNAME } = require("../GlobalConstants");
+// const crypto = require("crypto");
 
 verifyToken = (req, res, next) => {
   if (
@@ -52,9 +52,7 @@ uploadFileToServer = async (id, fileData, fileName) => {
         options,
         function (err, results1) {
           if (err) {
-            if (err != null) {
-              reject(err);
-            }
+            reject(err);
           }
           fs.unlinkSync(path);
           resolve(results1);
@@ -99,9 +97,7 @@ runPhase = async (
         options,
         function (err, results1) {
           if (err) {
-            if (err != null) {
-              resolve(err);
-            }
+            resolve(err);
           }
           resolve(results1);
         }
@@ -127,9 +123,7 @@ getPredFileNames = (id) => {
         options,
         function (err, results1) {
           if (err) {
-            if (err != null) {
-              resolve(err);
-            }
+            resolve(err);
           }
           resolve(results1);
         }
@@ -155,10 +149,7 @@ getPredFileText = (id, name, path, cols) => {
         options,
         function (err, results1) {
           if (err) {
-            if (err != null) {
-              console.log(err);
-              reject(err);
-            }
+            reject(err);
           }
           console.log(results1);
           resolve(results1);
@@ -186,10 +177,7 @@ getPredErrorOutputFileText = (id, path, fileName) => {
         options,
         function (err, results1) {
           if (err) {
-            if (err != null) {
-              console.log(err);
-              reject(err);
-            }
+            reject(err);
           }
           if (results1.toString().includes("[Errno 2] No such file")) {
             reject(fileName + ": not found");
@@ -204,6 +192,20 @@ getPredErrorOutputFileText = (id, path, fileName) => {
   });
 };
 
+checkJobUsers = (job, userID) => {
+  if (job.users) {
+    let found = false;
+    job.users.forEach((user) => {
+      if (user.toString() === userID.toString()) {
+        found = true;
+      }
+    });
+    return found;
+  } else {
+    return false;
+  }
+};
+
 module.exports = {
   verifyToken,
   addJobToUser,
@@ -212,4 +214,5 @@ module.exports = {
   getPredFileNames,
   getPredFileText,
   getPredErrorOutputFileText,
+  checkJobUsers,
 };

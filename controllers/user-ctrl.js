@@ -81,13 +81,7 @@ createUser = async (req, res) => {
 };
 
 update = async (req, res) => {
-  // console.log("request received");
-
-  let token = req.headers.authorization.split(" ")[1];
-  const decoded = jwt.verify(token, secret);
-  var userId = decoded._id;
-  console.log(userId);
-
+  let userId = req._id;
   const body = req.body;
 
   if (!body) {
@@ -96,8 +90,6 @@ update = async (req, res) => {
       error: "You must provide a body to update",
     });
   }
-
-  console.log(body);
 
   User.findOne({ _id: userId }, (err, user) => {
     if (err) {
@@ -156,11 +148,10 @@ update = async (req, res) => {
 };
 
 deleteUser = async (req, res) => {
-  await User.findOneAndDelete({ _id: req.params.id }, (err, user) => {
+  await User.findOneAndDelete({ _id: req._id }, (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
-
     return res.status(200).json({ success: true, data: user });
   }).catch((err) => {
     return res.status(400).json({ success: false, error: err });
@@ -227,19 +218,17 @@ getUsers = async (req, res) => {
 
 login = async (req, res) => {
   const body = req.body;
-
   await User.findOne({ email: body.email }, (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
-
     if (!user) {
       return res.status(404).json({ success: false, error: `User not found` });
     } else if (!user.guest || user.guest === false) {
       if (user.password === undefined || user.password === "") {
         return res.status(404).json({
           success: false,
-          error: `User is already registered as a regualar user. Please sign in as a regular user.`,
+          error: `User is already registered as a regular user. Please sign in as a regular user.`,
         });
       }
       let passCorrect = false;
@@ -248,13 +237,14 @@ login = async (req, res) => {
       } catch (e) {
         return res.status(404).json({
           success: false,
-          error: `User is already registered as a regualar user. Please sign in as a regular user.`,
+          error:
+            "User is already registered as a regular user. Please sign in as a regular user.",
         });
       }
       if (!passCorrect) {
         return res
           .status(404)
-          .json({ success: false, error: `Password not correct` });
+          .json({ success: false, error: "Password not correct" });
       }
     } else if (
       user.guest &&

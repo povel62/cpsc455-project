@@ -1,10 +1,10 @@
 const Job = require("../models/job-model");
 const User = require("../models/user-model");
-const { addJobToUser } = require("./generic-ctrl");
+const { addJobToUser, checkJobUsers } = require("./generic-ctrl");
 const ObjectId = require("mongodb").ObjectID;
 let { PythonShell } = require("python-shell");
-var crypto = require("crypto");
-const { CSV_FILES, SESSIONS, HOSTNAME } = require("../GlobalConstants");
+let crypto = require("crypto");
+const { CSV_FILES, HOSTNAME } = require("../GlobalConstants");
 const {
   uploadFileToServer,
   runPhase,
@@ -15,9 +15,9 @@ const {
 const { sendTemplateEmail } = require("./send-email");
 const fs = require("fs");
 const csv = require("csv-parser");
-const { validateGuest } = require("../util/validation");
-const jwt = require("jsonwebtoken");
-const { secret } = require("../util/security");
+// const { validateGuest } = require("../util/validation");
+// const jwt = require("jsonwebtoken");
+// const { secret } = require("../util/security");
 
 tryTest = async () => {
   let options = {
@@ -29,9 +29,7 @@ tryTest = async () => {
 
   PythonShell.run("./util/run_test.py", options, function (err, results1) {
     if (err) {
-      if (err != null) {
-        return err;
-      }
+      return err;
     }
     return results1;
   });
@@ -101,22 +99,8 @@ createJob = async (req, res) => {
 };
 
 uploadJob = async (req, res) => {
-  // console.log("request received");
-  // let token = req.headers.authorization.split(" ")[1];
-  // const decoded = jwt.verify(token, secret);
-  // var userId = decoded._id;
-  var userId = req._id;
-  // console.log("user id here");
-  console.log(userId);
-
+  let userId = req._id;
   const body = req.body;
-
-  console.log("body here");
-  console.log(body);
-  console.log(req.files);
-
-  //console.log(req);
-
   if (!body) {
     console.log("error 1 no body");
     return res.status(400).json({
@@ -124,19 +108,12 @@ uploadJob = async (req, res) => {
       error: "You must provide a job",
     });
   }
-
-  console.log("request here");
-  //console.log(req);
-
   if (!req.files) {
-    console.log("error 2 no file");
     return res.status(400).json({
       success: false,
       message: "No file uploaded",
     });
   }
-
-  console.log("reached here 1");
 
   let fileData = req.files.file.data.toString("utf8");
   let newJob = body;
@@ -186,9 +163,6 @@ uploadJob = async (req, res) => {
 };
 
 uploadTestFile = async (req, res) => {
-  // let token = req.headers.authorization.split(" ")[1];
-  // const decoded = jwt.verify(token, secret);
-  // var userId = decoded._id;
   const body = req.body;
 
   if (!body) {
@@ -212,9 +186,6 @@ uploadTestFile = async (req, res) => {
     .split(",")
     .map((x) => x.replace("\r", ""));
 
-  console.log(" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111 ");
-  console.log(req.params.id);
-
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
       console.log("job not found");
@@ -222,6 +193,9 @@ uploadTestFile = async (req, res) => {
         err,
         message: "Job not found!",
       });
+    }
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
     }
     let fileData = "";
     if (headers.includes(job.targetColumnName)) {
@@ -293,6 +267,9 @@ getPreds = async (req, res) => {
         message: "Job not found!",
       });
     }
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
     getPredFileNames(job._id).then((s1) => {
       let fileNames = [];
       try {
@@ -335,7 +312,9 @@ getFileText = async (req, res) => {
         message: "Job not found!",
       });
     }
-    //let fileName = job.trainingFinishedAt > job.predictionFinishedAt;
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
+    }
     let path = `./util/${req.params.id}-${req.params.fileName}`;
     getPredErrorOutputFileText(job._id, path, req.params.fileName)
       .then((s1) => {
@@ -374,6 +353,9 @@ getPredFile = async (req, res) => {
         err,
         message: "Job not found!",
       });
+    }
+    if (checkJobUsers(job, req._id) === false) {
+      return res.status(401).send({ message: "Unauthorized!" });
     }
     let path = `./util/${req.params.name}`;
     let cols = [];
@@ -571,44 +553,35 @@ updateJobStatus = async (req, res) => {
 };
 
 deleteJob = async (req, res) => {
-  console.log("request received");
-  // let token = req.headers.authorization.split(" ")[1];
-  // const decoded = jwt.verify(token, secret);
-  // var userId = decoded._id;
-  var userId = req._id;
-  console.log("user id here");
-  console.log(userId);
+  let userId = req._id;
 
   await User.findOne({ _id: userId }, async (err, user) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
     if (!user) {
-      console.log("request id here");
-      console.log(req.params.id);
-      // console.log("user jobs");
-      // console.log(user.jobs);
       return res.status(404).json({ success: false, error: `User not found` });
     }
-
     try {
-      console.log("request id here");
-      console.log(req.params.id);
-      console.log("user jobs");
-      console.log(user.jobs);
-
       if (user.jobs.includes(req.params.id)) {
         console.log("request id here");
         console.log(req.params.id);
-        await Job.findOneAndDelete({ _id: req.params.id }, (err, job) => {
+        await Job.findById(req.params.id, {}, {}, (err, job) => {
+          if (err) {
+            return res.status(404).json({
+              err,
+              message: "Job not found to check!",
+            });
+          }
+          if (checkJobUsers(job, req._id) === false) {
+            return res.status(401).send({ message: "Unauthorized!" });
+          }
+        });
+        await Job.findByIdAndDelete(req.params.id, (err, job) => {
           if (err) {
             return res.status(400).json({ success: false, error: err });
           }
           if (!job) {
-            console.log("request id here");
-            console.log(req.params.id);
-            console.log("user jobs");
-            console.log(user.jobs);
             return res
               .status(404)
               .json({ success: false, error: `Job not found` });
@@ -669,15 +642,7 @@ getJobs = async (req, res) => {
 };
 
 getUserJobs = async (req, res) => {
-  // console.log("get request received");
-  // console.log("request received");
-  // let token = req.headers.authorization.split(" ")[1];
-  // const decoded = jwt.verify(token, secret);
-  // var userId = decoded._id;
-  var userId = req._id;
-  // console.log("user id here");
-  // console.log(userId);
-
+  let userId = req._id;
   return await Job.find(
     { users: { $elemMatch: { $eq: ObjectId(userId) } } },
     (err, job) => {
@@ -696,19 +661,28 @@ getUserJobs = async (req, res) => {
 };
 
 addUsersToJob = async (req, res) => {
-  console.log("share received");
   const body = req.body;
-  console.log(body);
-  return await User.find(
+  return User.find(
     {
       email: { $in: body.users },
     },
-    function (err, docs) {
+    async function (err, docs) {
       if (err) {
         return res.status(400).json({ success: false, error: err });
       }
       let userIds = docs.map((x) => {
         return x["_id"];
+      });
+      await Job.findById(req.params.id, {}, {}, (err, job) => {
+        if (err) {
+          return res.status(404).json({
+            err,
+            message: "Job not found!",
+          });
+        }
+        if (checkJobUsers(job, req._id) === false) {
+          return res.status(401).send({ message: "Unauthorized!" });
+        }
       });
       Job.findByIdAndUpdate(
         req.params.id,
