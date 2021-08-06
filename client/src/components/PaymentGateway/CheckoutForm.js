@@ -47,7 +47,10 @@ export const CheckoutForm = () => {
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
+      <br />
       <CardElement />
+      <br />
+      <br />
       <button>Pay</button>
     </form>
   );

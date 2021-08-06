@@ -345,7 +345,13 @@ export default function AccountDashboard() {
 
             <br />
             <br />
-            <StripeContainer />
+            {values.isGuest ? (
+              <div>
+                <StripeContainer />
+              </div>
+            ) : (
+              ""
+            )}
           </Paper>
         </div>
         <Box mt={5}></Box>
