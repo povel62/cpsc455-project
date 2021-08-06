@@ -19,8 +19,8 @@ router.post(
   GenericCtrl.verifyToken,
   JobCtrl.addUsersToJob
 );
-router.get("/job/:id/preds", GenericCtrl.verifyToken, JobCtrl.getPreds); // TODO check user auth is allowed to access job
-router.get("/job/:id/pred/:name", GenericCtrl.verifyToken, JobCtrl.getPredFile); // TODO check user auth is allowed to access job
+router.get("/job/:id/preds", GenericCtrl.verifyToken, JobCtrl.getPreds);
+router.get("/job/:id/pred/:name", GenericCtrl.verifyToken, JobCtrl.getPredFile);
 router.get(
   "/job/:id/file/:fileName",
   GenericCtrl.verifyToken,
