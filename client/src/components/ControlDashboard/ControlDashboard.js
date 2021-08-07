@@ -15,6 +15,9 @@ import { setJobs } from "../../redux/actions/actions";
 import TablePagination from "@material-ui/core/TablePagination";
 import ReactJoyride, { EVENTS } from "react-joyride";
 import PropTypes from "prop-types";
+import Button from "@material-ui/core/Button";
+import DemoRow from "./DemoRow";
+import steps from "./demoSteps";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,7 +77,10 @@ export default function ControlDashboard(props) {
     const { type } = data;
 
     if (type === EVENTS.TOUR_END && run) {
-      // Need to set our running state to false, so we can restart if we click start again.
+      setRun(false);
+    }
+
+    if (type === EVENTS.TARGET_NOT_FOUND && run) {
       setRun(false);
     }
 
@@ -167,15 +173,17 @@ export default function ControlDashboard(props) {
           steps={steps}
           styles={{
             options: {
-              zIndex: 10000,
+              arrowColor: "#e3ffeb",
+              // primaryColor: "#2196f3",
+              zIndex: 1000,
             },
           }}
           callback={handleJoyrideCallback}
         />
         <Paper className={classes.paper}>
-          <button onClick={handleClickStart}>
-            TAke a tour of this dashboard
-          </button>
+          <Button onClick={handleClickStart} color="primary" variant="outlined">
+            Take a tour of this dashboard
+          </Button>
 
           <TableContainer className="table" component={Paper}>
             <Table stickyHeader aria-label="jobs table">
@@ -208,6 +216,7 @@ export default function ControlDashboard(props) {
                   .map((row, index) => (
                     <Row key={index} row={row} refreshJobs={() => loadJobs()} />
                   ))}
+                {run && <DemoRow />}
               </TableBody>
             </Table>
           </TableContainer>
@@ -226,45 +235,3 @@ export default function ControlDashboard(props) {
     </div>
   );
 }
-
-const steps = [
-  {
-    content: <h2>Let us begin our Tour</h2>,
-    locale: { skip: <strong aria-label="skip">SKIP</strong> },
-    placement: "center",
-    target: "body",
-  },
-  {
-    content: "These are our super awesome projects!",
-    placement: "bottom",
-    styles: {
-      options: {
-        width: "30vw",
-      },
-    },
-    target: ".table",
-    title: "1",
-  },
-  {
-    content: "These are our super awesome projects!",
-    placement: "bottom",
-    styles: {
-      options: {
-        width: "30vw",
-      },
-    },
-    target: ".demo__2",
-    title: "2",
-  },
-  {
-    content: "These are our super awesome projects!",
-    placement: "bottom",
-    styles: {
-      options: {
-        width: "30vw",
-      },
-    },
-    target: ".demo__3",
-    title: "3",
-  },
-];
