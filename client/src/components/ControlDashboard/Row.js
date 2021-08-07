@@ -139,7 +139,11 @@ const Row = ({ row, refreshJobs }) => {
           </Tooltip>
         </TableCell>
         <TableCell align="center">
-          <Tooltip title="Delete job" aria-label="Delete this job">
+          <Tooltip
+            title="Delete job"
+            aria-label="Delete this job"
+            className="demo__3"
+          >
             <IconButton
               aria-label="expand row"
               size="small"
