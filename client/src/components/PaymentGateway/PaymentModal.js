@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
-//import AddStepper from "./AddStepper";
 import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
-//import AddBoxIcon from "@material-ui/icons/AddBox";
 import { Button } from "@material-ui/core";
-//import { DropzoneArea } from "material-ui-dropzone";
 import StripeContainer from "../PaymentGateway/StripeContainer";
 
 function getModalStyle() {
@@ -42,63 +39,6 @@ export default function PaymentModal() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  //const login_token = useSelector((state) => state.loginReducer);
-
-  //   const handleOpen = () => {
-  //     setOpen(true);
-  //   };
-
-  //   const handleClose = () => {
-  //     setValues({
-  //       response: "",
-  //       post: "",
-  //       responseToPost: "",
-  //       user: "",
-  //     });
-  //     setOpen(false);
-  //   };
-
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-  //     console.log(values.user);
-  //     if (values.user == "") {
-  //       setSnackBarContent({
-  //         content: "Please enter e-mail",
-  //         severity: "error",
-  //       });
-  //       return;
-  //     }
-  //     const response = await fetch("api/job/addUsers/" + jobID, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: "Bearer " + login_token.accessToken,
-  //       },
-  //       body: JSON.stringify({ users: values.user }),
-  //     });
-
-  //     if (response.status === 201 || response.status === 200) {
-  //       console.log(response);
-  //       setOpenSnackBar(true);
-  //       setSnackBarContent({
-  //         content: "Share successful",
-  //         severity: "success",
-  //       });
-  //       setValues({
-  //         response: "",
-  //         post: "",
-  //         responseToPost: "",
-  //         user: "",
-  //       });
-  //     } else {
-  //       setOpenSnackBar(true);
-  //       setSnackBarContent({
-  //         content: "Something went wrong. Please try again",
-  //         severity: "error",
-  //       });
-  //     }
-  //   };
 
   const body = (
     <div style={modalStyle} className={classes.paper}>

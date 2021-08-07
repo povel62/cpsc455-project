@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import * as XLSX from "xlsx";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import PropTypes from "prop-types";
 import DataTable from "react-data-table-component";
-import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {

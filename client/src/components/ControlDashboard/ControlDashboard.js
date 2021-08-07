@@ -13,6 +13,11 @@ import JobModal from "../JobModal/JobModal";
 import { useSelector, useDispatch } from "react-redux";
 import { setJobs } from "../../redux/actions/actions";
 import TablePagination from "@material-ui/core/TablePagination";
+import ReactJoyride, { EVENTS } from "react-joyride";
+import PropTypes from "prop-types";
+import Button from "@material-ui/core/Button";
+import DemoRow from "./DemoRow";
+import steps from "./demoSteps";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +54,45 @@ const createData = (
   };
 };
 
-export default function ControlDashboard() {
+ControlDashboard.propTypes = {
+  joyride: PropTypes.shape({
+    callback: PropTypes.func,
+  }),
+};
+
+ControlDashboard.defaultProps = {
+  joyride: {},
+};
+
+export default function ControlDashboard(props) {
+  const [run, setRun] = useState(false);
+
+  const handleClickStart = (e) => {
+    e.preventDefault();
+    setRun(true);
+  };
+
+  const handleJoyrideCallback = (data) => {
+    const { joyride } = props;
+    const { type } = data;
+
+    if (type === EVENTS.TOUR_END && run) {
+      setRun(false);
+    }
+
+    if (type === EVENTS.TARGET_NOT_FOUND && run) {
+      setRun(false);
+    }
+
+    if (typeof joyride.callback === "function") {
+      joyride.callback(data);
+    } else {
+      console.group(type);
+      console.log(data); //eslint-disable-line no-console
+      console.groupEnd();
+    }
+  };
+
   const dispatch = useDispatch();
 
   const axios = require("axios");
@@ -61,30 +104,12 @@ export default function ControlDashboard() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const login_token = useSelector((state) => state.loginReducer);
 
-  // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-  // const emptyRows = rowsPerPage - filled_rows;
-
-  // const filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-  // const emptyRows = rowsPerPage - filled_rows;
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    // filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-    // emptyRows = rowsPerPage - filled_rows;
-    // console.log("empty:" + emptyRows);
-    // console.log("filled length:" + filled_rows);
-    // console.log("page:" + page);
-    // console.log("rows pp:" + rowsPerPage);
   };
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-    // filled_rows = Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-    // emptyRows = rowsPerPage - filled_rows;
-    // console.log("empty:" + emptyRows);
-    // console.log("filled length:" + filled_rows);
-    // console.log("page:" + page);
-    // console.log("rows pp:" + rowsPerPage);
   };
 
   if (login_token.jobs) {
@@ -139,7 +164,26 @@ export default function ControlDashboard() {
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
+        <ReactJoyride
+          continuous
+          scrollToFirstStep
+          showProgress
+          showSkipButton
+          run={run}
+          steps={steps}
+          styles={{
+            options: {
+              arrowColor: "#e3ffeb",
+              // primaryColor: "#2196f3",
+              zIndex: 1000,
+            },
+          }}
+          callback={handleJoyrideCallback}
+        />
         <Paper className={classes.paper}>
+          <Button onClick={handleClickStart} color="primary" variant="outlined">
+            Take a tour of this dashboard
+          </Button>
           <TableContainer className="table" component={Paper}>
             <Table stickyHeader aria-label="jobs table">
               <TableHead className={classes.table_head}>
@@ -148,7 +192,6 @@ export default function ControlDashboard() {
                   <TableCell>
                     <strong>Job Name</strong>
                   </TableCell>
-
                   <TableCell />
                   <TableCell align="center">
                     <strong>Status</strong>
@@ -158,7 +201,7 @@ export default function ControlDashboard() {
                   </TableCell>
                   <TableCell />
                   <TableCell />
-                  <TableCell align="center">
+                  <TableCell align="center" className="demo__2">
                     {/* JobModal contains add job button */}
                     <JobModal refreshJobs={() => loadJobs()} />
                   </TableCell>
@@ -171,15 +214,12 @@ export default function ControlDashboard() {
                   .map((row, index) => (
                     <Row key={index} row={row} refreshJobs={() => loadJobs()} />
                   ))}
-                {/* {emptyRows > 0 && (
-                  <TableRow style={{ height: 55 * emptyRows }}>
-                    <TableCell> {emptyRows} </TableCell>
-                  </TableRow>
-                )} */}
+                {run && <DemoRow />}
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
+            // className="demo__5"
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={rows.length}

@@ -75,12 +75,6 @@ class App extends Component {
               <AuthRoute path="/faq">
                 <Faq />
               </AuthRoute>
-              {/* <AuthRoute path="/login" type="guest">
-            <LoginPage />
-          </AuthRoute> */}
-              {/* <AuthRoute path="/my-account" type="private">
-            <MyAccount />
-          </AuthRoute> */}
 
               <AuthRoute path="/signup" type="guest">
                 <Signup />
@@ -92,7 +86,6 @@ class App extends Component {
               <AuthRoute path="/" type="guest">
                 <Landing />
               </AuthRoute>
-              {/* <Route path="/" render={Signin} /> */}
             </Switch>
           </Router>
         </div>
