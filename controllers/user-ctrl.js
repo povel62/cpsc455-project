@@ -7,12 +7,6 @@ const { secret } = require("../util/security");
 const validator = require("email-validator");
 const { sendTemplateEmail } = require("./send-email");
 
-//setup stripe in the backend
-
-const stripe = require("stripe")(
-  "sk_test_51HqZQ2EDyDRTboqUudQ3Cjw5VqmSV5dW0GYWth8LVvD9rfeWIrYSVeH4VeWxixgyrHAFKAmAeHdOEXerAyEwb5aM00QJOPb5sm"
-);
-
 createUser = async (req, res) => {
   const body = req.body;
   if (!validator.validate(body.email)) {
@@ -272,6 +266,7 @@ login = async (req, res) => {
 };
 
 makePayment = async (req, res) => {
+  const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
   console.log("stripe-routes.js 9 | route reached", req.body);
   let { amount, id } = req.body;
   console.log("stripe-routes.js 10 | amount and id", amount, id);
