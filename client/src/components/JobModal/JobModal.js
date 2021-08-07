@@ -6,7 +6,6 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import { Button } from "@material-ui/core";
-//import { DropzoneArea } from "material-ui-dropzone";
 
 function getModalStyle() {
   const top = 5;

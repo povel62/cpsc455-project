@@ -37,7 +37,7 @@ const DemoRow = () => {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          DemoJob
+          TourJob
         </TableCell>
         <TableCell component="th" scope="row" className="demo__5">
           <InlineIcon icon={kaggleIcon} color="skyblue" height="3em" />
@@ -54,6 +54,8 @@ const DemoRow = () => {
           >
             Latest Prediction
           </Button>
+          <br />
+          <br />
           <Button
             variant="contained"
             component="span"
@@ -97,31 +99,6 @@ const DemoRow = () => {
             progressColor="secondary"
             start={100}
           />
-          {/* {row.status == "TRAINING" && (
-            
-          <ProgressBar status="TRAINING" progressColor="primary" start={0} />
-          )}
-          {row.status == "TRAINING_COMPLETED" && (
-            <ProgressBar
-              status="TRAINING_COMPLETED"
-              progressColor="secondary"
-              start={50}
-            />
-          )}
-          {row.status == "PREDICTING" && (
-            <ProgressBar
-              status="PREDICTING"
-              progressColor="secondary"
-              start={50}
-            />
-          )}
-          {row.status == "PREDICTING_COMPLETED" && (
-            <ProgressBar
-              status="PREDICTING_COMPLETED"
-              progressColor="secondary"
-              start={100}
-            />
-          )} */}
         </TableCell>
       </TableRow>
       <TableRow>

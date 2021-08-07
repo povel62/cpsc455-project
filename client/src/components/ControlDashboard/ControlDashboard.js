@@ -184,7 +184,6 @@ export default function ControlDashboard(props) {
           <Button onClick={handleClickStart} color="primary" variant="outlined">
             Take a tour of this dashboard
           </Button>
-
           <TableContainer className="table" component={Paper}>
             <Table stickyHeader aria-label="jobs table">
               <TableHead className={classes.table_head}>
@@ -193,7 +192,6 @@ export default function ControlDashboard(props) {
                   <TableCell>
                     <strong>Job Name</strong>
                   </TableCell>
-
                   <TableCell />
                   <TableCell align="center">
                     <strong>Status</strong>

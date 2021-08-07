@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import "./index.css";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import Fab from "@material-ui/core/Fab";
 import Grow from "@material-ui/core/Grow";
 import ControlDashboard from "../ControlDashboard/ControlDashboard";
-import { useState } from "react";
 
 const Home = (props) => {
   const [show, setShow] = useState(false);
