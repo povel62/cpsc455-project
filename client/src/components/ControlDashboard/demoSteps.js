@@ -8,7 +8,7 @@ const demoSteps = [
     target: "body",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "This table contains all jobs associated with your account",
     placement: "left",
     styles: {
       options: {
@@ -16,10 +16,10 @@ const demoSteps = [
       },
     },
     target: ".table",
-    title: "1",
+    title: "Jobs Table",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "You can submit a new job for Training from here",
     placement: "left",
     styles: {
       options: {
@@ -27,10 +27,10 @@ const demoSteps = [
       },
     },
     target: ".demo__2",
-    title: "2",
+    title: "Add a job",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "Here you can find the details of this job",
     placement: "left",
     styles: {
       options: {
@@ -38,10 +38,10 @@ const demoSteps = [
       },
     },
     target: ".demo__3",
-    title: "3",
+    title: "Job Details",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "For more details about the job click on this button",
     placement: "left",
     styles: {
       options: {
@@ -49,10 +49,10 @@ const demoSteps = [
       },
     },
     target: ".demo__4",
-    title: "4",
+    title: "Extra Details",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "This cell tells that this job is associated with Kaggle",
     placement: "left",
     styles: {
       options: {
@@ -60,10 +60,10 @@ const demoSteps = [
       },
     },
     target: ".demo__5",
-    title: "5",
+    title: "Job Association",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "Shows the status of the job",
     placement: "left",
     styles: {
       options: {
@@ -71,10 +71,11 @@ const demoSteps = [
       },
     },
     target: ".demo__6",
-    title: "6",
+    title: "Job status",
   },
   {
-    content: "These are our super awesome projects!",
+    content:
+      "These are the actions available to the user based on the status of the job",
     placement: "left",
     styles: {
       options: {
@@ -82,10 +83,11 @@ const demoSteps = [
       },
     },
     target: ".demo__7",
-    title: "7",
+    title: "Actions",
   },
   {
-    content: "These are our super awesome projects!",
+    content:
+      "You can share this job with your teammates from here! All you need is their id that is associated with an account with us",
     placement: "left",
     styles: {
       options: {
@@ -93,10 +95,10 @@ const demoSteps = [
       },
     },
     target: ".demo__8",
-    title: "8",
+    title: "Share with Collaborators",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "This button lets you delete this job ",
     placement: "left",
     styles: {
       options: {
@@ -104,10 +106,10 @@ const demoSteps = [
       },
     },
     target: ".demo__9",
-    title: "9",
+    title: "Delete",
   },
   {
-    content: "These are our super awesome projects!",
+    content: " This button lets you view job error logs",
     placement: "left",
     styles: {
       options: {
@@ -115,10 +117,21 @@ const demoSteps = [
       },
     },
     target: ".demo__10",
-    title: "10",
+    title: "Logs",
   },
   {
-    content: "These are our super awesome projects!",
+    content: "The progress bar is a visual indicator of current job status",
+    /* <p>
+          TRAINING: Progress bar is still progressing towards the middle with a
+          blue color <br />
+          TRAINING_COMPLETED: Progress bar is at 50% with a green color
+          indicating that training has been completed <br />
+          PREDICTING: Progress bar is progressing towards the end with a green
+          color
+          <br />
+          PREDICTING_COMPLETED: Progress bar at 100%, colored green to indicate
+          prediction has been completed
+        </p> */
     placement: "left",
     styles: {
       options: {
@@ -126,18 +139,7 @@ const demoSteps = [
       },
     },
     target: ".demo__11",
-    title: "10",
-  },
-  {
-    content: "These are our super awesome projects!",
-    placement: "left",
-    styles: {
-      options: {
-        width: "30vw",
-      },
-    },
-    target: ".demo__12",
-    title: "10",
+    title: "Progress Bar",
   },
 ];
 

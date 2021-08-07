@@ -10,7 +10,6 @@ import TableRow from "@material-ui/core/TableRow";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import "./ControlDashboard.css";
-import { makeStyles } from "@material-ui/core/styles";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import ProgressBar from "./ProgressBar";
 import AddIcon from "@material-ui/icons/Add";
@@ -21,44 +20,33 @@ import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import Button from "@material-ui/core/Button";
 
-const useRowStyles = makeStyles({
-  root: {
-    "& > *": {
-      borderBottom: "unset",
-    },
-  },
-});
-
 const DemoRow = () => {
-  const classes = useRowStyles();
   const [open, setOpen] = React.useState(false);
 
   return (
     <React.Fragment>
-      <TableRow className={classes.root} hover={true}>
+      <TableRow hover={true} className="demo__3">
         <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
-            className="demo__3"
             onClick={() => setOpen(!open)}
+            className="demo__4"
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row" className="demo__4">
+        <TableCell component="th" scope="row">
           DemoJob
         </TableCell>
         <TableCell component="th" scope="row" className="demo__5">
           <InlineIcon icon={kaggleIcon} color="skyblue" height="3em" />
         </TableCell>
         <TableCell align="center" className="demo__6">
-          TRAINING
+          PREDICTING_COMPLETED
         </TableCell>
+        <TableCell align="center">Tabular</TableCell>
         <TableCell align="center" className="demo__7">
-          Tabular
-        </TableCell>
-        <TableCell align="center" className="demo__8">
           <Button
             variant="contained"
             component="span"
@@ -74,7 +62,7 @@ const DemoRow = () => {
             Submit New Test
           </Button>
         </TableCell>
-        <TableCell align="center" className="demo__9">
+        <TableCell align="center" className="demo__8">
           <Button
             variant="contained"
             color="primary"
@@ -85,14 +73,14 @@ const DemoRow = () => {
           </Button>
         </TableCell>
         <TableCell align="center">
-          <IconButton aria-label="expand row" size="small" className="demo__10">
+          <IconButton aria-label="expand row" size="small" className="demo__9">
             <DeleteOutlineIcon color="error" />
           </IconButton>
           <IconButton
             color="primary"
             aria-label="expand row"
             size="small"
-            className="demo__11"
+            className="demo__10"
           >
             <ErrorOutlinedIcon />
           </IconButton>
@@ -102,11 +90,16 @@ const DemoRow = () => {
         <TableCell
           style={{ paddingBottom: 0, paddingTop: 0 }}
           colSpan={8}
-          className="demo__12"
+          className="demo__11"
         >
-          <ProgressBar status="TRAINING" progressColor="primary" start={0} />
+          <ProgressBar
+            status="PREDICTING_COMPLETED"
+            progressColor="secondary"
+            start={100}
+          />
           {/* {row.status == "TRAINING" && (
             
+          <ProgressBar status="TRAINING" progressColor="primary" start={0} />
           )}
           {row.status == "TRAINING_COMPLETED" && (
             <ProgressBar
