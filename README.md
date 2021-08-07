@@ -1,4 +1,4 @@
-#High-Level Project Description
+# High-Level Project Description
 ### AutoML is a web application designed to help users interact with PLAI's Ensemble Squared automatic machine learning system. Our application focuses on making the system convenient and user-friendly by guiding the user through all the nessesary steps to make predictions of tabular data, even if they are not experts in ML. We include a third party integration with Kaggle to allow users to access even more data to explore and use with the system for competitions.  
 
 ##  Project goals
