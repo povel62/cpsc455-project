@@ -1,0 +1,144 @@
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Modal from "@material-ui/core/Modal";
+//import AddStepper from "./AddStepper";
+import { FaTimesCircle } from "react-icons/fa";
+import Tooltip from "@material-ui/core/Tooltip";
+//import AddBoxIcon from "@material-ui/icons/AddBox";
+import { Button } from "@material-ui/core";
+//import { DropzoneArea } from "material-ui-dropzone";
+import StripeContainer from "../PaymentGateway/StripeContainer";
+
+function getModalStyle() {
+  const top = 5;
+
+  return {
+    top: `${top}%`,
+    margin: "auto",
+  };
+}
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: "absolute",
+    width: "30vw",
+    height: "40vh",
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
+export default function PaymentModal() {
+  const classes = useStyles();
+  const [modalStyle] = useState(getModalStyle);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  //const login_token = useSelector((state) => state.loginReducer);
+
+  //   const handleOpen = () => {
+  //     setOpen(true);
+  //   };
+
+  //   const handleClose = () => {
+  //     setValues({
+  //       response: "",
+  //       post: "",
+  //       responseToPost: "",
+  //       user: "",
+  //     });
+  //     setOpen(false);
+  //   };
+
+  //   const handleSubmit = async (e) => {
+  //     e.preventDefault();
+  //     console.log(values.user);
+  //     if (values.user == "") {
+  //       setSnackBarContent({
+  //         content: "Please enter e-mail",
+  //         severity: "error",
+  //       });
+  //       return;
+  //     }
+  //     const response = await fetch("api/job/addUsers/" + jobID, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: "Bearer " + login_token.accessToken,
+  //       },
+  //       body: JSON.stringify({ users: values.user }),
+  //     });
+
+  //     if (response.status === 201 || response.status === 200) {
+  //       console.log(response);
+  //       setOpenSnackBar(true);
+  //       setSnackBarContent({
+  //         content: "Share successful",
+  //         severity: "success",
+  //       });
+  //       setValues({
+  //         response: "",
+  //         post: "",
+  //         responseToPost: "",
+  //         user: "",
+  //       });
+  //     } else {
+  //       setOpenSnackBar(true);
+  //       setSnackBarContent({
+  //         content: "Something went wrong. Please try again",
+  //         severity: "error",
+  //       });
+  //     }
+  //   };
+
+  const body = (
+    <div style={modalStyle} className={classes.paper}>
+      <Tooltip title="close window" aria-label="close window">
+        <FaTimesCircle
+          size="1.5em"
+          onClick={handleClose}
+          style={{ cursor: "pointer" }}
+        />
+      </Tooltip>
+      <h2 id="modal-title">Get Premium</h2>
+      <p id="modal-description">Please enter you card details belows</p>
+      <StripeContainer />
+    </div>
+  );
+
+  return (
+    <div>
+      <Tooltip title="Get premium" aria-label="Get premium">
+        <Button
+          variant="contained"
+          color="primary"
+          component="span"
+          onClick={handleOpen}
+        >
+          Upgrade to premium for $10
+        </Button>
+      </Tooltip>
+      <Modal
+        open={open}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}

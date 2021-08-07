@@ -25,6 +25,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 
+//import StripeContainer from "../PaymentGateway/StripeContainer";
+import PaymentModal from "../PaymentGateway/PaymentModal";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -340,6 +343,16 @@ export default function AccountDashboard() {
                 </div>
               )}
             </form>
+
+            <br />
+            <br />
+            {!values.isGuest ? (
+              <div>
+                <PaymentModal />
+              </div>
+            ) : (
+              ""
+            )}
           </Paper>
         </div>
         <Box mt={5}></Box>

@@ -10,5 +10,10 @@ router.delete("/user/:id", GenericCtrl.verifyToken, UserCtrl.deleteUser);
 router.get("/myUser", GenericCtrl.verifyToken, UserCtrl.getUserById);
 router.post("/user/login", UserCtrl.login);
 router.put("/user/update", GenericCtrl.verifyToken, UserCtrl.update);
+router.post(
+  "/user/stripe/charge",
+  GenericCtrl.verifyToken,
+  UserCtrl.makePayment
+);
 
 module.exports = router;
