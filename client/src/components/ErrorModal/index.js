@@ -22,6 +22,8 @@ function getModalStyle() {
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
+    overflowY: "scroll",
+    overflowX: "scroll",
     width: "90vw",
     height: "85vh",
     backgroundColor: theme.palette.background.paper,

@@ -110,7 +110,7 @@ const demoSteps = [
   },
   {
     content: " This button lets you view job error logs",
-    placement: "left",
+    placement: "right",
     styles: {
       options: {
         width: "30vw",

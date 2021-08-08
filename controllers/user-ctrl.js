@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { secret } = require("../util/security");
 const validator = require("email-validator");
 const { sendTemplateEmail } = require("./send-email");
+const nodemailer = require("nodemailer");
 
 createUser = async (req, res) => {
   const body = req.body;
@@ -292,6 +293,47 @@ makePayment = async (req, res) => {
   }
 };
 
+sendContactEmail = async (req, res) => {
+  const contactEmail = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.CONTACT_EMAIL_ADDRESS,
+      pass: process.env.CONTACT_EMAIL_PASSWORD,
+    },
+  });
+  contactEmail.verify((error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Ready to Send");
+    }
+  });
+  const name = req.body.name;
+  const email = req.body.email;
+  const message = req.body.message;
+  const mail = {
+    from: name,
+    to: process.env.CONTACT_EMAIL_ADDRESS,
+    subject: "Contact Form Submission",
+    html: `<p>Name: ${name}</p>
+           <p>Email: ${email}</p>
+           <p>Message: ${message}</p>`,
+  };
+  contactEmail.sendMail(mail, (error) => {
+    if (error) {
+      res.json({
+        status: 400,
+        message: "Something went wrong. Please try again.",
+      });
+    } else {
+      res.json({
+        status: 200,
+        message: "Message Sent. Please allow up to 48 hours for a reply.",
+      });
+    }
+  });
+};
+
 module.exports = {
   createUser,
   deleteUser,
@@ -301,4 +343,5 @@ module.exports = {
   login,
   update,
   makePayment,
+  sendContactEmail,
 };

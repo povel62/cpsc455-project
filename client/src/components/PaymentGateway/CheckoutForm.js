@@ -53,7 +53,6 @@ export const CheckoutForm = () => {
       <CardElement />
       <br />
       <br />
-      {/* <button>Pay</button> */}
       <Button variant="contained" color="primary" onClick={handleSubmit}>
         Pay Now
       </Button>

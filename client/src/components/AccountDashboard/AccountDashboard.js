@@ -9,7 +9,7 @@ import {
   setKaggleAPI,
   setKaggleUsername,
 } from "../../redux/actions/actions";
-
+import AccountCircle from "@material-ui/icons/AccountCircle";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import FilledInput from "@material-ui/core/FilledInput";
@@ -25,6 +25,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import PaymentModal from "../PaymentGateway/PaymentModal";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,6 +74,19 @@ export default function AccountDashboard() {
     lname: login_token.lname,
   });
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
   const [editInfo, setEditInfo] = useState(false);
 
   const toggleEditInfo = () => setEditInfo(!editInfo);
@@ -90,15 +110,23 @@ export default function AccountDashboard() {
       }),
     });
 
+    setOpenSnackBar(true);
     if (response.status === 200) {
       dispatch(setEmail(values.email));
       dispatch(setFName(values.fname));
       dispatch(setLName(values.lname));
       dispatch(setKaggleUsername(values.kusername));
       dispatch(setKaggleAPI(values.kapi));
+      setSnackBarContent({
+        content: "account changes made successfully",
+        severity: "success",
+      });
     } else {
       resetValues();
-      alert(response.status);
+      setSnackBarContent({
+        content: "Something went wrong please try again later",
+        severity: "error",
+      });
     }
   };
 
@@ -138,6 +166,19 @@ export default function AccountDashboard() {
       <br />
       <br />
       <br />
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={1500}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
 
@@ -153,7 +194,10 @@ export default function AccountDashboard() {
             }}
           >
             <Typography component="h1" variant="h5">
-              Account Info
+              <br />
+              Account Info <AccountCircle />
+              <br />
+              <br />
             </Typography>
           </div>
           <Paper style={{ padding: 22 }}>
@@ -330,7 +374,7 @@ export default function AccountDashboard() {
                   </Button>
                 </div>
               ) : (
-                <div>
+                <div className="buttonContainer">
                   <Button
                     variant="contained"
                     color="primary"
@@ -338,19 +382,14 @@ export default function AccountDashboard() {
                   >
                     Edit
                   </Button>
+                  <br />
+                  <PaymentModal />
                 </div>
               )}
             </form>
 
             <br />
             <br />
-            {!values.isGuest ? (
-              <div>
-                <PaymentModal />
-              </div>
-            ) : (
-              ""
-            )}
           </Paper>
         </div>
         <Box mt={5}></Box>

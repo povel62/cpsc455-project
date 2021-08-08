@@ -184,6 +184,14 @@ export default function ControlDashboard(props) {
           <Button onClick={handleClickStart} color="primary" variant="outlined">
             Take a tour of this dashboard
           </Button>
+          <br />
+          <Button
+            color="primary"
+            style={{ float: "right" }}
+            onClick={() => props.setTab(4)}
+          >
+            Having troubles? contact us
+          </Button>
           <TableContainer className="table" component={Paper}>
             <Table stickyHeader aria-label="jobs table">
               <TableHead className={classes.table_head}>
@@ -203,7 +211,10 @@ export default function ControlDashboard(props) {
                   <TableCell />
                   <TableCell align="center" className="demo__2">
                     {/* JobModal contains add job button */}
-                    <JobModal refreshJobs={() => loadJobs()} />
+                    <JobModal
+                      refreshJobs={() => loadJobs()}
+                      setTab={props.setTab}
+                    />
                   </TableCell>
                 </TableRow>
               </TableHead>
