@@ -15,5 +15,10 @@ router.post(
   GenericCtrl.verifyToken,
   UserCtrl.makePayment
 );
+router.post(
+  "/user/contact",
+  GenericCtrl.verifyToken,
+  UserCtrl.sendContactEmail
+);
 
 module.exports = router;
