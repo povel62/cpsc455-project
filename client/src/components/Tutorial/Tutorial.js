@@ -94,21 +94,15 @@ const Tutorial = () => {
       </div>
       <div className="bottom_box">
         {overview ? (
-          <p>
-            <iframe
-              width="1280"
-              height="720"
-              src="https://www.youtube.com/embed/llqWTJGUFeE"
-              id="iframe_overview"
-            ></iframe>
-          </p>
+          <iframe
+            width="1280"
+            height="720"
+            src="https://www.youtube.com/embed/llqWTJGUFeE"
+            id="iframe_overview"
+          ></iframe>
         ) : null}
 
-        {show ? (
-          <p>
-            <Instructions />
-          </p>
-        ) : null}
+        {show ? <Instructions /> : null}
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function JobModal({ refreshJobs }) {
+export default function JobModal({ refreshJobs, setTab }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function JobModal({ refreshJobs }) {
         />
       </Tooltip>
       <h2 id="modal-title">Add ML Job</h2>
-      <AddStepper />
+      <AddStepper setTab={setTab} />
     </div>
   );
 

@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AddStepper() {
+function AddStepper({ setTab }) {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [message, setMessage] = useState("Job Submitted!");
   const [snackBarContent, setSnackBarContent] = useState({
@@ -135,6 +135,16 @@ function AddStepper() {
                 </MenuItem>
               ))}
             </TextField>
+            <Button
+              color="primary"
+              style={{ float: "right" }}
+              onClick={() => {
+                setTab(4);
+              }}
+              variant="outlined"
+            >
+              Want a more customizeed job? contact us!
+            </Button>
           </div>
         );
       case 1:
