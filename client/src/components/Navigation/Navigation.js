@@ -5,6 +5,7 @@ import Faq from "../Faq/Faq";
 import AccountDashboard from "../AccountDashboard/AccountDashboard";
 import Tutorial from "../Tutorial/Tutorial";
 import Home from "../Home/index";
+import ContactForm from "../ContactUs/ContactForm";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoginToken, setEmail, setJobs } from "../../redux/actions/actions";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +25,13 @@ import Tooltip from "@material-ui/core/Tooltip";
 
 import MenuIcon from "@material-ui/icons/Menu";
 
-const options = ["Dashboard", "Tutorial", "FAQ", "Kaggle Dashboard"];
+const options = [
+  "Dashboard",
+  "Tutorial",
+  "FAQ",
+  "Kaggle Dashboard",
+  "Contact Us",
+];
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -243,6 +250,7 @@ export default function Navigation(props) {
         {selectedTab === 3 && (
           <KaggleDashBoard tab={selectedTab} setTab={setSelectedTab} />
         )}
+        {selectedTab === 4 && <ContactForm />}
 
         {selectedTab === 99 && <AccountDashboard />}
       </>

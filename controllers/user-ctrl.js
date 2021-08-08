@@ -8,14 +8,6 @@ const validator = require("email-validator");
 const { sendTemplateEmail } = require("./send-email");
 const nodemailer = require("nodemailer");
 
-const contactEmail = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.CONTACT_EMAIL_ADDRESS,
-    pass: process.env.CONTACT_EMAIL_PASSWORD,
-  },
-});
-
 createUser = async (req, res) => {
   const body = req.body;
   if (!validator.validate(body.email)) {
@@ -302,6 +294,13 @@ makePayment = async (req, res) => {
 };
 
 sendContactEmail = async (req, res) => {
+  const contactEmail = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.CONTACT_EMAIL_ADDRESS,
+      pass: process.env.CONTACT_EMAIL_PASSWORD,
+    },
+  });
   contactEmail.verify((error) => {
     if (error) {
       console.log(error);
@@ -324,7 +323,9 @@ sendContactEmail = async (req, res) => {
     if (error) {
       res.json({ status: "ERROR" });
     } else {
-      res.json({ status: "Message Sent" });
+      res.json({
+        status: "Message Sent. Please allow up to 48 hours for a reply.",
+      });
     }
   });
 };
