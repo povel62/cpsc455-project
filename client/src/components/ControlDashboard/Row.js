@@ -21,6 +21,7 @@ import ErrorModal from "../ErrorModal";
 import PredictModal from "../PredictModal/PredictModal";
 import { InlineIcon } from "@iconify/react";
 import kaggleIcon from "@iconify-icons/simple-icons/kaggle";
+import PredictDlModal from "../PredictDownloadModal/PredictDlModal";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -126,7 +127,25 @@ const Row = ({ row, refreshJobs }) => {
               refreshJobs={() => refreshJobs()}
               jobId={row.id}
               showPredict={row.status == "TRAINING_COMPLETED"}
-              showDownload={row.status == "PREDICTING_COMPLETED"}
+              showDownload={
+                row.status == "PREDICTING_COMPLETED" ||
+                row.status == "PREDICTING"
+              }
+            />
+          </Tooltip>
+        </TableCell>
+        <TableCell align="center">
+          <Tooltip
+            title="download predit job"
+            aria-label="click to download predicted files"
+          >
+            <PredictDlModal
+              refreshJobs={() => refreshJobs()}
+              jobId={row.id}
+              showDownload={
+                row.status == "PREDICTING_COMPLETED" ||
+                row.status == "PREDICTING"
+              }
             />
           </Tooltip>
         </TableCell>

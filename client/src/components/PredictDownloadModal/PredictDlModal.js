@@ -1,0 +1,222 @@
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Modal from "@material-ui/core/Modal";
+import { FaTimesCircle } from "react-icons/fa";
+import Tooltip from "@material-ui/core/Tooltip";
+import Button from "@material-ui/core/Button";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { MenuItem } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+function getModalStyle() {
+  const top = 5;
+
+  return {
+    top: `${top}%`,
+    margin: "auto",
+  };
+}
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    overflowY: "scroll",
+    overflowX: "scroll",
+    position: "absolute",
+    width: "1100px",
+    height: "750px",
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
+export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
+  const login_token = useSelector((state) => state.loginReducer);
+  const classes = useStyles();
+  const [modalStyle] = useState(getModalStyle);
+  const [open, setOpen] = useState(false);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    refreshJobs();
+  };
+
+  const getFileNames = (job) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`/api/job/${job}/preds`, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            resolve(res.data.fileNames);
+          } else {
+            resolve([]);
+          }
+        })
+        .catch(() => reject([]));
+    });
+  };
+
+  const handleFileNames = async () => {
+    let fileList = [];
+    await getFileNames(jobId)
+      .then((res) => {
+        let entries = res.map((ele, i) => {
+          let name;
+          try {
+            name = ele.slice(26, -4);
+          } catch {
+            name = ele;
+          }
+          return (
+            <MenuItem value={ele} key={i}>
+              {name}
+            </MenuItem>
+          );
+        });
+        console.log("success");
+        console.log(entries);
+        fileList = entries;
+      })
+      .catch(() => {
+        console.log("fail");
+        fileList = [];
+      });
+    return fileList;
+  };
+
+  const handleDlPredict = async () => {
+    let fileList = await handleFileNames();
+
+    console.log(fileList);
+    if (fileList && fileList.length >= 1) {
+      let fileName = fileList[0].props.value;
+      axios
+        .get("/api/job/" + jobId + "/pred/" + fileName, {
+          headers: {
+            Authorization: "Bearer " + login_token.accessToken,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            let name = fileName;
+            const addr = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement("a");
+            link.href = addr;
+            link.setAttribute("download", name);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(addr);
+            setOpenSnackBar(true);
+            setSnackBarContent({
+              content: "Downloading file...",
+              severity: "info",
+            });
+          } else {
+            setOpenSnackBar(true);
+            setSnackBarContent({
+              content: "Something went wrong. Please try again",
+              severity: "error",
+            });
+          }
+        })
+        .catch(() => {
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "Something went wrong. Please try again",
+            severity: "error",
+          });
+        });
+    } else {
+      console.log("file list empty");
+    }
+  };
+
+  const body = (
+    <div style={modalStyle} className={classes.paper}>
+      <Tooltip title="close window" aria-label="close window">
+        <FaTimesCircle
+          size="1.5em"
+          onClick={handleClose}
+          style={{ cursor: "pointer" }}
+        />
+      </Tooltip>
+      <h2 id="modal-title">Download Prediction File</h2>
+      <br />
+    </div>
+  );
+
+  return (
+    <div>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
+      {showDownload && (
+        <div>
+          <Tooltip
+            title="Download latest prediction file"
+            aria-label="Download latest prediction file"
+          >
+            <Button
+              variant="contained"
+              component="span"
+              onClick={handleDlPredict}
+              endIcon={<CloudDownloadIcon />}
+            >
+              Latest Prediction
+            </Button>
+          </Tooltip>
+          <br />
+          <br />
+        </div>
+      )}
+      <Modal
+        open={open}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}
