@@ -1,9 +1,62 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import Paper from "@material-ui/core/Paper";
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  form: {
+    width: "100%",
+    marginTop: theme.spacing(3),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
 
 const ContactForm = () => {
+  const classes = useStyles();
   const [status, setStatus] = useState("Submit");
   const login_token = useSelector((state) => state.loginReducer);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,26 +80,131 @@ const ContactForm = () => {
 
     setStatus("Submit");
     let result = await response.json();
-    alert(result.status);
+
+    setOpenSnackBar(true);
+    if (result.status == 200) {
+      setSnackBarContent({
+        content: result.message,
+        severity: "success",
+      });
+    } else {
+      setSnackBarContent({
+        content: "Something went wrong please try again later",
+        severity: "error",
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="name">Name:</label>
-        <input type="text" id="name" required />
-      </div>
-      <div>
-        <label htmlFor="email">Email:</label>
-        <input type="email" id="email" required />
-      </div>
-      <div>
-        <label htmlFor="message">Message:</label>
-        <textarea id="message" required />
-      </div>
-      <button type="submit">{status}</button>
-    </form>
+    <>
+      <br />
+      <br />
+      <br />
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={1500}
+        onClose={handleCloseSnackBar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={snackBarContent.severity}
+        >
+          {snackBarContent.content}
+        </Alert>
+      </Snackbar>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+
+        <div>
+          <div
+            style={{
+              width: "100%",
+              borderRadius: ".25rem",
+              background: "linear-gradient(40deg ,#45cafc,#303f9f)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              <br />
+              Contact Us <ContactMailIcon />
+              <br />
+              <br />
+            </Typography>
+          </div>
+          <Paper style={{ padding: 22 }}>
+            <form className={classes.form} noValidate onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="name"
+                    label="Full Name"
+                    name="name"
+                    autoComplete="name"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="email"
+                    label="E-mail"
+                    name="email"
+                    autoComplete="email"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    multiline
+                    rows={8}
+                    id="message"
+                    label="Message"
+                    name="message"
+                  />
+                </Grid>
+              </Grid>
+
+              <br />
+              <br />
+
+              <div className="buttonContainer">
+                <Button variant="contained" color="primary" type="submit">
+                  {status}
+                </Button>
+              </div>
+            </form>
+          </Paper>
+        </div>
+        <Box mt={5}></Box>
+      </Container>
+    </>
   );
+  // (
+  //   <form onSubmit={handleSubmit}>
+  //     <div>
+  //       <label htmlFor="name">Name:</label>
+  //       <input type="text" id="name" required />
+  //     </div>
+  //     <div>
+  //       <label htmlFor="email">Email:</label>
+  //       <input type="email" id="email" required />
+  //     </div>
+  //     <div>
+  //       <label htmlFor="message">Message:</label>
+  //       <textarea id="message" required />
+  //     </div>
+  //     <button type="submit">{status}</button>
+  //   </form>
+  // );
 };
 
 export default ContactForm;

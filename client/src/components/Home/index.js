@@ -70,6 +70,7 @@ const Home = (props) => {
 
 Home.propTypes = {
   isLanding: PropTypes.bool,
+  setTab: PropTypes.func,
 };
 
 export default Home;

@@ -321,10 +321,14 @@ sendContactEmail = async (req, res) => {
   };
   contactEmail.sendMail(mail, (error) => {
     if (error) {
-      res.json({ status: "ERROR" });
+      res.json({
+        status: 400,
+        message: "Something went wrong. Please try again.",
+      });
     } else {
       res.json({
-        status: "Message Sent. Please allow up to 48 hours for a reply.",
+        status: 200,
+        message: "Message Sent. Please allow up to 48 hours for a reply.",
       });
     }
   });

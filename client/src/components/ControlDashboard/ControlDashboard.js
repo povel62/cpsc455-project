@@ -184,6 +184,10 @@ export default function ControlDashboard(props) {
           <Button onClick={handleClickStart} color="primary" variant="outlined">
             Take a tour of this dashboard
           </Button>
+          <br />
+          <Button color="primary" style={{ float: "right" }}>
+            Want a more customizeable job? contact us
+          </Button>
           <TableContainer className="table" component={Paper}>
             <Table stickyHeader aria-label="jobs table">
               <TableHead className={classes.table_head}>
