@@ -186,7 +186,7 @@ export default function ControlDashboard(props) {
           </Button>
           <br />
           <Button color="primary" style={{ float: "right" }}>
-            Want a more customizeable job? contact us
+            Want a more customizeable job? contact us!
           </Button>
           <TableContainer className="table" component={Paper}>
             <Table stickyHeader aria-label="jobs table">
