@@ -95,7 +95,7 @@ competitionUploadSubmit = async (req, res) => {
                 res.status(201).json({ success: true });
               },
               (err) => {
-                // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
+                // rejected by kaggle (99% chance unauth)
                 res.status(401).json({ success: false, error: err });
               }
             )
@@ -196,7 +196,7 @@ datasetCreateVersion = async (req, res) => {
                 res.status(201).json({ success: true });
               },
               (err) => {
-                // rejected by kaggle (99% chance unauth), TODO change exitcode to http code in python
+                // rejected by kaggle (99% chance unauth)
                 res.status(401).json({ success: false, error: err });
               }
             )

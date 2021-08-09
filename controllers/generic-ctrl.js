@@ -2,10 +2,7 @@ const User = require("../models/user-model");
 const jwt = require("jsonwebtoken");
 const { secret } = require("../util/security");
 const fs = require("fs");
-// const { Readable } = require("stream");
 let { PythonShell } = require("python-shell");
-// const { CSV_FILES, SESSIONS, HOSTNAME } = require("../GlobalConstants");
-// const crypto = require("crypto");
 
 verifyToken = (req, res, next) => {
   if (
@@ -59,8 +56,11 @@ uploadFileToServer = async (id, fileData, fileName) => {
         }
       );
     } catch (e) {
-      console.log(e);
-      fs.unlinkSync(path);
+      try {
+        fs.unlinkSync(`./util/${id}-${fileName}`);
+      } catch (ee) {
+        console.log(ee);
+      }
       reject(e);
     }
   });

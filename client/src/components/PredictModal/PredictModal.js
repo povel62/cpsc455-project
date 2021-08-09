@@ -5,11 +5,8 @@ import { FaTimesCircle } from "react-icons/fa";
 import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
-// import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import PredictUploadButton from "./PredictUploadButton";
 import { useSelector } from "react-redux";
-// import axios from "axios";
-// import { MenuItem } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 
@@ -40,12 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PredictModal({
-  refreshJobs,
-  jobId,
-  showPredict,
-  // showDownload,
-}) {
+export default function PredictModal({ refreshJobs, jobId, showPredict }) {
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
