@@ -31,6 +31,8 @@ createUser = async (req, res) => {
         user.email = body.email;
         user.dob = body.dob;
 
+        user.premium = body.premium;
+
         if (body.kusername) {
           user.kusername = body.kusername;
         }
@@ -127,6 +129,10 @@ update = async (req, res) => {
     }
     if (body.kapi) {
       user.kapi = body.kapi;
+    }
+
+    if (body.premium) {
+      user.premium = body.premium;
     }
 
     user

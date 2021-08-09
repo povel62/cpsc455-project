@@ -157,3 +157,17 @@ export const setSubTable = (s) => {
     payload: s,
   };
 };
+
+export const setPremium = (s) => {
+  return {
+    type: "SET_PREMIUM",
+    payload: s,
+  };
+};
+
+export const setGuest = (s) => {
+  return {
+    type: "SET_GUEST",
+    payload: s,
+  };
+};

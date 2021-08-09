@@ -19,6 +19,8 @@ import {
   setEmail,
   setFName,
   setLName,
+  setPremium,
+  setGuest,
 } from "../../redux/actions/actions";
 import { useHistory } from "react-router-dom";
 import Switch from "@material-ui/core/Switch";
@@ -138,6 +140,8 @@ export default function Signin(props) {
       dispatch(setEmail(body.data.email));
       dispatch(setFName(body.data.fname));
       dispatch(setLName(body.data.lname));
+      dispatch(setGuest(body.data.guest));
+      dispatch(setPremium(body.data.premium));
       history.push({
         pathname: "/home",
         state: { isUserNewlyRegistred: userNewlyRegistred },

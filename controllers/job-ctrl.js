@@ -647,12 +647,10 @@ getUserJobs = async (req, res) => {
     { users: { $elemMatch: { $eq: ObjectId(userId) } } },
     (err, job) => {
       if (err) {
-        console.log("error 1");
         console.log(err);
         return res.status(400).json({ success: false, error: err });
       }
       if (!job.length) {
-        console.log("error 2");
         return res.status(404).json({ success: false, error: `Job not found` });
       }
       return res.status(200).json({ success: true, data: job });

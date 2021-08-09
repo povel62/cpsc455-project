@@ -71,6 +71,7 @@ export default function Signup(props) {
     lname: "",
     kaggleUsername: "",
     kapi: "",
+    premium: false,
   });
   const [open, setOpen] = React.useState(false);
   const [snackBarContent, setSnackBarContent] = React.useState({
@@ -134,6 +135,7 @@ export default function Signup(props) {
             password: values.password,
             kusername: values.kaggleUsername,
             kapi: values.kaggleApiKey,
+            premium: values.premium,
           }
         : {
             guest: values.guest,
@@ -141,6 +143,7 @@ export default function Signup(props) {
             lname: values.lname,
             email: values.email,
             password: values.password,
+            premium: values.premium,
           }
     );
     if (body.success) {

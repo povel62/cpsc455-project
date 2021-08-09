@@ -14,6 +14,7 @@ const User = new Schema(
     kusername: { type: String, required: false },
     kapi: { type: String, get: decrypt, set: encrypt, required: false },
     jobs: [{ type: Schema.Types.ObjectId, ref: "jobs" }],
+    premium: { type: Boolean, required: false, default: false },
   },
   { timestamps: true, toObject: { getters: true }, toJSON: { getters: true } }
 );
