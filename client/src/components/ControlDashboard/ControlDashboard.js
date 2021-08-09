@@ -19,6 +19,15 @@ import Button from "@material-ui/core/Button";
 import DemoRow from "./DemoRow";
 import steps from "./demoSteps";
 
+import Tooltip from "@material-ui/core/Tooltip";
+import AddBoxIcon from "@material-ui/icons/AddBox";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -66,6 +75,18 @@ ControlDashboard.defaultProps = {
 
 export default function ControlDashboard(props) {
   const [run, setRun] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarContent, setSnackBarContent] = useState({
+    content: " ",
+    severity: "success",
+  });
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
 
   const handleClickStart = (e) => {
     e.preventDefault();
@@ -103,6 +124,7 @@ export default function ControlDashboard(props) {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const login_token = useSelector((state) => state.loginReducer);
+  const isPremium = login_token.isPremium;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -164,6 +186,19 @@ export default function ControlDashboard(props) {
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
+        <Snackbar
+          open={openSnackBar}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackBar}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleCloseSnackBar}
+            severity={snackBarContent.severity}
+          >
+            {snackBarContent.content}
+          </Alert>
+        </Snackbar>
         <ReactJoyride
           continuous
           scrollToFirstStep
@@ -212,10 +247,40 @@ export default function ControlDashboard(props) {
                   <TableCell />
                   <TableCell align="center" className="demo__2">
                     {/* JobModal contains add job button */}
-                    <JobModal
-                      refreshJobs={() => loadJobs()}
-                      setTab={props.setTab}
-                    />
+                    {isPremium && (
+                      <JobModal
+                        refreshJobs={() => loadJobs()}
+                        setTab={props.setTab}
+                      />
+                    )}
+                    {!isPremium && login_token.jobs.length <= 10 && (
+                      <JobModal
+                        refreshJobs={() => loadJobs()}
+                        setTab={props.setTab}
+                      />
+                    )}
+                    {!isPremium && login_token.jobs.length >= 10 && (
+                      <Tooltip title="Add a job" aria-label="add a job">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          aria-label="add a new job"
+                          component="span"
+                          onClick={() => {
+                            setOpenSnackBar(true);
+                            setSnackBarContent({
+                              content:
+                                "Job limit exceeded. Delete previous jobs or upgrade to premium",
+                              severity: "info",
+                            });
+                            loadJobs();
+                          }}
+                          endIcon={<AddBoxIcon />}
+                        >
+                          Add Job
+                        </Button>
+                      </Tooltip>
+                    )}
                   </TableCell>
                 </TableRow>
               </TableHead>
