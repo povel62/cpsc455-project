@@ -12,9 +12,6 @@ export const CheckoutForm = () => {
   let token = useSelector((state) => state.loginReducer.accessToken);
 
   const updatePremium = async () => {
-    //e.preventDefault();
-    //setEditInfo(!editInfo);
-
     const response = await fetch("/api/user/update", {
       method: "PUT",
       headers: {
@@ -26,20 +23,9 @@ export const CheckoutForm = () => {
       }),
     });
 
-    // setOpenSnackBar(true);
-    if (response.status === 200) {
+    if (response.status == 200) {
       dispatch(setPremium(true));
-      // setSnackBarContent({
-      //   content: "Account made premium successfully",
-      //   severity: "success",
-      // });
     }
-    //else {
-    // setSnackBarContent({
-    //   content: "Something went wrong please try again later",
-    //   severity: "error",
-    // });
-    //}
   };
 
   const handleSubmit = async (event) => {
@@ -67,10 +53,10 @@ export const CheckoutForm = () => {
         );
 
         console.log("Stripe 35 | data", response.data.success);
+
         if (response.data.success) {
           console.log("CheckoutForm.js 25 | payment successful!");
           updatePremium();
-          alert("Payment successful");
         }
       } catch (error) {
         console.log("CheckoutForm.js 28 | ", error);
