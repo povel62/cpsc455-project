@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AccountDashboard() {
   const classes = useStyles();
   const login_token = useSelector((state) => state.loginReducer);
+  const isPremium = login_token.premium;
 
   const dispatch = useDispatch();
   const [values, setValues] = useState({
@@ -65,7 +66,7 @@ export default function AccountDashboard() {
     post: "",
     responseToPost: "",
     email: login_token.email,
-    guest: login_token.isGuest,
+    guest: login_token.guest,
     pwd: "",
     kusername: login_token.kusername,
     kapi: login_token.kapi,
@@ -314,42 +315,44 @@ export default function AccountDashboard() {
                     />
                   )}
                 </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    id="kaggleUsername"
-                    label="Kaggle Username (optional)"
-                    name="kaggleUsername"
-                    autoComplete="kaggleUsername"
-                    defaultValue={values.kusername}
-                    onChange={(e) =>
-                      setValues({ ...values, kusername: e.target.value })
-                    }
-                    InputProps={{
-                      readOnly: editInfo ? false : true,
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    autoComplete="kaggleApiKey"
-                    name="kaggleApiKey"
-                    variant="outlined"
-                    fullWidth
-                    id="kaggleApiKey"
-                    label="Kaggle Api Key "
-                    defaultValue={values.kapi}
-                    onChange={(e) =>
-                      setValues({ ...values, kapi: e.target.value })
-                    }
-                    InputProps={{
-                      readOnly: editInfo ? false : true,
-                    }}
-                  />
-                </Grid>
+                {isPremium && (
+                  <Grid item xs={12}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      id="kaggleUsername"
+                      label="Kaggle Username (optional)"
+                      name="kaggleUsername"
+                      autoComplete="kaggleUsername"
+                      defaultValue={values.kusername}
+                      onChange={(e) =>
+                        setValues({ ...values, kusername: e.target.value })
+                      }
+                      InputProps={{
+                        readOnly: editInfo ? false : true,
+                      }}
+                    />
+                  </Grid>
+                )}
+                {isPremium && (
+                  <Grid item xs={12}>
+                    <TextField
+                      autoComplete="kaggleApiKey"
+                      name="kaggleApiKey"
+                      variant="outlined"
+                      fullWidth
+                      id="kaggleApiKey"
+                      label="Kaggle Api Key "
+                      defaultValue={values.kapi}
+                      onChange={(e) =>
+                        setValues({ ...values, kapi: e.target.value })
+                      }
+                      InputProps={{
+                        readOnly: editInfo ? false : true,
+                      }}
+                    />
+                  </Grid>
+                )}
               </Grid>
 
               <br />
@@ -383,11 +386,10 @@ export default function AccountDashboard() {
                     Edit
                   </Button>
                   <br />
-                  <PaymentModal />
+                  {!isPremium && <PaymentModal />}
                 </div>
               )}
             </form>
-
             <br />
             <br />
           </Paper>

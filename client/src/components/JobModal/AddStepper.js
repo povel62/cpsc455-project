@@ -87,7 +87,7 @@ function AddStepper({ setTab }) {
     responseToPost: "",
     jobName: "",
     jobTime: 5,
-    guest: login_token.isGuest,
+    guest: login_token.guest,
   });
 
   function getSteps() {
@@ -258,7 +258,7 @@ function AddStepper({ setTab }) {
         responseToPost: "",
         jobName: "",
         jobTime: 5,
-        guest: login_token.isGuest,
+        guest: login_token.guest,
       });
     } else {
       setOpenSnackBar(true);

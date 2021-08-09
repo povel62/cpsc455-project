@@ -52,6 +52,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Navigation(props) {
   let history = useHistory();
   const fname = useSelector((state) => state.loginReducer.fname);
+  const isGuest = useSelector((state) => state.loginReducer.guest);
+
   const dispatch = useDispatch();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -208,7 +210,7 @@ export default function Navigation(props) {
                     onClick={handleMenu}
                     color="inherit"
                   >
-                    <AccountCircle /> {fname}
+                    <AccountCircle /> {!isGuest && fname} {isGuest && "Guest"}
                   </IconButton>
                 </Tooltip>
 
@@ -227,7 +229,10 @@ export default function Navigation(props) {
                   open={open}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleMyAccount}>My account</MenuItem>
+                  {!isGuest && (
+                    <MenuItem onClick={handleMyAccount}>My account</MenuItem>
+                  )}
+
                   <MenuItem
                     onClick={() => {
                       dispatch(setLoginToken(""));
