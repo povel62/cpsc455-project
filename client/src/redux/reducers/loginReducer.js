@@ -7,6 +7,8 @@ const loginReducer = (
     kusername: "",
     kapi: "",
     jobs: [],
+    guest: false,
+    premium: false,
   },
   action
 ) => {
@@ -25,6 +27,10 @@ const loginReducer = (
       return Object.assign({}, state, { kapi: action.payload });
     case "SET_JOBS":
       return Object.assign({}, state, { jobs: action.payload });
+    case "SET_GUEST":
+      return Object.assign({}, state, { guest: action.payload });
+    case "SET_PREMIUM":
+      return Object.assign({}, state, { premium: action.payload });
     default:
       return state;
   }

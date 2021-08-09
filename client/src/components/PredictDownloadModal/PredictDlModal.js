@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: "500px",
-    height: "300px",
+    height: "350px",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
   const login_token = useSelector((state) => state.loginReducer);
+  const isPremium = login_token.premium;
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -62,6 +63,7 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   const handleOpen = () => {
     setLoad(true);
+    setSubmitting(false);
     setOpen(true);
     handleFileNames();
   };
@@ -180,6 +182,12 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {submitting && <p> Cannot close while download request is being made</p>}
       <h2 id="modal-title">Download Prediction File</h2>
       <br />
+      {!isPremium && (
+        <p>
+          Upgrade to Premium and unlock the ability to download any of your
+          submitted prediction file for the associated trained job
+        </p>
+      )}
       {!load && (
         <Select
           required
@@ -196,7 +204,7 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
             }
           }}
         >
-          {preds}
+          {isPremium ? preds : preds[0]}
         </Select>
       )}
       {load && <CircularProgress size={44} />}
@@ -205,13 +213,13 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {submitting && <CircularProgress size={44} />}
       {!submitting && (
         <Tooltip
-          title="Download latest prediction file"
-          aria-label="Download latest prediction file"
+          title="Download prediction file"
+          aria-label="Download prediction file"
         >
           <Button
             variant="contained"
             component="span"
-            disabled={preds.length <= 1}
+            disabled={preds.length < 1}
             onClick={handleDlPredict}
             endIcon={<CloudDownloadIcon />}
           >
@@ -240,8 +248,8 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {showDownload && (
         <div>
           <Tooltip
-            title="Download latest prediction file"
-            aria-label="Download latest prediction file"
+            title="Download prediction file"
+            aria-label="Download prediction file"
           >
             <Button
               variant="contained"
@@ -249,11 +257,9 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
               onClick={handleOpen}
               endIcon={<CloudDownloadIcon />}
             >
-              Latest Prediction
+              Download Prediction
             </Button>
           </Tooltip>
-          <br />
-          <br />
         </div>
       )}
       <Modal

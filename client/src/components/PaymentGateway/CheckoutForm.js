@@ -1,14 +1,46 @@
 import React from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
+import { setPremium } from "../../redux/actions/actions";
 
 export const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
-
+  const dispatch = useDispatch();
   let token = useSelector((state) => state.loginReducer.accessToken);
+
+  const updatePremium = async () => {
+    //e.preventDefault();
+    //setEditInfo(!editInfo);
+
+    const response = await fetch("/api/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        premium: true,
+      }),
+    });
+
+    // setOpenSnackBar(true);
+    if (response.status === 200) {
+      dispatch(setPremium(true));
+      // setSnackBarContent({
+      //   content: "Account made premium successfully",
+      //   severity: "success",
+      // });
+    }
+    //else {
+    // setSnackBarContent({
+    //   content: "Something went wrong please try again later",
+    //   severity: "error",
+    // });
+    //}
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,6 +69,7 @@ export const CheckoutForm = () => {
         console.log("Stripe 35 | data", response.data.success);
         if (response.data.success) {
           console.log("CheckoutForm.js 25 | payment successful!");
+          updatePremium();
           alert("Payment successful");
         }
       } catch (error) {

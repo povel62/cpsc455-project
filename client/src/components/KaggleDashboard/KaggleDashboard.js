@@ -1,11 +1,7 @@
-import { ButtonGroup, CardMedia, Grid } from "@material-ui/core";
-import React, { useState, useEffect } from "react";
-import KaggleActionPane from "./KaggleActionPane";
-import "./KaggleDashboard.css";
-import KaggleDataPane from "./KaggleDataPane";
-import KaggleSearchPane from "./KaggleSearchPane";
-import PropTypes from "prop-types";
 import {
+  ButtonGroup,
+  CardMedia,
+  Grid,
   Backdrop,
   CircularProgress,
   Card,
@@ -15,6 +11,12 @@ import {
   CardActions,
   Button,
 } from "@material-ui/core";
+import React, { useState, useEffect } from "react";
+import KaggleActionPane from "./KaggleActionPane";
+import "./KaggleDashboard.css";
+import KaggleDataPane from "./KaggleDataPane";
+import KaggleSearchPane from "./KaggleSearchPane";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { KaggleAuthCheck } from "./kaggleApi";
@@ -58,6 +60,7 @@ const KaggleDashBoard = (props) => {
   let loading = useSelector((state) => state.kaggleReducer.loading);
   let token = useSelector((state) => state.loginReducer.accessToken);
   let KSuccess = useSelector((state) => state.kaggleReducer.KSuccess);
+  let isPremium = useSelector((state) => state.loginReducer.premium);
   let dispatch = useDispatch();
   const [enabled, setEnabled] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -210,74 +213,95 @@ const KaggleDashBoard = (props) => {
                 <CardActionArea>
                   <CardContent>
                     <Typography variant="h5" component="h2">
-                      Kaggle api key required
+                      {isPremium
+                        ? "Kaggle api key required"
+                        : "Premium Feature"}
                     </Typography>
                     <Typography
                       variant="body2"
                       color="textSecondary"
                       component="p"
                     >
-                      Your account does not seem have a valid Kaggle api key
-                      connected. Please visit Kaggle to generate an api key and
-                      add it to your account on the account page. If you
-                      previously had a key associated it may no longer be valid.
+                      {isPremium
+                        ? "Your account does not seem have a valid Kaggle api key connected. Please visit Kaggle to generate an api key and add it to your account on the account page. If you previously had a key associated it may no longer be valid"
+                        : "The feature you are trying to access is only available to a Premium user. To access this feature, upgrade to Premium with a one-time fee of 10$. Become Premium and enjoy all the perks of kaggle in AutoML"}
                     </Typography>
                   </CardContent>
                 </CardActionArea>
                 <CardActions>
-                  <ButtonGroup
-                    size="small"
-                    color="primary"
-                    variant="contained"
-                    style={{ maxWidth: "100%", height: "6rem" }}
-                  >
+                  {isPremium && (
+                    <ButtonGroup
+                      size="small"
+                      color="primary"
+                      variant="contained"
+                      style={{ maxWidth: "100%", height: "6rem" }}
+                    >
+                      <Button
+                        style={{
+                          width: `${(1 / 3) * 100}%`,
+                          maxHeight: "100%",
+                          fontSize: "0.7rem",
+                        }}
+                        onClick={() => {
+                          props.setTab(99);
+                        }}
+                      >
+                        Add Kaggle Credentials
+                      </Button>
+                      <Button
+                        style={{
+                          width: `${(1 / 3) * 100}%`,
+                          maxHeight: "100%",
+                          fontSize: "0.7rem",
+                        }}
+                        onClick={() => {
+                          try {
+                            const kaggleWindow = window.open(
+                              "https://www.kaggle.com/account/login?phase=startRegisterTab&returnUrl=%2F",
+                              "_blank",
+                              "noopener,noreferrer"
+                            );
+                            if (kaggleWindow) kaggleWindow.opener = null;
+                          } catch (e) {
+                            console.log(e);
+                          }
+                        }}
+                      >
+                        <p>Kaggle Sign Up</p>
+                      </Button>
+                      <Button
+                        style={{
+                          width: `${(1 / 3) * 100}%`,
+                          maxHeight: "100%",
+                          fontSize: "1rem",
+                        }}
+                        onClick={() => {
+                          checkAuth();
+                        }}
+                      >
+                        <p>Retry</p>
+                      </Button>
+                    </ButtonGroup>
+                  )}
+                  {!isPremium && (
                     <Button
+                      size="small"
+                      color="primary"
+                      variant="contained"
                       style={{
-                        width: `${(1 / 3) * 100}%`,
-                        maxHeight: "100%",
-                        fontSize: "0.7rem",
+                        width: "100%",
+                        height: "4rem",
+                        fontSize: "1rem",
                       }}
                       onClick={() => {
                         props.setTab(99);
                       }}
                     >
-                      Add Kaggle Credentials
+                      To My Account
                     </Button>
-                    <Button
-                      style={{
-                        width: `${(1 / 3) * 100}%`,
-                        maxHeight: "100%",
-                        fontSize: "0.7rem",
-                      }}
-                      onClick={() => {
-                        try {
-                          const kaggleWindow = window.open(
-                            "https://www.kaggle.com/account/login?phase=startRegisterTab&returnUrl=%2F",
-                            "_blank",
-                            "noopener,noreferrer"
-                          );
-                          if (kaggleWindow) kaggleWindow.opener = null;
-                        } catch (e) {
-                          console.log(e);
-                        }
-                      }}
-                    >
-                      <p>Kaggle Sign Up</p>
-                    </Button>
-                    <Button
-                      style={{
-                        width: `${(1 / 3) * 100}%`,
-                        maxHeight: "100%",
-                        fontSize: "0.7rem",
-                      }}
-                      onClick={() => {
-                        checkAuth();
-                      }}
-                    >
-                      <p>Retry</p>
-                    </Button>
-                  </ButtonGroup>
+                  )}
                 </CardActions>
+                <br />
               </Card>
             </Grid>
           </Grid>

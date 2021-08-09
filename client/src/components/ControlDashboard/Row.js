@@ -39,6 +39,7 @@ const useRowStyles = makeStyles({
 });
 
 const Row = ({ row, refreshJobs }) => {
+  const isPremium = useSelector((state) => state.loginReducer.premium);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarContent, setSnackBarContent] = useState({
     content: " ",
@@ -136,7 +137,7 @@ const Row = ({ row, refreshJobs }) => {
         </TableCell>
         <TableCell align="center">
           <Tooltip
-            title="download predit job"
+            title="download predict job"
             aria-label="click to download predicted files"
           >
             <PredictDlModal
@@ -150,12 +151,14 @@ const Row = ({ row, refreshJobs }) => {
           </Tooltip>
         </TableCell>
         <TableCell align="center">
-          <Tooltip
-            title="Get share link for this job"
-            aria-label="get link to share this job"
-          >
-            <ShareModal jobID={row.id}></ShareModal>
-          </Tooltip>
+          {isPremium && (
+            <Tooltip
+              title="Get share link for this job"
+              aria-label="get link to share this job"
+            >
+              <ShareModal jobID={row.id}></ShareModal>
+            </Tooltip>
+          )}
         </TableCell>
         <TableCell align="center">
           <Tooltip title="Delete job" aria-label="Delete this job">
@@ -167,45 +170,53 @@ const Row = ({ row, refreshJobs }) => {
               <DeleteOutlineIcon color="error" />
             </IconButton>
           </Tooltip>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            // onClick={seeJobErrorEvent}
-          >
-            <ErrorModal jobId={row.id} />
-          </IconButton>
+          {isPremium && (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              // onClick={seeJobErrorEvent}
+            >
+              <ErrorModal jobId={row.id} />
+            </IconButton>
+          )}
         </TableCell>
       </TableRow>
+      {isPremium && (
+        <TableRow>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+            {row.status == "TRAINING" && (
+              <ProgressBar
+                status="TRAINING"
+                progressColor="primary"
+                start={0}
+              />
+            )}
+            {row.status == "TRAINING_COMPLETED" && (
+              <ProgressBar
+                status="TRAINING_COMPLETED"
+                progressColor="secondary"
+                start={50}
+              />
+            )}
+            {row.status == "PREDICTING" && (
+              <ProgressBar
+                status="PREDICTING"
+                progressColor="secondary"
+                start={50}
+              />
+            )}
+            {row.status == "PREDICTING_COMPLETED" && (
+              <ProgressBar
+                status="PREDICTING_COMPLETED"
+                progressColor="secondary"
+                start={100}
+              />
+            )}
+          </TableCell>
+        </TableRow>
+      )}
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-          {row.status == "TRAINING" && (
-            <ProgressBar status="TRAINING" progressColor="primary" start={0} />
-          )}
-          {row.status == "TRAINING_COMPLETED" && (
-            <ProgressBar
-              status="TRAINING_COMPLETED"
-              progressColor="secondary"
-              start={50}
-            />
-          )}
-          {row.status == "PREDICTING" && (
-            <ProgressBar
-              status="PREDICTING"
-              progressColor="secondary"
-              start={50}
-            />
-          )}
-          {row.status == "PREDICTING_COMPLETED" && (
-            <ProgressBar
-              status="PREDICTING_COMPLETED"
-              progressColor="secondary"
-              start={100}
-            />
-          )}
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Table size="small" aria-label="jobs">
