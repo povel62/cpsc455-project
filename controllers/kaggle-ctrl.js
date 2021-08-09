@@ -369,7 +369,8 @@ function uploadJobHelper(fileData, req, res) {
               "povel62@yahoo.ca",
               job.name,
               HOSTNAME +
-                `job/${job._id}/status/${jobCtrl.JobStatus.TRAINING_COMPLETED}`,
+                `job/${job._id}/status/${jobCtrl.JobStatus.TRAINING_COMPLETED}?key=` +
+                encrypt(process.env.API_SECRET_TEXT),
               true
             ).then((s2) => {
               return res.status(201).json({
@@ -447,7 +448,8 @@ function uploadTestFile(tmpFileData, req, res) {
             "povel62@yahoo.ca",
             job.name,
             HOSTNAME +
-              `job/${job._id}/status/${jobCtrl.JobStatus.PREDICTING_COMPLETED}`,
+              `job/${job._id}/status/${jobCtrl.JobStatus.PREDICTING_COMPLETED}?key=` +
+              encrypt(process.env.API_SECRET_TEXT),
             false
           ).then((s2) => {
             return res.status(201).json({

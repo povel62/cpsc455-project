@@ -151,16 +151,9 @@ export default function ControlDashboard(props) {
   }
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      loadJobs();
-    }, 60000); // refreshes the jobs every minute
-
-    return () => {
-      clearInterval(timer);
-    };
+    loadJobs();
   }, []);
 
-  loadJobs();
   return (
     <div className="controlDashboard">
       <div className={classes.root}>
