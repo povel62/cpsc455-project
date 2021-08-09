@@ -124,7 +124,7 @@ export default function ControlDashboard(props) {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const login_token = useSelector((state) => state.loginReducer);
-  const isPremium = login_token.isPremium;
+  const isPremium = login_token.premium;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -247,19 +247,20 @@ export default function ControlDashboard(props) {
                   <TableCell />
                   <TableCell align="center" className="demo__2">
                     {/* JobModal contains add job button */}
-                    {isPremium && (
+                    {(isPremium ||
+                      (!isPremium && login_token.jobs.length <= 10)) && (
                       <JobModal
                         refreshJobs={() => loadJobs()}
                         setTab={props.setTab}
                       />
                     )}
-                    {!isPremium && login_token.jobs.length <= 10 && (
+                    {/* {!isPremium && login_token.jobs.length < 10 && (
                       <JobModal
                         refreshJobs={() => loadJobs()}
                         setTab={props.setTab}
                       />
-                    )}
-                    {!isPremium && login_token.jobs.length >= 10 && (
+                    )} */}
+                    {!isPremium && login_token.jobs.length > 10 && (
                       <Tooltip title="Add a job" aria-label="add a job">
                         <Button
                           variant="contained"
