@@ -126,11 +126,15 @@ const Row = ({ row, refreshJobs }) => {
             <PredictModal
               refreshJobs={() => refreshJobs()}
               jobId={row.id}
-              showPredict={row.status == "TRAINING_COMPLETED"}
-              showDownload={
+              showPredict={
+                row.status == "TRAINING_COMPLETED" ||
                 row.status == "PREDICTING_COMPLETED" ||
                 row.status == "PREDICTING"
               }
+              // showDownload={
+              //   row.status == "PREDICTING_COMPLETED" ||
+              //   row.status == "PREDICTING"
+              // }
             />
           </Tooltip>
         </TableCell>

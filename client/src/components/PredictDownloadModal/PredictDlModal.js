@@ -57,6 +57,10 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
     setOpenSnackBar(false);
   };
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   const handleClose = () => {
     setOpen(false);
     refreshJobs();
@@ -168,6 +172,19 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       </Tooltip>
       <h2 id="modal-title">Download Prediction File</h2>
       <br />
+      <Tooltip
+        title="Download latest prediction file"
+        aria-label="Download latest prediction file"
+      >
+        <Button
+          variant="contained"
+          component="span"
+          onClick={handleDlPredict}
+          endIcon={<CloudDownloadIcon />}
+        >
+          Download Prediction File
+        </Button>
+      </Tooltip>
     </div>
   );
 
@@ -195,7 +212,7 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
             <Button
               variant="contained"
               component="span"
-              onClick={handleDlPredict}
+              onClick={handleOpen}
               endIcon={<CloudDownloadIcon />}
             >
               Latest Prediction
