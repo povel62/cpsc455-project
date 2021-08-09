@@ -21,7 +21,9 @@ const Home = (props) => {
           <img width="150" height="150" src="../logo.png" />
         </Grid>
 
-        {!props.isLanding && <ControlDashboard></ControlDashboard>}
+        {!props.isLanding && (
+          <ControlDashboard setTab={props.setTab}></ControlDashboard>
+        )}
 
         <br />
         <hr />

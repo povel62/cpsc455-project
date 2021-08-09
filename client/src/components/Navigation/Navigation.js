@@ -244,7 +244,9 @@ export default function Navigation(props) {
         </Toolbar>
       </AppBar>
       <>
-        {selectedTab === 0 && <Home isLanding={false} />}
+        {selectedTab === 0 && (
+          <Home isLanding={false} setTab={setSelectedTab} />
+        )}
         {selectedTab === 1 && <Tutorial />}
         {selectedTab === 2 && <Faq />}
         {selectedTab === 3 && (

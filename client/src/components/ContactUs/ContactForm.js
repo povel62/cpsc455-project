@@ -4,7 +4,6 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -41,9 +40,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ContactForm = () => {
+  const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
   const [status, setStatus] = useState("Submit");
-  const login_token = useSelector((state) => state.loginReducer);
+  const [values, setValues] = useState({
+    message: "",
+    email: login_token.email,
+    name: login_token.fname + " " + login_token.lname,
+  });
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarContent, setSnackBarContent] = useState({
@@ -60,13 +64,23 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // const { name, email, message } = e.target.elements;
+
+    if (values.name == "" || values.email == "" || values.message == "") {
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "Please fill in all fields",
+        severity: "warning",
+      });
+      return;
+    }
+
     setStatus("Sending...");
-    const { name, email, message } = e.target.elements;
 
     let details = {
-      name: name.value,
-      email: email.value,
-      message: message.value,
+      name: values.name,
+      email: values.email,
+      message: values.message,
     };
 
     let response = await fetch("/api/user/contact", {
@@ -146,6 +160,10 @@ const ContactForm = () => {
                     label="Full Name"
                     name="name"
                     autoComplete="name"
+                    defaultValue={values.name}
+                    onChange={(e) =>
+                      setValues({ ...values, name: e.target.value })
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -157,6 +175,10 @@ const ContactForm = () => {
                     label="E-mail"
                     name="email"
                     autoComplete="email"
+                    defaultValue={values.email}
+                    onChange={(e) =>
+                      setValues({ ...values, email: e.target.value })
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -169,6 +191,9 @@ const ContactForm = () => {
                     id="message"
                     label="Message"
                     name="message"
+                    onChange={(e) =>
+                      setValues({ ...values, message: e.target.value })
+                    }
                   />
                 </Grid>
               </Grid>
@@ -184,27 +209,9 @@ const ContactForm = () => {
             </form>
           </Paper>
         </div>
-        <Box mt={5}></Box>
       </Container>
     </>
   );
-  // (
-  //   <form onSubmit={handleSubmit}>
-  //     <div>
-  //       <label htmlFor="name">Name:</label>
-  //       <input type="text" id="name" required />
-  //     </div>
-  //     <div>
-  //       <label htmlFor="email">Email:</label>
-  //       <input type="email" id="email" required />
-  //     </div>
-  //     <div>
-  //       <label htmlFor="message">Message:</label>
-  //       <textarea id="message" required />
-  //     </div>
-  //     <button type="submit">{status}</button>
-  //   </form>
-  // );
 };
 
 export default ContactForm;
