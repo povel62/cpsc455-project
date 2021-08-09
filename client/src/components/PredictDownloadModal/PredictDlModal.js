@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { MenuItem } from "@material-ui/core";
+import { Select, MenuItem, CircularProgress } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 
@@ -16,7 +16,7 @@ function Alert(props) {
 }
 
 function getModalStyle() {
-  const top = 5;
+  const top = 15;
 
   return {
     top: `${top}%`,
@@ -26,11 +26,9 @@ function getModalStyle() {
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    overflowY: "scroll",
-    overflowX: "scroll",
     position: "absolute",
-    width: "1100px",
-    height: "750px",
+    width: "500px",
+    height: "300px",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -43,6 +41,11 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
+  const [preds, setPreds] = useState([]);
+  const [pred, setPred] = useState("");
+
+  const [load, setLoad] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarContent, setSnackBarContent] = useState({
@@ -58,11 +61,15 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
   };
 
   const handleOpen = () => {
+    setLoad(true);
     setOpen(true);
+    handleFileNames();
   };
 
   const handleClose = () => {
     setOpen(false);
+    setSubmitting(false);
+    setLoad(false);
     refreshJobs();
   };
 
@@ -86,9 +93,9 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
   };
 
   const handleFileNames = async () => {
-    let fileList = [];
     await getFileNames(jobId)
       .then((res) => {
+        setLoad(false);
         let entries = res.map((ele, i) => {
           let name;
           try {
@@ -104,21 +111,18 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
         });
         console.log("success");
         console.log(entries);
-        fileList = entries;
+        setPreds(entries);
       })
       .catch(() => {
         console.log("fail");
-        fileList = [];
+        setPreds([]);
       });
-    return fileList;
   };
 
   const handleDlPredict = async () => {
-    let fileList = await handleFileNames();
-
-    console.log(fileList);
-    if (fileList && fileList.length >= 1) {
-      let fileName = fileList[0].props.value;
+    if (preds && preds.length >= 1) {
+      setSubmitting(true);
+      let fileName = pred;
       axios
         .get("/api/job/" + jobId + "/pred/" + fileName, {
           headers: {
@@ -126,6 +130,7 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
           },
         })
         .then((res) => {
+          setSubmitting(false);
           if (res.status === 200) {
             let name = fileName;
             const addr = window.URL.createObjectURL(new Blob([res.data]));
@@ -163,28 +168,57 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      <Tooltip title="close window" aria-label="close window">
-        <FaTimesCircle
-          size="1.5em"
-          onClick={handleClose}
-          style={{ cursor: "pointer" }}
-        />
-      </Tooltip>
+      {!submitting && (
+        <Tooltip title="close window" aria-label="close window">
+          <FaTimesCircle
+            size="1.5em"
+            onClick={handleClose}
+            style={{ cursor: "pointer" }}
+          />
+        </Tooltip>
+      )}
+      {submitting && <p> Cannot close while download request is being made</p>}
       <h2 id="modal-title">Download Prediction File</h2>
       <br />
-      <Tooltip
-        title="Download latest prediction file"
-        aria-label="Download latest prediction file"
-      >
-        <Button
-          variant="contained"
-          component="span"
-          onClick={handleDlPredict}
-          endIcon={<CloudDownloadIcon />}
+      {!load && (
+        <Select
+          required
+          disabled={submitting || load}
+          defaultValue={() => {
+            if (preds && preds.length >= 1) {
+              setPred(preds[0].props.value);
+              return preds[0].props.value;
+            }
+          }}
+          onChange={(e) => {
+            if (e.target.value) {
+              setPred(e.target.value);
+            }
+          }}
         >
-          Download Prediction File
-        </Button>
-      </Tooltip>
+          {preds}
+        </Select>
+      )}
+      {load && <CircularProgress size={44} />}
+      <br />
+      <br />
+      {submitting && <CircularProgress size={44} />}
+      {!submitting && (
+        <Tooltip
+          title="Download latest prediction file"
+          aria-label="Download latest prediction file"
+        >
+          <Button
+            variant="contained"
+            component="span"
+            disabled={preds.length <= 1}
+            onClick={handleDlPredict}
+            endIcon={<CloudDownloadIcon />}
+          >
+            Download Prediction File
+          </Button>
+        </Tooltip>
+      )}
     </div>
   );
 

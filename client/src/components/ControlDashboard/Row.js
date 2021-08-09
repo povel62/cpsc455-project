@@ -131,10 +131,6 @@ const Row = ({ row, refreshJobs }) => {
                 row.status == "PREDICTING_COMPLETED" ||
                 row.status == "PREDICTING"
               }
-              // showDownload={
-              //   row.status == "PREDICTING_COMPLETED" ||
-              //   row.status == "PREDICTING"
-              // }
             />
           </Tooltip>
         </TableCell>
