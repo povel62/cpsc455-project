@@ -15,9 +15,7 @@ const {
 const { sendTemplateEmail } = require("./send-email");
 const fs = require("fs");
 const csv = require("csv-parser");
-// const { validateGuest } = require("../util/validation");
-// const jwt = require("jsonwebtoken");
-// const { secret } = require("../util/security");
+const { encrypt, decrypt } = require("../util/security");
 
 tryTest = async () => {
   let options = {
@@ -143,7 +141,9 @@ uploadJob = async (req, res) => {
           job.targetColumnName,
           "povel62@yahoo.ca",
           job.name,
-          HOSTNAME + `job/${job._id}/status/${JobStatus.TRAINING_COMPLETED}`,
+          HOSTNAME +
+            `job/${job._id}/status/${JobStatus.TRAINING_COMPLETED}?key=` +
+            encrypt(process.env.API_SECRET_TEXT),
           true
         ).then((s2) => {
           return res.status(201).json({
@@ -239,7 +239,8 @@ uploadTestFile = async (req, res) => {
             "povel62@yahoo.ca",
             job.name,
             HOSTNAME +
-              `job/${job._id}/status/${JobStatus.PREDICTING_COMPLETED}`,
+              `job/${job._id}/status/${JobStatus.PREDICTING_COMPLETED}?key=` +
+              encrypt(process.env.API_SECRET_TEXT),
             false
           ).then((s2) => {
             return res.status(201).json({
@@ -456,8 +457,13 @@ updateJob = async (req, res) => {
 };
 
 updateJobStatus = async (req, res) => {
+  let key = req.query.key;
+  if (!req.query.key || decrypt(key) !== process.env.API_SECRET_TEXT) {
+    return res
+      .status(400)
+      .json({ success: false, error: "Unauthorized use of the api detected." });
+  }
   const body = req.body;
-
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
       return res.status(404).json({
@@ -695,8 +701,25 @@ addUsersToJob = async (req, res) => {
               message: "Job not found!",
             });
           }
-          userIds.map((x) => {
-            addJobToUser(x, job);
+          userIds.map(async (x) => {
+            await User.findOne({ _id: x }, async (err, user) => {
+              if (err) {
+                console.log(`User: ${x} not found`);
+              }
+              if (!user) {
+                console.log(`User: ${x} not found`);
+              }
+              try {
+                addJobToUser(x, job);
+                await sendTemplateEmail({
+                  to: user.email,
+                  tier: "Premium",
+                  user: user.fname + " " + user.lname,
+                  templateName: "shared",
+                  job_name: job.name,
+                });
+              } catch (err) {}
+            });
           });
           return res.status(200).json({ success: true });
         }
