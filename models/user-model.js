@@ -10,7 +10,6 @@ const User = new Schema(
     lname: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
-    // dob: { type: String, required: false },
     kusername: { type: String, required: false },
     kapi: { type: String, get: decrypt, set: encrypt, required: false },
     jobs: [{ type: Schema.Types.ObjectId, ref: "jobs" }],

@@ -15,9 +15,6 @@ const {
 const { sendTemplateEmail } = require("./send-email");
 const fs = require("fs");
 const csv = require("csv-parser");
-// const { validateGuest } = require("../util/validation");
-// const jwt = require("jsonwebtoken");
-// const { secret } = require("../util/security");
 
 tryTest = async () => {
   let options = {
@@ -34,24 +31,6 @@ tryTest = async () => {
     return results1;
   });
 };
-
-// /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
-//          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
-//          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
-//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-search-bm.sh\
-//          "60dd54803baa72ef93306ea5" "HEHE" "/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dd54803baa72ef93306ea5/train.csv" "5" "Date" "povel62@yahoo.ca" "https://cpsc455-project.herokuapp.com/apijob/60dd54803baa72ef93306ea5/status/TRAINING_COMPLETED"
-
-// /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
-//          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error_predict.err\
-//          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out_predict.out\
-//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
-//          "60dcc25271a132cc9c05d1e2" "HEHE" "/ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcc25271a132cc9c05d1e2/8f2e83efe416a93719a5.csv" "5" "Date" "povel62@yahoo.ca"
-
-//  /opt/slurm/bin/sbatch --partition=blackboxml --nodelist=chicago\
-//          --error=/ubc/cs/research/plai-scratch/BlackBoxML/error.err\
-//          --output=/ubc/cs/research/plai-scratch/BlackBoxML/out.out\
-//          /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/run-client-produce.sh\
-//          60dcca95c81cf5d1580c45e4 HEHE /ubc/cs/research/plai-scratch/BlackBoxML/bbml-backend-3/ensemble_squared/datasets/60dcca95c81cf5d1580c45e4/829036a5f48b16b37684.csv 5 Date povel62@yahoo.ca https://cpsc455-project.herokuapp.com/apijob/60dd54803baa72ef93306ea5/status/TRAINING_COMPLETED
 
 const JobStatus = {
   CREATED: "CREATED",
@@ -319,7 +298,7 @@ getFileText = async (req, res) => {
     getPredErrorOutputFileText(job._id, path, req.params.fileName)
       .then((s1) => {
         try {
-          var array = fs.readFileSync(path).toString("utf8").split("\n");
+          let array = fs.readFileSync(path).toString("utf8").split("\n");
           fs.unlinkSync(path);
           return res.status(200).json(array);
         } catch (err) {
@@ -439,7 +418,6 @@ updateJob = async (req, res) => {
     job
       .save()
       .then(() => {
-        // TODO: According to status, submit job for training or pred (submit job code)
         return res.status(200).json({
           success: true,
           id: job._id,
@@ -607,18 +585,23 @@ getJobById = async (req, res) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
-
     if (!job) {
       return res.status(404).json({ success: false, error: `Job not found` });
     }
-    return res.status(200).json({ success: true, data: job });
+    if (checkJobUsers(job, req._id)) {
+      return res.status(200).json({ success: true, data: job });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, error: `User not authorized` });
+    }
   }).catch((err) => {
     return res.status(400).json({ success: false, error: err });
   });
 };
 
 getJobs = async (req, res) => {
-  return await Job.find({}, (err, job) => {
+  return Job.find({}, (err, job) => {
     if (err) {
       return res.status(400).json({ success: false, error: err });
     }
@@ -643,7 +626,7 @@ getJobs = async (req, res) => {
 
 getUserJobs = async (req, res) => {
   let userId = req._id;
-  return await Job.find(
+  return Job.find(
     { users: { $elemMatch: { $eq: ObjectId(userId) } } },
     (err, job) => {
       if (err) {

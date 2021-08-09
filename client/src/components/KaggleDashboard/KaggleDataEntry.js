@@ -21,7 +21,7 @@ const KaggleDataEntry = (props) => {
     if (arr.length === 0) {
       return false;
     } else {
-      let res = arr[arr.length - 1].toLowerCase() === "csv" ? true : false;
+      let res = arr[arr.length - 1].toLowerCase() === "csv";
       return res;
     }
   };
