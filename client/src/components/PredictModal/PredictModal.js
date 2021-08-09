@@ -264,38 +264,6 @@ export default function PredictModal({
           {snackBarContent.content}
         </Alert>
       </Snackbar>
-      {/* {showDownload && (
-        <div>
-          <Tooltip
-            title="Download latest prediction file"
-            aria-label="Download latest prediction file"
-          >
-            <Button
-              variant="contained"
-              component="span"
-              onClick={handleDlPredict}
-              endIcon={<CloudDownloadIcon />}
-            >
-              Latest Prediction
-            </Button>
-          </Tooltip>
-          <br />
-          <br />
-          <Tooltip
-            title="Submit new testfile"
-            aria-label="Submit new test file for prediction"
-          >
-            <Button
-              variant="contained"
-              component="span"
-              onClick={handleOpen}
-              endIcon={<DonutLargeIcon />}
-            >
-              Submit New Test
-            </Button>
-          </Tooltip>
-        </div>
-      )} */}
       {showPredict && (
         <Tooltip
           title="Submit testfile"

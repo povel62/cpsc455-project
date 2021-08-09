@@ -205,8 +205,8 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {submitting && <CircularProgress size={44} />}
       {!submitting && (
         <Tooltip
-          title="Download latest prediction file"
-          aria-label="Download latest prediction file"
+          title="Download prediction file"
+          aria-label="Download prediction file"
         >
           <Button
             variant="contained"
@@ -240,8 +240,8 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {showDownload && (
         <div>
           <Tooltip
-            title="Download latest prediction file"
-            aria-label="Download latest prediction file"
+            title="Download prediction file"
+            aria-label="Download prediction file"
           >
             <Button
               variant="contained"
@@ -249,7 +249,7 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
               onClick={handleOpen}
               endIcon={<CloudDownloadIcon />}
             >
-              Latest Prediction
+              Download Prediction
             </Button>
           </Tooltip>
           <br />

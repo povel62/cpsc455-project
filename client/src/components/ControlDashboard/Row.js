@@ -136,7 +136,7 @@ const Row = ({ row, refreshJobs }) => {
         </TableCell>
         <TableCell align="center">
           <Tooltip
-            title="download predit job"
+            title="download predict job"
             aria-label="click to download predicted files"
           >
             <PredictDlModal
@@ -205,7 +205,7 @@ const Row = ({ row, refreshJobs }) => {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Table size="small" aria-label="jobs">

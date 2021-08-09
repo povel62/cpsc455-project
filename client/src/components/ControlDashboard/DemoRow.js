@@ -50,20 +50,21 @@ const DemoRow = () => {
           <Button
             variant="contained"
             component="span"
-            endIcon={<CloudDownloadIcon />}
-          >
-            Latest Prediction
-          </Button>
-          <br />
-          <br />
-          <Button
-            variant="contained"
-            component="span"
             endIcon={<DonutLargeIcon />}
           >
             Submit New Test
           </Button>
         </TableCell>
+        <TableCell align="center" className="demo__7">
+          <Button
+            variant="contained"
+            component="span"
+            endIcon={<CloudDownloadIcon />}
+          >
+            Download Prediction
+          </Button>
+        </TableCell>
+
         <TableCell align="center" className="demo__8">
           <Button
             variant="contained"
@@ -114,7 +115,6 @@ const DemoRow = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  \
                   <TableRow>
                     <TableCell component="th" scope="row">
                       2021-07-31
