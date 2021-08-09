@@ -162,7 +162,7 @@ const KaggleSearchPane = () => {
   return (
     <Paper className="KagglePanel">
       <h2 className="KagglePanelHeader">
-        Kaggle competition and dataset sources
+        Kaggle Competition and Dataset Sources
       </h2>
       <List className="KaggleList" aria-labelledby="nested-list-subheader">
         <KaggleSearchForm GetKaggle={GetKaggle} />
