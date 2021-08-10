@@ -34,6 +34,10 @@ import {
 } from "../../redux/actions/actions";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 
+// tour stuff
+import ReactJoyride, { EVENTS } from "react-joyride";
+import steps from "./kaggleTourSteps";
+
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -66,8 +70,42 @@ const KaggleDashBoard = (props) => {
   const [checked, setChecked] = useState(false);
 
   KaggleDashBoard.propTypes = {
+    joyride: PropTypes.shape({
+      callback: PropTypes.func,
+    }),
     tab: PropTypes.number.isRequired,
     setTab: PropTypes.func.isRequired,
+  };
+
+  KaggleDashBoard.defaultProps = {
+    joyride: {},
+  };
+  const [run, setRun] = useState(false);
+
+  const handleClickStart = (e) => {
+    e.preventDefault();
+    setRun(true);
+  };
+
+  const handleJoyrideCallback = (data) => {
+    const { joyride } = props;
+    const { type } = data;
+
+    if (type === EVENTS.TOUR_END && run) {
+      setRun(false);
+    }
+
+    if (type === EVENTS.TARGET_NOT_FOUND && run) {
+      setRun(false);
+    }
+
+    if (typeof joyride.callback === "function") {
+      joyride.callback(data);
+    } else {
+      console.group(type);
+      console.log(data); //eslint-disable-line no-console
+      console.groupEnd();
+    }
   };
 
   const checkAuth = () => {
@@ -109,6 +147,23 @@ const KaggleDashBoard = (props) => {
 
   return (
     <div className="KaggleDash">
+      <ReactJoyride
+        continuous
+        scrollToFirstStep
+        showProgress
+        showSkipButton
+        run={run}
+        steps={steps}
+        styles={{
+          options: {
+            arrowColor: "#e3ffeb",
+            // primaryColor: "#2196f3",
+            zIndex: 1000,
+          },
+        }}
+        callback={handleJoyrideCallback}
+      />
+
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -183,6 +238,10 @@ const KaggleDashBoard = (props) => {
       </Backdrop>
       {enabled === true && checked === true && (
         <div>
+          <Button onClick={handleClickStart} color="primary" variant="outlined">
+            Take a tour of Kaggle dashboard
+          </Button>
+
           <br />
           <Grid container spacing={3}>
             <Grid item xs>

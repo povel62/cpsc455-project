@@ -17,7 +17,7 @@ import ReactJoyride, { EVENTS } from "react-joyride";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import DemoRow from "./DemoRow";
-import steps from "./demoSteps";
+import steps from "./tourSteps";
 
 import Tooltip from "@material-ui/core/Tooltip";
 import AddBoxIcon from "@material-ui/icons/AddBox";

@@ -13,6 +13,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import GradeTwoToneIcon from "@material-ui/icons/GradeTwoTone";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import Grid from "@material-ui/core/Grid";
@@ -53,6 +54,7 @@ export default function Navigation(props) {
   let history = useHistory();
   const fname = useSelector((state) => state.loginReducer.fname);
   const isGuest = useSelector((state) => state.loginReducer.guest);
+  const isPremium = useSelector((state) => state.loginReducer.premium);
 
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -202,6 +204,7 @@ export default function Navigation(props) {
             </Grid>
             <Grid item xs style={{ textAlign: "end" }}>
               <div>
+                {isPremium && <GradeTwoToneIcon fontSize="small" />}
                 <Tooltip title="Account Menu" aria-label="Open Account Menu">
                   <IconButton
                     aria-label="account of current user"
@@ -210,7 +213,8 @@ export default function Navigation(props) {
                     onClick={handleMenu}
                     color="inherit"
                   >
-                    <AccountCircle /> {!isGuest && fname} {isGuest && "Guest"}
+                    <AccountCircle fontSize="large" />
+                    {!isGuest && fname} {isGuest && "Guest"}
                   </IconButton>
                 </Tooltip>
 
