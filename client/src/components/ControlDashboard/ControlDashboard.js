@@ -239,21 +239,16 @@ export default function ControlDashboard(props) {
                   <TableCell />
                   <TableCell />
                   <TableCell align="center" className="demo__2">
-                    {/* JobModal contains add job button */}
                     {(isPremium ||
-                      (!isPremium && login_token.jobs.length <= 10)) && (
+                      (!isPremium && login_token.jobs.length < 10)) && (
                       <JobModal
+                        setOpenSnackBar={setOpenSnackBar}
+                        setSnackBarContent={setSnackBarContent}
                         refreshJobs={() => loadJobs()}
                         setTab={props.setTab}
                       />
                     )}
-                    {/* {!isPremium && login_token.jobs.length < 10 && (
-                      <JobModal
-                        refreshJobs={() => loadJobs()}
-                        setTab={props.setTab}
-                      />
-                    )} */}
-                    {!isPremium && login_token.jobs.length > 10 && (
+                    {!isPremium && login_token.jobs.length >= 10 && (
                       <Tooltip title="Add a job" aria-label="add a job">
                         <Button
                           variant="contained"
@@ -283,7 +278,13 @@ export default function ControlDashboard(props) {
                   .reverse()
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
-                    <Row key={index} row={row} refreshJobs={() => loadJobs()} />
+                    <Row
+                      key={index}
+                      row={row}
+                      refreshJobs={() => loadJobs()}
+                      setOpenSnackBar={setOpenSnackBar}
+                      setSnackBarContent={setSnackBarContent}
+                    />
                   ))}
                 {run && <DemoRow />}
               </TableBody>

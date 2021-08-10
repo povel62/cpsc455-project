@@ -287,11 +287,8 @@ export default function AccountDashboard() {
                               onMouseDown={handleMouseDownPassword}
                               edge="end"
                             >
-                              {values.showPassword ? (
-                                <Visibility />
-                              ) : (
-                                <VisibilityOff />
-                              )}
+                              {values.showPassword && <Visibility />}
+                              {!values.showPassword && <VisibilityOff />}
                             </IconButton>
                           </InputAdornment>
                         }
@@ -386,7 +383,12 @@ export default function AccountDashboard() {
                     Edit
                   </Button>
                   <br />
-                  {!isPremium && <PaymentModal />}
+                  {!isPremium && (
+                    <PaymentModal
+                      setOpenSnackBar={setOpenSnackBar}
+                      setSnackBarContent={setSnackBarContent}
+                    />
+                  )}
                 </div>
               )}
             </form>

@@ -102,6 +102,7 @@ function PredictUploadButton(props) {
           color="primary"
           component="span"
           startIcon={<CloudUploadIcon />}
+          disabled={props.submitting}
         >
           Upload File
         </Button>

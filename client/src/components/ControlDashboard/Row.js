@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
@@ -23,13 +23,6 @@ import { InlineIcon } from "@iconify/react";
 import kaggleIcon from "@iconify-icons/simple-icons/kaggle";
 import PredictDlModal from "../PredictDownloadModal/PredictDlModal";
 
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
 const useRowStyles = makeStyles({
   root: {
     "& > *": {
@@ -38,20 +31,8 @@ const useRowStyles = makeStyles({
   },
 });
 
-const Row = ({ row, refreshJobs }) => {
+const Row = ({ row, refreshJobs, setOpenSnackBar, setSnackBarContent }) => {
   const isPremium = useSelector((state) => state.loginReducer.premium);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarContent, setSnackBarContent] = useState({
-    content: " ",
-    severity: "success",
-  });
-
-  const handleCloseSnackBar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-  };
 
   const login_token = useSelector((state) => state.loginReducer);
 
@@ -81,27 +62,12 @@ const Row = ({ row, refreshJobs }) => {
     refreshJobs();
   };
 
-  // const seeJobErrorEvent = () => alert("checkout job error/output");
-
   const [open, setOpen] = React.useState(false);
 
   const classes = useRowStyles();
 
   return (
     <React.Fragment>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackBar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseSnackBar}
-          severity={snackBarContent.severity}
-        >
-          {snackBarContent.content}
-        </Alert>
-      </Snackbar>
       <TableRow className={classes.root} hover={true}>
         <TableCell>
           <IconButton
@@ -125,6 +91,8 @@ const Row = ({ row, refreshJobs }) => {
         <TableCell align="center">
           <Tooltip title="predit job" aria-label="click to start predicting">
             <PredictModal
+              setOpenSnackBar={setOpenSnackBar}
+              setSnackBarContent={setSnackBarContent}
               refreshJobs={() => refreshJobs()}
               jobId={row.id}
               showPredict={
@@ -141,6 +109,8 @@ const Row = ({ row, refreshJobs }) => {
             aria-label="click to download predicted files"
           >
             <PredictDlModal
+              setOpenSnackBar={setOpenSnackBar}
+              setSnackBarContent={setSnackBarContent}
               refreshJobs={() => refreshJobs()}
               jobId={row.id}
               showDownload={
@@ -156,7 +126,11 @@ const Row = ({ row, refreshJobs }) => {
               title="Get share link for this job"
               aria-label="get link to share this job"
             >
-              <ShareModal jobID={row.id}></ShareModal>
+              <ShareModal
+                jobID={row.id}
+                setOpenSnackBar={setOpenSnackBar}
+                setSnackBarContent={setSnackBarContent}
+              ></ShareModal>
             </Tooltip>
           )}
         </TableCell>

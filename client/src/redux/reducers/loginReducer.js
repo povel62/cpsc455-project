@@ -35,8 +35,4 @@ const loginReducer = (
       return state;
   }
 };
-
-// To extract loginReducer
-//const login_token = useSelector((state) => state.loginReducer);
-
 export default loginReducer;

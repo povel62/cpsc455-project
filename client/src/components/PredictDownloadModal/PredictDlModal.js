@@ -8,12 +8,6 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Select, MenuItem, CircularProgress } from "@material-ui/core";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 function getModalStyle() {
   const top = 15;
@@ -30,13 +24,18 @@ const useStyles = makeStyles((theme) => ({
     width: "500px",
     height: "350px",
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[20],
     padding: theme.spacing(2, 4, 3),
   },
 }));
 
-export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
+export default function PredictDlModal({
+  refreshJobs,
+  jobId,
+  showDownload,
+  setOpenSnackBar,
+  setSnackBarContent,
+}) {
   const login_token = useSelector((state) => state.loginReducer);
   const isPremium = login_token.premium;
   const classes = useStyles();
@@ -47,19 +46,6 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   const [load, setLoad] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarContent, setSnackBarContent] = useState({
-    content: " ",
-    severity: "success",
-  });
-
-  const handleCloseSnackBar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-  };
 
   const handleOpen = () => {
     setLoad(true);
@@ -134,20 +120,20 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
         .then((res) => {
           setSubmitting(false);
           if (res.status === 200) {
-            let name = fileName;
             const addr = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement("a");
             link.href = addr;
-            link.setAttribute("download", name);
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(addr);
             setOpenSnackBar(true);
             setSnackBarContent({
-              content: "Downloading file...",
+              content: "Downloading..." + fileName,
               severity: "info",
             });
+            handleClose();
           } else {
             setOpenSnackBar(true);
             setSnackBarContent({
@@ -170,18 +156,14 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      {!submitting && (
-        <Tooltip title="close window" aria-label="close window">
-          <FaTimesCircle
-            size="1.5em"
-            onClick={handleClose}
-            style={{ cursor: "pointer" }}
-          />
-        </Tooltip>
-      )}
-      {submitting && <p> Cannot close while download request is being made</p>}
+      <Tooltip title="close window" aria-label="close window">
+        <FaTimesCircle
+          size="1.5em"
+          onClick={handleClose}
+          style={{ cursor: "pointer" }}
+        />
+      </Tooltip>
       <h2 id="modal-title">Download Prediction File</h2>
-      <br />
       {!isPremium && (
         <p>
           Upgrade to Premium and unlock the ability to download any of your
@@ -210,41 +192,26 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {load && <CircularProgress size={44} />}
       <br />
       <br />
-      {submitting && <CircularProgress size={44} />}
-      {!submitting && (
-        <Tooltip
-          title="Download prediction file"
-          aria-label="Download prediction file"
+      <Tooltip
+        title="Download prediction file"
+        aria-label="Download prediction file"
+      >
+        <Button
+          variant="contained"
+          component="span"
+          disabled={preds.length < 1 || submitting}
+          onClick={handleDlPredict}
+          endIcon={<CloudDownloadIcon />}
         >
-          <Button
-            variant="contained"
-            component="span"
-            disabled={preds.length < 1}
-            onClick={handleDlPredict}
-            endIcon={<CloudDownloadIcon />}
-          >
-            Download Prediction File
-          </Button>
-        </Tooltip>
-      )}
+          Download Prediction File{" "}
+          {submitting && <CircularProgress size={25} />}
+        </Button>
+      </Tooltip>
     </div>
   );
 
   return (
     <div>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackBar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackBar}
-          severity={snackBarContent.severity}
-        >
-          {snackBarContent.content}
-        </Alert>
-      </Snackbar>
       {showDownload && (
         <div>
           <Tooltip

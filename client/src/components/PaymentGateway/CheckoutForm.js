@@ -1,20 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 import { setPremium } from "../../redux/actions/actions";
+import { CircularProgress } from "@material-ui/core";
 
-export const CheckoutForm = () => {
+export const CheckoutForm = ({
+  setOpenSnackBar,
+  setSnackBarContent,
+  handleClose,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
   let token = useSelector((state) => state.loginReducer.accessToken);
+  const [submitting, setSubmitting] = useState(false);
 
   const updatePremium = async () => {
-    //e.preventDefault();
-    //setEditInfo(!editInfo);
-
     const response = await fetch("/api/user/update", {
       method: "PUT",
       headers: {
@@ -26,23 +29,14 @@ export const CheckoutForm = () => {
       }),
     });
 
-    // setOpenSnackBar(true);
-    if (response.status === 200) {
+    if (response.status == 200) {
       dispatch(setPremium(true));
-      // setSnackBarContent({
-      //   content: "Account made premium successfully",
-      //   severity: "success",
-      // });
+      setSubmitting(false);
     }
-    //else {
-    // setSnackBarContent({
-    //   content: "Something went wrong please try again later",
-    //   severity: "error",
-    // });
-    //}
   };
 
   const handleSubmit = async (event) => {
+    setSubmitting(true);
     event.preventDefault();
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
@@ -67,16 +61,36 @@ export const CheckoutForm = () => {
         );
 
         console.log("Stripe 35 | data", response.data.success);
+
         if (response.data.success) {
           console.log("CheckoutForm.js 25 | payment successful!");
           updatePremium();
-          alert("Payment successful");
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "payment successful",
+            severity: "success",
+          });
+          handleClose();
         }
-      } catch (error) {
-        console.log("CheckoutForm.js 28 | ", error);
+      } catch (errorS) {
+        setSubmitting(false);
+        console.log("CheckoutForm.js 28 | ", errorS);
+        setOpenSnackBar(true);
+        setSnackBarContent({
+          content: "That didn't go through. Please try again",
+          severity: "error",
+        });
       }
     } else {
+      setSubmitting(false);
       console.log(error.message);
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content:
+          "Payment could not be made at this time. Please try again later",
+        severity: "error",
+      });
+      handleClose();
     }
   };
 
@@ -86,8 +100,14 @@ export const CheckoutForm = () => {
       <CardElement />
       <br />
       <br />
-      <Button variant="contained" color="primary" onClick={handleSubmit}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        disabled={submitting}
+      >
         Pay Now
+        {submitting && <CircularProgress size={24} />}
       </Button>
     </form>
   );

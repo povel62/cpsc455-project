@@ -21,13 +21,12 @@ const useStyles = makeStyles((theme) => ({
     width: "600px",
     height: "350px",
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[20],
     padding: theme.spacing(2, 4, 3),
   },
 }));
 
-export default function PaymentModal() {
+export default function PaymentModal({ setSnackBarContent, setOpenSnackBar }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -51,7 +50,11 @@ export default function PaymentModal() {
       </Tooltip>
       <h2 id="modal-title">Get Premium</h2>
       <p id="modal-description">Please enter you card details belows</p>
-      <StripeContainer />
+      <StripeContainer
+        setOpenSnackBar={setOpenSnackBar}
+        setSnackBarContent={setSnackBarContent}
+        handleClose={handleClose}
+      />
     </div>
   );
 

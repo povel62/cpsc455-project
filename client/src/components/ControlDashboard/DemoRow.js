@@ -52,7 +52,7 @@ const DemoRow = () => {
             component="span"
             endIcon={<DonutLargeIcon />}
           >
-            Submit New Test
+            Predict
           </Button>
         </TableCell>
         <TableCell align="center" className="demo__7">

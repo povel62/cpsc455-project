@@ -9,10 +9,14 @@ const PUBLIC_KEY =
 
 const stripeTestPromise = loadStripe(PUBLIC_KEY);
 
-const Stripe = () => {
+const Stripe = ({ setOpenSnackBar, setSnackBarContent, handleClose }) => {
   return (
     <Elements stripe={stripeTestPromise}>
-      <CheckoutForm />
+      <CheckoutForm
+        setOpenSnackBar={setOpenSnackBar}
+        setSnackBarContent={setSnackBarContent}
+        handleClose={handleClose}
+      />
     </Elements>
   );
 };
