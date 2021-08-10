@@ -110,7 +110,10 @@ export default function ShareModal({ jobID }) {
     } else {
       setOpenSnackBar(true);
       setSnackBarContent({
-        content: "Something went wrong. Please try again",
+        content:
+          response.status === 404
+            ? "User not found"
+            : "Something went wrong. Please try again",
         severity: "error",
       });
     }
