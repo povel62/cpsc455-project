@@ -239,7 +239,6 @@ export default function ControlDashboard(props) {
                   <TableCell />
                   <TableCell />
                   <TableCell align="center" className="demo__2">
-                    {/* JobModal contains add job button */}
                     {(isPremium ||
                       (!isPremium && login_token.jobs.length < 10)) && (
                       <JobModal

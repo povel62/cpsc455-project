@@ -33,7 +33,6 @@ function AddStepper({
   handleClose,
 }) {
   let isPremium = useSelector((state) => state.loginReducer.premium);
-  const [message, setMessage] = useState("Job Submitted!");
 
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
@@ -42,7 +41,6 @@ function AddStepper({
   const [data, setData] = useState(null);
 
   const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
     response: "",
@@ -121,7 +119,6 @@ function AddStepper({
       case 1:
         return (
           <div>
-            {/* <p> Upload your Dataset</p> */}
             <UploadButtons
               changeTarget={(t_col) => setTarget(t_col)}
               changeData={(fData) => setData(fData)}
@@ -166,8 +163,6 @@ function AddStepper({
   const steps = getSteps();
 
   const handleNext = () => {
-    setLoading(true);
-
     if (values.jobName === "") {
       setOpenSnackBar(true);
       setSnackBarContent({
@@ -219,12 +214,10 @@ function AddStepper({
       console.log("submitted new job");
 
       setOpenSnackBar(true);
-      setMessage("Job Submitted!");
       setSnackBarContent({
         content: "Submitted new job for TRAINING",
         severity: "success",
       });
-      setLoading(false);
       setValues({
         response: "",
         post: "",
@@ -236,12 +229,10 @@ function AddStepper({
       handleClose();
     } else {
       setOpenSnackBar(true);
-      setMessage("Could not Submit Job");
       setSnackBarContent({
         content: "Something went wrong. Please try again",
         severity: "error",
       });
-      setLoading(false);
     }
     setData(null);
   };
@@ -261,16 +252,7 @@ function AddStepper({
         ))}
       </Stepper>
       <div>
-        {activeStep === steps.length ? (
-          <div>
-            {loading && <CircularProgress size={34} />}
-            {!loading && (
-              <Typography className={classes.instructions}>
-                <h1>{message}</h1>
-              </Typography>
-            )}
-          </div>
-        ) : (
+        {activeStep !== steps.length && (
           <div>
             <Typography className={classes.instructions}>
               {getStepContent(activeStep)}

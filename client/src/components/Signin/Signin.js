@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   margin: {
@@ -145,7 +145,6 @@ export default function Signin(props) {
       history.push({
         pathname: "/home",
         state: { isUserNewlyRegistred: userNewlyRegistred },
-        // state: { },
       });
     }
   };
@@ -168,10 +167,7 @@ export default function Signin(props) {
               style={{
                 width: "100%",
                 borderRadius: ".25rem",
-                background:
-                  // "linear-gradient(120deg , #e0c3fc 0%, #8ec5fc 100%)",
-                  "linear-gradient(40deg ,#45cafc,#303f9f)",
-                // "linear-gradient(to right bottom, #430089, #82ffa1)",
+                background: "linear-gradient(40deg ,#45cafc,#303f9f)",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",

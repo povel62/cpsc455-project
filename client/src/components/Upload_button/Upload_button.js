@@ -135,7 +135,6 @@ function UploadButtons(props) {
                 props.changeTarget(e.target.value);
               }}
               helperText="Please select target column"
-              //style={{ float: "right" }}
             >
               {columns.map((option) => (
                 <MenuItem key={option.selector} value={option.selector}>
