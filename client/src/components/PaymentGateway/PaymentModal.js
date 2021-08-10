@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PaymentModal() {
+export default function PaymentModal({ setSnackBarContent, setOpenSnackBar }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -51,7 +51,10 @@ export default function PaymentModal() {
       </Tooltip>
       <h2 id="modal-title">Get Premium</h2>
       <p id="modal-description">Please enter you card details belows</p>
-      <StripeContainer />
+      <StripeContainer
+        setOpenSnackBar={setOpenSnackBar}
+        setSnackBarContent={setSnackBarContent}
+      />
     </div>
   );
 

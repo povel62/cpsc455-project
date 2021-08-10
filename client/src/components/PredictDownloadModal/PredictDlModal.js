@@ -134,18 +134,17 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
         .then((res) => {
           setSubmitting(false);
           if (res.status === 200) {
-            let name = fileName;
             const addr = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement("a");
             link.href = addr;
-            link.setAttribute("download", name);
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(addr);
             setOpenSnackBar(true);
             setSnackBarContent({
-              content: "Downloading file...",
+              content: "Downloading..." + fileName,
               severity: "info",
             });
           } else {
@@ -170,18 +169,14 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   const body = (
     <div style={modalStyle} className={classes.paper}>
-      {!submitting && (
-        <Tooltip title="close window" aria-label="close window">
-          <FaTimesCircle
-            size="1.5em"
-            onClick={handleClose}
-            style={{ cursor: "pointer" }}
-          />
-        </Tooltip>
-      )}
-      {submitting && <p> Cannot close while download request is being made</p>}
+      <Tooltip title="close window" aria-label="close window">
+        <FaTimesCircle
+          size="1.5em"
+          onClick={handleClose}
+          style={{ cursor: "pointer" }}
+        />
+      </Tooltip>
       <h2 id="modal-title">Download Prediction File</h2>
-      <br />
       {!isPremium && (
         <p>
           Upgrade to Premium and unlock the ability to download any of your
@@ -210,23 +205,21 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
       {load && <CircularProgress size={44} />}
       <br />
       <br />
-      {submitting && <CircularProgress size={44} />}
-      {!submitting && (
-        <Tooltip
-          title="Download prediction file"
-          aria-label="Download prediction file"
+      <Tooltip
+        title="Download prediction file"
+        aria-label="Download prediction file"
+      >
+        <Button
+          variant="contained"
+          component="span"
+          disabled={preds.length < 1 || submitting}
+          onClick={handleDlPredict}
+          endIcon={<CloudDownloadIcon />}
         >
-          <Button
-            variant="contained"
-            component="span"
-            disabled={preds.length < 1}
-            onClick={handleDlPredict}
-            endIcon={<CloudDownloadIcon />}
-          >
-            Download Prediction File
-          </Button>
-        </Tooltip>
-      )}
+          Download Prediction File{" "}
+          {submitting && <CircularProgress size={25} />}
+        </Button>
+      </Tooltip>
     </div>
   );
 

@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 import { setPremium } from "../../redux/actions/actions";
+import { CircularProgress } from "@material-ui/core";
 
-export const CheckoutForm = () => {
+export const CheckoutForm = ({ setOpenSnackBar, setSnackBarContent }) => {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
   let token = useSelector((state) => state.loginReducer.accessToken);
+  const [submitting, setSubmitting] = useState(false);
 
   const updatePremium = async () => {
     const response = await fetch("/api/user/update", {
@@ -25,10 +27,12 @@ export const CheckoutForm = () => {
 
     if (response.status == 200) {
       dispatch(setPremium(true));
+      setSubmitting(false);
     }
   };
 
   const handleSubmit = async (event) => {
+    setSubmitting(true);
     event.preventDefault();
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
@@ -57,12 +61,30 @@ export const CheckoutForm = () => {
         if (response.data.success) {
           console.log("CheckoutForm.js 25 | payment successful!");
           updatePremium();
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "payment successful",
+            severity: "success",
+          });
         }
-      } catch (error) {
-        console.log("CheckoutForm.js 28 | ", error);
+      } catch (errorS) {
+        setSubmitting(false);
+        console.log("CheckoutForm.js 28 | ", errorS);
+        setOpenSnackBar(true);
+        setSnackBarContent({
+          content: "That didn't go through. Please try again",
+          severity: "error",
+        });
       }
     } else {
+      setSubmitting(false);
       console.log(error.message);
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content:
+          "Payment could not be made at this time. Please try again later",
+        severity: "error",
+      });
     }
   };
 
@@ -72,8 +94,14 @@ export const CheckoutForm = () => {
       <CardElement />
       <br />
       <br />
-      <Button variant="contained" color="primary" onClick={handleSubmit}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        disabled={submitting}
+      >
         Pay Now
+        {submitting && <CircularProgress size={24} />}
       </Button>
     </form>
   );
