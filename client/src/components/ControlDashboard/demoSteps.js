@@ -83,7 +83,19 @@ const demoSteps = [
       },
     },
     target: ".demo__7",
-    title: "Actions",
+    title: "Predict Action",
+  },
+  {
+    content:
+      "These are the actions available to the user based on the status of the job",
+    placement: "left",
+    styles: {
+      options: {
+        width: "30vw",
+      },
+    },
+    target: ".demo__12",
+    title: "Download Action",
   },
   {
     content:
