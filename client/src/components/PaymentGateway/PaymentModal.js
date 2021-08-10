@@ -21,8 +21,7 @@ const useStyles = makeStyles((theme) => ({
     width: "600px",
     height: "350px",
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[20],
     padding: theme.spacing(2, 4, 3),
   },
 }));
@@ -54,6 +53,7 @@ export default function PaymentModal({ setSnackBarContent, setOpenSnackBar }) {
       <StripeContainer
         setOpenSnackBar={setOpenSnackBar}
         setSnackBarContent={setSnackBarContent}
+        handleClose={handleClose}
       />
     </div>
   );

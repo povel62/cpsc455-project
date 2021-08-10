@@ -8,12 +8,6 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Select, MenuItem, CircularProgress } from "@material-ui/core";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 function getModalStyle() {
   const top = 15;
@@ -30,13 +24,18 @@ const useStyles = makeStyles((theme) => ({
     width: "500px",
     height: "350px",
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[20],
     padding: theme.spacing(2, 4, 3),
   },
 }));
 
-export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
+export default function PredictDlModal({
+  refreshJobs,
+  jobId,
+  showDownload,
+  setOpenSnackBar,
+  setSnackBarContent,
+}) {
   const login_token = useSelector((state) => state.loginReducer);
   const isPremium = login_token.premium;
   const classes = useStyles();
@@ -47,19 +46,6 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   const [load, setLoad] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarContent, setSnackBarContent] = useState({
-    content: " ",
-    severity: "success",
-  });
-
-  const handleCloseSnackBar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-  };
 
   const handleOpen = () => {
     setLoad(true);
@@ -147,6 +133,7 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
               content: "Downloading..." + fileName,
               severity: "info",
             });
+            handleClose();
           } else {
             setOpenSnackBar(true);
             setSnackBarContent({
@@ -225,19 +212,6 @@ export default function PredictDlModal({ refreshJobs, jobId, showDownload }) {
 
   return (
     <div>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackBar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackBar}
-          severity={snackBarContent.severity}
-        >
-          {snackBarContent.content}
-        </Alert>
-      </Snackbar>
       {showDownload && (
         <div>
           <Tooltip

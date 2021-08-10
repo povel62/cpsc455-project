@@ -24,13 +24,17 @@ const useStyles = makeStyles((theme) => ({
     width: "80vw",
     height: "90vh",
     backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[20],
     padding: theme.spacing(2, 4, 3),
   },
 }));
 
-export default function JobModal({ refreshJobs, setTab }) {
+export default function JobModal({
+  refreshJobs,
+  setTab,
+  setOpenSnackBar,
+  setSnackBarContent,
+}) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
@@ -54,7 +58,12 @@ export default function JobModal({ refreshJobs, setTab }) {
         />
       </Tooltip>
       <h2 id="modal-title">Add ML Job</h2>
-      <AddStepper setTab={setTab} />
+      <AddStepper
+        setTab={setTab}
+        setOpenSnackBar={setOpenSnackBar}
+        setSnackBarContent={setSnackBarContent}
+        handleClose={handleClose}
+      />
     </div>
   );
 

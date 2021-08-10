@@ -6,7 +6,11 @@ import Button from "@material-ui/core/Button";
 import { setPremium } from "../../redux/actions/actions";
 import { CircularProgress } from "@material-ui/core";
 
-export const CheckoutForm = ({ setOpenSnackBar, setSnackBarContent }) => {
+export const CheckoutForm = ({
+  setOpenSnackBar,
+  setSnackBarContent,
+  handleClose,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
@@ -66,6 +70,7 @@ export const CheckoutForm = ({ setOpenSnackBar, setSnackBarContent }) => {
             content: "payment successful",
             severity: "success",
           });
+          handleClose();
         }
       } catch (errorS) {
         setSubmitting(false);
@@ -85,6 +90,7 @@ export const CheckoutForm = ({ setOpenSnackBar, setSnackBarContent }) => {
           "Payment could not be made at this time. Please try again later",
         severity: "error",
       });
+      handleClose();
     }
   };
 

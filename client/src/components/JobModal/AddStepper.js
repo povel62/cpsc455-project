@@ -11,62 +11,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import UploadButtons from "../Upload_button/Upload_button";
 import { CircularProgress } from "@material-ui/core";
 import PropTypes from "prop-types";
-
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-const computeTimes = [
-  {
-    value: 5,
-    label: "5 minutes",
-  },
-  {
-    value: 20,
-    label: "20 minutes",
-  },
-  {
-    value: 60,
-    label: "1 hour",
-  },
-  {
-    value: 360,
-    label: "6 hours",
-  },
-];
-
-const computeTimesPremium = [
-  {
-    value: 5,
-    label: "5 minutes",
-  },
-  {
-    value: 20,
-    label: "20 minutes",
-  },
-  {
-    value: 60,
-    label: "1 hour",
-  },
-  {
-    value: 360,
-    label: "6 hours",
-  },
-  {
-    value: 1440,
-    label: "24 hours",
-  },
-  {
-    value: 2880,
-    label: "48 hours",
-  },
-  {
-    value: 5760,
-    label: "96 hours",
-  },
-];
+import { computeTimes, computeTimesPremium } from "./trainingTimes";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,21 +26,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AddStepper({ setTab }) {
+function AddStepper({
+  setTab,
+  setOpenSnackBar,
+  setSnackBarContent,
+  handleClose,
+}) {
   let isPremium = useSelector((state) => state.loginReducer.premium);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
   const [message, setMessage] = useState("Job Submitted!");
-  const [snackBarContent, setSnackBarContent] = useState({
-    content: " ",
-    severity: "success",
-  });
-
-  const handleCloseSnackBar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-  };
 
   const login_token = useSelector((state) => state.loginReducer);
   const classes = useStyles();
@@ -103,6 +41,7 @@ function AddStepper({ setTab }) {
   const [target_col, setTarget] = useState("");
   const [data, setData] = useState(null);
 
+  const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
@@ -257,6 +196,7 @@ function AddStepper({ setTab }) {
   };
 
   const handleFinish = async () => {
+    setSubmitting(true);
     console.log(data);
     const formData = new FormData();
 
@@ -274,6 +214,7 @@ function AddStepper({ setTab }) {
       body: formData,
     });
 
+    setSubmitting(false);
     if (response.status === 201 || response.status === 200) {
       console.log("submitted new job");
 
@@ -292,6 +233,7 @@ function AddStepper({ setTab }) {
         jobTime: 5,
         guest: login_token.guest,
       });
+      handleClose();
     } else {
       setOpenSnackBar(true);
       setMessage("Could not Submit Job");
@@ -311,19 +253,6 @@ function AddStepper({ setTab }) {
 
   return (
     <div className={classes.root}>
-      <Snackbar
-        open={openSnackBar}
-        autoHideDuration={1500}
-        onClose={handleCloseSnackBar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackBar}
-          severity={snackBarContent.severity}
-        >
-          {snackBarContent.content}
-        </Alert>
-      </Snackbar>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label) => (
           <Step key={label}>
@@ -360,9 +289,15 @@ function AddStepper({ setTab }) {
               >
                 Back
               </Button>
-              <Button variant="contained" color="primary" onClick={handleNext}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleNext}
+                disabled={submitting}
+              >
                 {activeStep === steps.length - 1 && "Submit"}
                 {activeStep !== steps.length - 1 && "Next"}
+                {submitting && <CircularProgress size={25} />}
               </Button>
             </div>
           </div>

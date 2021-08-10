@@ -243,6 +243,8 @@ export default function ControlDashboard(props) {
                     {(isPremium ||
                       (!isPremium && login_token.jobs.length < 10)) && (
                       <JobModal
+                        setOpenSnackBar={setOpenSnackBar}
+                        setSnackBarContent={setSnackBarContent}
                         refreshJobs={() => loadJobs()}
                         setTab={props.setTab}
                       />
@@ -277,7 +279,13 @@ export default function ControlDashboard(props) {
                   .reverse()
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => (
-                    <Row key={index} row={row} refreshJobs={() => loadJobs()} />
+                    <Row
+                      key={index}
+                      row={row}
+                      refreshJobs={() => loadJobs()}
+                      setOpenSnackBar={setOpenSnackBar}
+                      setSnackBarContent={setSnackBarContent}
+                    />
                   ))}
                 {run && <DemoRow />}
               </TableBody>
