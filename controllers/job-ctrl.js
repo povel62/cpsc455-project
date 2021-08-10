@@ -679,6 +679,9 @@ addUsersToJob = async (req, res) => {
       let userIds = docs.map((x) => {
         return x["_id"];
       });
+      if (userIds.length === 0) {
+        return res.status(404).send({ message: "User not found!" });
+      }
       await Job.findById(req.params.id, {}, {}, (err, job) => {
         if (err) {
           return res.status(404).json({
@@ -704,10 +707,16 @@ addUsersToJob = async (req, res) => {
           userIds.map(async (x) => {
             await User.findOne({ _id: x }, async (err, user) => {
               if (err) {
-                console.log(`User: ${x} not found`);
+                return res.status(404).json({
+                  err,
+                  message: "User not found!",
+                });
               }
               if (!user) {
-                console.log(`User: ${x} not found`);
+                return res.status(404).json({
+                  err,
+                  message: "User not found!",
+                });
               }
               try {
                 addJobToUser(x, job);
