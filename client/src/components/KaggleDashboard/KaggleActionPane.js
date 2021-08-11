@@ -753,7 +753,7 @@ const KaggleActionPane = () => {
         </ButtonGroup>
         {files && files.type === compType && (
           <p>
-            Unable to determine license for competitions, please abide by the
+            Unable to determine license for competition, please abide by the
             competition rules.
           </p>
         )}
