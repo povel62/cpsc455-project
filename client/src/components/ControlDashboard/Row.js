@@ -50,8 +50,6 @@ const Row = ({ row, refreshJobs, setOpenSnackBar, setSnackBarContent }) => {
         severity: "success",
       });
     } else {
-      console.log(response.data);
-
       setOpenSnackBar(true);
       setSnackBarContent({
         content: "Could not delete. Try again.",

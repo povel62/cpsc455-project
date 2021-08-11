@@ -80,7 +80,6 @@ export default function PredictModal({
 
     setSubmitting(false);
     if (response.status === 201 || response.status === 200) {
-      console.log("submitted prediction testfile");
       setOpenSnackBar(true);
       setSnackBarContent({
         content: "submitted prediction testfile",

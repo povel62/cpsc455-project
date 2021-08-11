@@ -163,8 +163,11 @@ export default function ControlDashboard(props) {
             dispatch(setJobs(jobData));
           }
         } else {
-          console.log("error");
-          alert(response.status);
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "Couldn't load jobs",
+            severity: "error",
+          });
         }
       })
       .catch((err) => {

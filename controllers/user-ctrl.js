@@ -96,7 +96,6 @@ update = async (req, res) => {
 
   User.findOne({ _id: userId }, (err, user) => {
     if (err) {
-      console.log("error1");
       return res.status(404).json({
         err,
         message: "User not found!",
@@ -145,7 +144,6 @@ update = async (req, res) => {
         });
       })
       .catch((error) => {
-        console.log("error2");
         return res.status(404).json({
           error,
           message: "User not updated!",

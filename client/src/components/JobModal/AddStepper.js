@@ -192,7 +192,6 @@ function AddStepper({
 
   const handleFinish = async () => {
     setSubmitting(true);
-    console.log(data);
     const formData = new FormData();
 
     // Update the formData object
@@ -211,8 +210,6 @@ function AddStepper({
 
     setSubmitting(false);
     if (response.status === 201 || response.status === 200) {
-      console.log("submitted new job");
-
       setOpenSnackBar(true);
       setSnackBarContent({
         content: "Submitted new job for TRAINING",
@@ -239,7 +236,6 @@ function AddStepper({
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    console.log(target_col);
   };
 
   return (

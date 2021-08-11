@@ -127,7 +127,6 @@ function UploadButtons(props) {
               label="Select target column"
               value={values.target_col}
               onChange={(e) => {
-                console.log("value changed to " + e.target.value);
                 setValues({
                   ...values,
                   target_col: e.target.value,
