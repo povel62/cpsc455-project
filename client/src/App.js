@@ -56,9 +56,9 @@ class App extends Component {
             8: ml9,
             9: ml10,
           }}
-          how={60} // Pass the number of images Sky will render chosing randomly
-          time={40} // time of animation
-          size={"60px"} // size of the rendered images
+          how={40} // Pass the number of images Sky will render chosing randomly
+          time={30} // time of animation
+          size={"40px"} // size of the rendered images
           background={"palettedvioletred"} // color of background
         />
 

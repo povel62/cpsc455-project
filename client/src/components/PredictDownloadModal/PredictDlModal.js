@@ -97,12 +97,9 @@ export default function PredictDlModal({
             </MenuItem>
           );
         });
-        console.log("success");
-        console.log(entries);
         setPreds(entries);
       })
       .catch(() => {
-        console.log("fail");
         setPreds([]);
       });
   };
@@ -150,7 +147,11 @@ export default function PredictDlModal({
           });
         });
     } else {
-      console.log("file list empty");
+      setOpenSnackBar(true);
+      setSnackBarContent({
+        content: "No files to download",
+        severity: "error",
+      });
     }
   };
 

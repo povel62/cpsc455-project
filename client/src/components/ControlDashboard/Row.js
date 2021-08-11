@@ -50,8 +50,6 @@ const Row = ({ row, refreshJobs, setOpenSnackBar, setSnackBarContent }) => {
         severity: "success",
       });
     } else {
-      console.log(response.data);
-
       setOpenSnackBar(true);
       setSnackBarContent({
         content: "Could not delete. Try again.",
@@ -145,11 +143,7 @@ const Row = ({ row, refreshJobs, setOpenSnackBar, setSnackBarContent }) => {
             </IconButton>
           </Tooltip>
           {isPremium && (
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              // onClick={seeJobErrorEvent}
-            >
+            <IconButton aria-label="expand row" size="small">
               <ErrorModal jobId={row.id} />
             </IconButton>
           )}

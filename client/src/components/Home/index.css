@@ -7,3 +7,44 @@
   flex-direction: column;
   flex-wrap: wrap;
 }
+.circle_1 {
+  display: flex;
+  width: 200px;
+  height: 200px;
+  background-color: rgb(180, 37, 68);
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle_2 {
+  display: flex;
+  width: 200px;
+  height: 200px;
+  background-color: rgb(118, 33, 167);
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle_3 {
+  display: flex;
+  width: 200px;
+  height: 200px;
+  background-color: rgb(42, 167, 47);
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle_text {
+  display: flex;
+  width: 200px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+}
+
+.skyBreak {
+  background-color: #ffffff8a;
+}

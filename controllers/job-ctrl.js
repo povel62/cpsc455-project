@@ -82,7 +82,6 @@ uploadJob = async (req, res) => {
   let userId = req._id;
   const body = req.body;
   if (!body) {
-    console.log("error 1 no body");
     return res.status(400).json({
       success: false,
       error: "You must provide a job",
@@ -148,7 +147,6 @@ uploadTestFile = async (req, res) => {
   const body = req.body;
 
   if (!body) {
-    console.log("error 1 no body");
     return res.status(400).json({
       success: false,
       error: "You must provide a body with test file",
@@ -156,7 +154,6 @@ uploadTestFile = async (req, res) => {
   }
 
   if (!req.files) {
-    console.log("error 2 no file");
     return res.status(400).json({
       success: false,
       message: "No file uploaded",
@@ -170,7 +167,6 @@ uploadTestFile = async (req, res) => {
 
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
-      console.log("job not found");
       return res.status(404).json({
         err,
         message: "Job not found!",
@@ -199,7 +195,6 @@ uploadTestFile = async (req, res) => {
         .map((x) => x.replace("\r", ""));
     }
     if (headers.length !== job.headers.length) {
-      console.log("error 3 header");
       return res.status(400).json({
         success: false,
         message: "Job headers count is different from test file headers count!",
@@ -256,22 +251,17 @@ getPreds = async (req, res) => {
     getPredFileNames(job._id).then((s1) => {
       let fileNames = [];
       try {
-        console.log(s1);
         if (s1.length > 0) {
           fileNames = JSON.parse(s1[0].replace(/'/g, '"')).map((x) => {
             return x.split("\n")[0];
           });
         }
       } catch (err) {
-        console.log("cant retrieve");
         return res.status(404).json({
           error: err,
           message: "Cannot retreive files!",
         });
       }
-
-      console.log("file name here");
-      console.log(fileNames);
 
       return res.status(200).json({
         success: true,
@@ -331,7 +321,6 @@ getFileText = async (req, res) => {
 getPredFile = async (req, res) => {
   Job.findOne({ _id: req.params.id }, (err, job) => {
     if (err) {
-      console.log("job not found");
       return res.status(404).json({
         err,
         message: "Job not found!",
@@ -376,7 +365,6 @@ getPredFile = async (req, res) => {
         }
       })
       .catch((error) => {
-        console.log("file not found");
         return res.status(404).json({
           error,
           message: "Cannot find file!",
@@ -551,8 +539,6 @@ deleteJob = async (req, res) => {
     }
     try {
       if (user.jobs.includes(req.params.id)) {
-        console.log("request id here");
-        console.log(req.params.id);
         await Job.findById(req.params.id, {}, {}, (err, job) => {
           if (err) {
             return res.status(404).json({

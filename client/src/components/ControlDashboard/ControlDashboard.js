@@ -163,8 +163,11 @@ export default function ControlDashboard(props) {
             dispatch(setJobs(jobData));
           }
         } else {
-          console.log("error");
-          alert(response.status);
+          setOpenSnackBar(true);
+          setSnackBarContent({
+            content: "Couldn't load jobs",
+            severity: "error",
+          });
         }
       })
       .catch((err) => {
@@ -202,7 +205,6 @@ export default function ControlDashboard(props) {
           styles={{
             options: {
               arrowColor: "#e3ffeb",
-              // primaryColor: "#2196f3",
               zIndex: 1000,
             },
           }}
@@ -291,7 +293,6 @@ export default function ControlDashboard(props) {
             </Table>
           </TableContainer>
           <TablePagination
-            // className="demo__5"
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={rows.length}
