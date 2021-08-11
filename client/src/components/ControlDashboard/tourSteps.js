@@ -19,7 +19,8 @@ const demoSteps = [
     title: "Jobs Table",
   },
   {
-    content: "You can submit a new job for Training from here",
+    content:
+      "You can submit a new job for Training from here. Non-Premium users can have upto 10 active jobs. Premium Users can have any number of jobs. Upgrade to Premium now!",
     placement: "left",
     styles: {
       options: {
@@ -41,7 +42,7 @@ const demoSteps = [
     title: "Job Details",
   },
   {
-    content: "For more details about the job click on this button",
+    content: "Use this button to view more details about this job",
     placement: "left",
     styles: {
       options: {
@@ -52,7 +53,8 @@ const demoSteps = [
     title: "Extra Details",
   },
   {
-    content: "This cell tells that this job is associated with Kaggle",
+    content:
+      "This cell tells that this job is associated with Kaggle. Kaggle integration is only accessible to Premium users. Upgrade now!",
     placement: "left",
     styles: {
       options: {
@@ -75,7 +77,7 @@ const demoSteps = [
   },
   {
     content:
-      "These are the actions available to the user based on the status of the job",
+      "Use this button to submit a test file for prediction and start predicting!",
     placement: "left",
     styles: {
       options: {
@@ -83,11 +85,23 @@ const demoSteps = [
       },
     },
     target: ".demo__7",
-    title: "Actions",
+    title: "Predict Action",
   },
   {
     content:
-      "You can share this job with your teammates from here! All you need is their id that is associated with an account with us",
+      "Download prediction results. PREMIUM user has access to all of their prediction results!! Upgrade now!",
+    placement: "left",
+    styles: {
+      options: {
+        width: "30vw",
+      },
+    },
+    target: ".demo__12",
+    title: "Download Action",
+  },
+  {
+    content:
+      "PREMIUM FEATURE! You can share a job with your teammates from here! All you need is their id that is associated with an account with us",
     placement: "left",
     styles: {
       options: {
@@ -98,7 +112,7 @@ const demoSteps = [
     title: "Share with Collaborators",
   },
   {
-    content: "This button lets you delete this job ",
+    content: "Use this button to delete a job ",
     placement: "left",
     styles: {
       options: {
@@ -109,7 +123,8 @@ const demoSteps = [
     title: "Delete",
   },
   {
-    content: " This button lets you view job error logs",
+    content:
+      "PREMIUM FEATURE! Use this button to view job output and error logs",
     placement: "right",
     styles: {
       options: {
@@ -120,18 +135,9 @@ const demoSteps = [
     title: "Logs",
   },
   {
-    content: "The progress bar is a visual indicator of current job status",
-    /* <p>
-          TRAINING: Progress bar is still progressing towards the middle with a
-          blue color <br />
-          TRAINING_COMPLETED: Progress bar is at 50% with a green color
-          indicating that training has been completed <br />
-          PREDICTING: Progress bar is progressing towards the end with a green
-          color
-          <br />
-          PREDICTING_COMPLETED: Progress bar at 100%, colored green to indicate
-          prediction has been completed
-        </p> */
+    content:
+      "PREMIUM FEATURE! The progress bar is a visual indicator of current job status",
+
     placement: "left",
     styles: {
       options: {

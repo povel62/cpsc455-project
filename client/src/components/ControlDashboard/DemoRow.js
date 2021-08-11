@@ -55,7 +55,7 @@ const DemoRow = () => {
             Predict
           </Button>
         </TableCell>
-        <TableCell align="center" className="demo__7">
+        <TableCell align="center" className="demo__12">
           <Button
             variant="contained"
             component="span"

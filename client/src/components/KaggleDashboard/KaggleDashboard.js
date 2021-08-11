@@ -34,6 +34,10 @@ import {
 } from "../../redux/actions/actions";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 
+// tour stuff
+import ReactJoyride, { EVENTS } from "react-joyride";
+import steps from "./kaggleTourSteps";
+
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -55,7 +59,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const KaggleDashBoard = (props) => {
+KaggleDashBoard.propTypes = {
+  joyride: PropTypes.shape({
+    callback: PropTypes.func,
+  }),
+  tab: PropTypes.number.isRequired,
+  setTab: PropTypes.func.isRequired,
+};
+
+KaggleDashBoard.defaultProps = {
+  joyride: {},
+};
+
+export default function KaggleDashBoard(props) {
   const classes = useStyles();
   let loading = useSelector((state) => state.kaggleReducer.loading);
   let token = useSelector((state) => state.loginReducer.accessToken);
@@ -65,9 +81,30 @@ const KaggleDashBoard = (props) => {
   const [enabled, setEnabled] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  KaggleDashBoard.propTypes = {
-    tab: PropTypes.number.isRequired,
-    setTab: PropTypes.func.isRequired,
+  const [run, setRun] = useState(false);
+
+  const handleClickStart = (e) => {
+    e.preventDefault();
+    setRun(true);
+  };
+
+  const handleJoyrideCallback = (data) => {
+    const { joyride } = props;
+    const { type } = data;
+
+    if (type === EVENTS.TOUR_END && run) {
+      setRun(false);
+    }
+
+    if (type === EVENTS.TARGET_NOT_FOUND && run) {
+      setRun(false);
+    }
+
+    if (typeof joyride.callback === "function") {
+      joyride.callback(data);
+    } else {
+      console.groupEnd();
+    }
   };
 
   const checkAuth = () => {
@@ -109,6 +146,25 @@ const KaggleDashBoard = (props) => {
 
   return (
     <div className="KaggleDash">
+      <ReactJoyride
+        continuous
+        scrollToFirstStep
+        showProgress
+        disableScrolling={true}
+        showSkipButton
+        disableOverlayClose={true}
+        hideCloseButton
+        run={run}
+        steps={steps}
+        styles={{
+          backgroundColor: "#FFFFFF",
+          options: {
+            arrowColor: "#e3ffeb",
+            zIndex: 1000,
+          },
+        }}
+        callback={handleJoyrideCallback}
+      />
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -183,6 +239,22 @@ const KaggleDashBoard = (props) => {
       </Backdrop>
       {enabled === true && checked === true && (
         <div>
+          <Card
+            style={{
+              alignItems: "center",
+              alignContent: "center",
+              textAlign: "center",
+              display: "inline-block",
+            }}
+          >
+            <Button
+              onClick={handleClickStart}
+              color="primary"
+              variant="outlined"
+            >
+              Take a tour of Kaggle dashboard
+            </Button>
+          </Card>
           <br />
           <Grid container spacing={3}>
             <Grid item xs>
@@ -309,6 +381,4 @@ const KaggleDashBoard = (props) => {
       )}
     </div>
   );
-};
-
-export default KaggleDashBoard;
+}
