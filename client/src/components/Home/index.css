@@ -11,7 +11,7 @@
   display: flex;
   width: 200px;
   height: 200px;
-  background-color: rgb(168, 10, 44);
+  background-color: rgb(180, 37, 68);
   border-radius: 50%;
   justify-content: center;
   align-items: center;
@@ -21,7 +21,7 @@
   display: flex;
   width: 200px;
   height: 200px;
-  background-color: rgb(107, 13, 161);
+  background-color: rgb(118, 33, 167);
   border-radius: 50%;
   justify-content: center;
   align-items: center;
@@ -31,7 +31,7 @@
   display: flex;
   width: 200px;
   height: 200px;
-  background-color: rgb(11, 177, 17);
+  background-color: rgb(42, 167, 47);
   border-radius: 50%;
   justify-content: center;
   align-items: center;
@@ -43,4 +43,8 @@
   height: 100px;
   justify-content: center;
   align-items: center;
+}
+
+.skyBreak {
+  background-color: #ffffff8a;
 }
