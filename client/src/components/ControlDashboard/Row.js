@@ -145,11 +145,7 @@ const Row = ({ row, refreshJobs, setOpenSnackBar, setSnackBarContent }) => {
             </IconButton>
           </Tooltip>
           {isPremium && (
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              // onClick={seeJobErrorEvent}
-            >
+            <IconButton aria-label="expand row" size="small">
               <ErrorModal jobId={row.id} />
             </IconButton>
           )}
