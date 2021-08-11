@@ -40,5 +40,5 @@
   max-height: 85vh;
   max-width: 33.33333333vw;
   height: fit-content;
-  overflow: auto;
+  overflow: auto !important; /* needed to fix a bug where ReactJoyride overrides elements below it's modal */
 }
