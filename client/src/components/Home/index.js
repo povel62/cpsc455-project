@@ -21,7 +21,7 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 const useStyles = makeStyles({
   root: {
     maxWidth: 400,
-    // marginLeft: 190,
+    marginLeft: 65,
   },
   media: {
     height: 150,
@@ -110,24 +110,45 @@ const Home = (props) => {
               alignContent="center"
               justifyContent="center"
             >
-              <Grid xs={15} sm={2} item></Grid>
-              <Grid xs={15} sm={3} item>
+              <Grid xs={12} item>
+                <h1> As easy as 1... 2... 3</h1>
+              </Grid>
+              <Grid xs={12} sm={2} item />
+              <Grid xs={12} sm={3} item>
                 <div className="circle_1">
                   <DescriptionIcon style={{ color: "white", fontSize: "80" }} />
                 </div>
               </Grid>
-              <Grid xs={15} sm={3} item>
+              <Grid xs={12} sm={3} item>
                 <div className="circle_2">
                   <DonutLargeIcon style={{ color: "white", fontSize: "80" }} />
                 </div>
               </Grid>
-              <Grid xs={15} sm={3} item>
+              <Grid xs={12} sm={3} item>
                 <div className="circle_3">
                   <GetAppIcon style={{ color: "white", fontSize: "80" }} />
                 </div>
               </Grid>
-              <Grid xs={15} sm={3} item></Grid>
+
+              <Grid xs={12} sm={2} item />
+              <Grid xs={12} sm={3} item>
+                <div className="circle_text">
+                  <h3>Submit Dataset and start Training</h3>
+                </div>
+              </Grid>
+              <Grid xs={12} sm={3} item>
+                <div className="circle_text">
+                  <h3>Submit Testing set and start predicting</h3>
+                </div>
+              </Grid>
+              <Grid xs={12} sm={3} item>
+                <div className="circle_text">
+                  <h3>Download Prediction results</h3>
+                </div>
+              </Grid>
             </Grid>
+
+            <Grid></Grid>
           </Grid>
         )}
       </div>

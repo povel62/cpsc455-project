@@ -36,3 +36,11 @@
   justify-content: center;
   align-items: center;
 }
+
+.circle_text {
+  display: flex;
+  width: 200px;
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+}
