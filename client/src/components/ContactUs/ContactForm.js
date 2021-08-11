@@ -64,7 +64,6 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const { name, email, message } = e.target.elements;
 
     if (values.name == "" || values.email == "" || values.message == "") {
       setOpenSnackBar(true);
