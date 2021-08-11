@@ -19,7 +19,7 @@ const KaggleSearchForm = (props) => {
   };
 
   return (
-    <div className="searchArea">
+    <div className="searchArea ktour__2">
       <form
         onSubmit={(e) => {
           e.preventDefault();

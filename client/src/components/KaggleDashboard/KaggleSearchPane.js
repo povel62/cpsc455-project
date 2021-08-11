@@ -160,7 +160,7 @@ const KaggleSearchPane = () => {
   }
 
   return (
-    <Paper className="KagglePanel">
+    <Paper className="KagglePanel ktour__1">
       <h2 className="KagglePanelHeader">
         Kaggle Competition and Dataset Sources
       </h2>
@@ -169,7 +169,7 @@ const KaggleSearchPane = () => {
         <ListItem
           button
           onClick={handleCompetitionClick}
-          className="nestedItem"
+          className="nestedItem ktour__4"
         >
           <Grid container>
             <Grid item xs={8}>
@@ -182,6 +182,7 @@ const KaggleSearchPane = () => {
                 value={userFilter ? userFilter.compFilter : "general"}
                 onChange={(e) => handleKaggleCompSelect(e)}
                 disabled={loading}
+                className="ktour__3"
               >
                 <MenuItem value={"general"}>General</MenuItem>
                 <MenuItem value={"inClass"}>In Class</MenuItem>
@@ -197,10 +198,10 @@ const KaggleSearchPane = () => {
           </div>
         </Collapse>
         <Divider />
-        <ListItem button onClick={handleDatasetClick}>
+        <ListItem button onClick={handleDatasetClick} className="ktour__5">
           <Grid container>
             <Grid item xs={8}>
-              Personal Datasets
+              Datasets
             </Grid>
             <Grid item xs={4}>
               <Select

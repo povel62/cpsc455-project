@@ -12,8 +12,6 @@
 }
 
 .KaggleList {
-  /* height:max-content; */
-  /* max-height: 85vh; */
   overflow: auto;
 }
 
@@ -30,7 +28,6 @@
 }
 
 .KagglePanelAction{
-  /* margin-top: 2vh; */
   max-width: 33.33333333vw;
   height: fit-content;
   max-height: 85vh;

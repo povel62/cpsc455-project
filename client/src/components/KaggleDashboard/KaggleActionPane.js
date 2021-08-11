@@ -675,7 +675,7 @@ const KaggleActionPane = () => {
           <br />
         </DialogContent>
       </Dialog>
-      <Paper className="KagglePanel">
+      <Paper className="KagglePanel ktour__7">
         <h2 className="KagglePanelHeader">Available Actions</h2>
         <ButtonGroup style={{ width: "100%" }}>
           <Button
