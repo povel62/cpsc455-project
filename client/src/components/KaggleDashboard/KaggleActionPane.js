@@ -497,6 +497,11 @@ const KaggleActionPane = () => {
                   >
                     <MenuItem value={5}>5 minutes</MenuItem>
                     <MenuItem value={20}>20 minutes</MenuItem>
+                    <MenuItem value={60}>1 hour</MenuItem>
+                    <MenuItem value={360}>6 hours</MenuItem>
+                    <MenuItem value={1440}>24 hours</MenuItem>
+                    <MenuItem value={2880}>48 hours</MenuItem>
+                    <MenuItem value={5760}>96 hours</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
